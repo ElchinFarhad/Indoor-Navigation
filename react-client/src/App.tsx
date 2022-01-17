@@ -32,10 +32,12 @@ const canvasRef = useRef<HTMLCanvasElement>(null);
       .catch(err => {
         console.error("error:", err);
       });
-      setInterval(captureImage, 900);
+      setInterval(captureImage, 3000);
 
 
   };
+
+  
 
   var video, $output, toggle;
   var scale = 0.25;
@@ -52,21 +54,34 @@ const canvasRef = useRef<HTMLCanvasElement>(null);
 
     ctx.drawImage(video, 0, 0, width, height);
 
+    //  const clampedByteArray = canvasRef.current.getContext("2d").getImageData(0, 0, 640, 480).data;
+    //  console.log(" ccc "+clampedByteArray)
+
 
     canvas.toBlob(blob => {
-      var newImg = document.createElement('img'),
-      url = URL.createObjectURL(blob);
+      var newImg = document.createElement('img');
+     var base64String = "";
 
-      console.log(url+" urllllll")
 
-  newImg.onload = function() {
-    // no longer need to read the blob so it's revoked
-    URL.revokeObjectURL(url);
-  };
+     newImg.src = canvasRef.current.toDataURL("image/png", 0.92);
 
-  newImg.src = url;
-  document.body.appendChild(newImg);
-  });
+     console.log("aaaa "+newImg.src);
+
+
+      newImg.src =   URL.createObjectURL(blob);
+
+
+
+      // console.log(newImg.src+" asad");
+
+      // console.log(JSON.stringify(blob)+"blobb")
+
+      
+
+
+  }
+  
+  );
 
 
    // stop();
