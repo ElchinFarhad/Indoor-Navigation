@@ -1,15 +1,6 @@
-import { url } from 'inspector';
-import React, {createRef, useEffect, useRef, useState} from 'react';
-// import * as wasm from "../../wasm-build";       
-
+import React, { useEffect, useRef} from 'react';
 
 function App() {
-
-  import('wasm').then(({ add_two_ints, fib }) => {
-    const sumResult = add_two_ints(10, 20);
-    const fibResult = fib(10);
-  })
-/////
 
 const videoRef = useRef<HTMLVideoElement>(null);
 const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -17,7 +8,6 @@ const canvasRef = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
     getVideo();
   }, [videoRef]); 
-
 
   const getVideo = () => {
     navigator.mediaDevices
@@ -33,20 +23,12 @@ const canvasRef = useRef<HTMLCanvasElement>(null);
         console.error("error:", err);
       });
       setInterval(captureImage, 3000);
-
-
   };
-
-  
-
-  var video, $output, toggle;
-  var scale = 0.25;
 
   var captureImage = function() {
     let video = videoRef.current;
     let canvas=canvasRef.current;
     let ctx = canvas.getContext("2d");
-
     const width = 420;
     const height = 340;
     canvas.width = width;
@@ -54,54 +36,26 @@ const canvasRef = useRef<HTMLCanvasElement>(null);
 
     ctx.drawImage(video, 0, 0, width, height);
 
-    //  const clampedByteArray = canvasRef.current.getContext("2d").getImageData(0, 0, 640, 480).data;
-    //  console.log(" ccc "+clampedByteArray)
+    var newImg = document.createElement('img');
 
+    newImg.src = canvasRef.current.toDataURL("png", 0.50);
 
-    canvas.toBlob(blob => {
-      var newImg = document.createElement('img');
-     var base64String = "";
+    let a= newImg.src;
 
+    console.log(a);
 
-     newImg.src = canvasRef.current.toDataURL("image/png", 0.92);
-
-     console.log("aaaa "+newImg.src);
-
-
-      newImg.src =   URL.createObjectURL(blob);
-
-
-
-      // console.log(newImg.src+" asad");
-
-      // console.log(JSON.stringify(blob)+"blobb")
-
-      
-
-
-  }
-  
-  );
-
-
-   // stop();
-
-  };
-
-  const stop = () => {
-    const stream = video.srcObject;
-    const tracks = stream.getTracks();
-  
-    for (let i = 0; i < tracks.length; i++) {
-      let track = tracks[i];
-      track.stop();
+    var byteNumbers = new Array(a.length);
+    for (var i = 0; i < a.length; i++) {
+      byteNumbers[i] = a.charCodeAt(i);
     }
-  
-    video.srcObject = null;
-  }
+    
+    var byteArray = new Uint8Array(byteNumbers);
 
-
-
+    import('wasm').then(({decode_qr}) => {
+      const decodeQr = decode_qr(byteArray);
+      console.log(decodeQr);
+    })
+  };
 
   return (
     <div>
@@ -112,6 +66,5 @@ const canvasRef = useRef<HTMLCanvasElement>(null);
 
   );
 }
-
 
 export default App;
