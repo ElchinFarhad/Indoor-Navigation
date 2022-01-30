@@ -28,7 +28,7 @@ pub fn decode_qr(a: &str) -> String {
     }
 
     // Decode the grid
-    let (meta, content) = match grids[0].decode() {
+    let (_meta, content) = match grids[0].decode() {
         Ok(v) => v,
         Err(_e) => return format!("{}", "[Error] Failed decoding the image"),
     };
