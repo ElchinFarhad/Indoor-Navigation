@@ -1,42 +1,37 @@
 extern crate wasm_bindgen;
-use rqrr;
+use base64::decode;
+// use rqrr;
 use wasm_bindgen::prelude::*;
 
-extern crate base64;
-
-use base64::{encode, decode};
-
 #[wasm_bindgen]
-pub fn decode_qr(a: &[u8]) -> String {
+pub fn decode_qr(a: &str) -> String {
+    let img = decode(a);
+    let res = img.unwrap();
+    let c: &[u8] = &res;
 
-    
-    let img = match image::load_from_memory_with_format(&a, image::ImageFormat::PNG) {
+    let k = match image::load_from_memory_with_format(c, image::ImageFormat::Png) {
         Ok(i) => i,
-        Err(e) => {
-            return format!( "[Error] Failed decoding the image {}", &e)
-        }
+        Err(e) => return format!("[Error] Failed decoding the image1st {}", &e),
     };
 
-    let res=img.to_luma();
+    let res = k.to_luma8();
 
-    // Prepare for detection
+    // // Prepare for detection
     let mut imgn = rqrr::PreparedImage::prepare(res);
 
-    // Search for grids, without decoding
+    // // Search for grids, without decoding
     let grids = imgn.detect_grids();
+    // print!("{:?}", &grids);
 
     if grids.len() != 1 {
-        return format!("{}", "[Error] No QR code detected in image")
+        return format!("{}", "[Error] No QR code detected in image");
     }
 
     // Decode the grid
-    let (_meta, content) = match grids[0].decode() {
+    let (meta, content) = match grids[0].decode() {
         Ok(v) => v,
         Err(_e) => return format!("{}", "[Error] Failed decoding the image"),
     };
 
-
-        return format!("{}", content);
-
+    return format!("{:?} and {:?}", &grids[0].bounds, content);
 }
-

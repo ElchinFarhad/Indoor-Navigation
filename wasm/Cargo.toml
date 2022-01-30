@@ -8,8 +8,8 @@ crate-type = ["cdylib"]
 path = "src/lib.rs"
 
 [dependencies]
-rqrr = "0.2.0"
-image = "0.21.2"
+rqrr = "0.4.0"
+image = "0.23.14"
 wasm-bindgen = "0.2.47"
 cargo-debug = "0.3.0"
 base64 = "0.13.0"

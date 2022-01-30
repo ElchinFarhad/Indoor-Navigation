@@ -38,21 +38,20 @@ const canvasRef = useRef<HTMLCanvasElement>(null);
 
     var newImg = document.createElement('img');
 
-    newImg.src = canvasRef.current.toDataURL("png", 0.50);
+    newImg.src = canvasRef.current.toDataURL("png", 0.90);
 
-    let a= newImg.src;
+    let base64Format= newImg.src;
 
-    console.log(a);
+    const newBase64 = base64Format.substring(base64Format.indexOf('base64,') + 7);
 
-    var byteNumbers = new Array(a.length);
-    for (var i = 0; i < a.length; i++) {
-      byteNumbers[i] = a.charCodeAt(i);
-    }
-    
-    var byteArray = new Uint8Array(byteNumbers);
+    // var byteNumbers = new Array(base64Format.length);
+    // for (var i = 0; i < base64Format.length; i++) {
+    //   byteNumbers[i] = base64Format.charCodeAt(i);
+    // }    
+    // var byteArray = new Uint8Array(byteNumbers);
 
     import('wasm').then(({decode_qr}) => {
-      const decodeQr = decode_qr(byteArray);
+      const decodeQr = decode_qr(newBase64);
       console.log(decodeQr);
     })
   };
