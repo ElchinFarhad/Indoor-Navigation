@@ -8,6 +8,10 @@ crate-type = ["cdylib"]
 path = "src/lib.rs"
 
 [dependencies]
+serde = "*"
+serde_json = "*"
+serde_derive = "*"
+json = "0.12.4"
 rqrr = "0.4.0"
 image = "0.23.14"
 wasm-bindgen = "0.2.47"

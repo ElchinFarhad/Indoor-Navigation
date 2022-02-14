@@ -20,4 +20,4 @@ To Visit App:
 
 Compile rust code if there is any changes:
 
-`wasm-pack build --out-dir ../wasm-build `
+`wasm-pack build --out-dir ../wasm-build`

@@ -1,7 +1,20 @@
 extern crate wasm_bindgen;
 use base64::decode;
 // use rqrr;
+use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
+#[macro_use]
+extern crate serde_derive;
+extern crate serde;
+extern crate serde_json;
+
+use json;
+
+#[derive(Serialize, Deserialize, Debug)]
+struct Greeting {
+    points: String,
+    content: String,
+}
 
 #[wasm_bindgen]
 pub fn decode_qr(a: &str) -> String {
@@ -28,10 +41,31 @@ pub fn decode_qr(a: &str) -> String {
     }
 
     // Decode the grid
-    let (_meta, content) = match grids[0].decode() {
+    let (meta, content) = match grids[0].decode() {
         Ok(v) => v,
         Err(_e) => return format!("{}", "[Error] Failed decoding the image"),
     };
 
-    return format!("{:?} and {:?}", &grids[0].bounds, content);
+    // let resp = Greeting {
+    //     points: (grids[0].bounds),
+
+    //     content: content,
+    // };
+
+
+    // {
+    //     "points":
+    //      [
+    //       {"x":1, "y":2},
+    //       {"x":1, "y":2},
+    //       {"x":1, "y":2},
+    //       {"x":1, "y":2},
+    //      ],
+    //     "content": "localhost:/dfdkj"
+    // }
+
+    return format!(
+        " {{ points: {:?}, content: {:?} }}",
+        &grids[0].bounds, content
+    );
 }
