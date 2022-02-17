@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState} from 'react';
 import {Container, Card, CardContent, Grid} from '@mui/material';
 import {makeStyles} from '@mui/styles';
 
+// import {decode_qr} from '../../wasm-build'
+
 function App() {
 
   const [scanResultWebCam, setScanResultWebCam] =  useState('');
@@ -17,27 +19,9 @@ function App() {
 
 
 
-const videoRef = useRef<HTMLVideoElement>(null);
+
+let videoRef = useRef<HTMLVideoElement>(null);
 const canvasRef = useRef<HTMLCanvasElement>(null);
-
-
-// console.log(scanResultWebCam+" ress");
-
-//[Point { x: 170, y: 22 }, Point { x: 413, y: 39 }, Point { x: 413, y: 248 }, Point { x: 168, y: 248 }] and "http://localhost:3000/destinations" 
-
-//[Point { x: 166, y: 16 },
-// Point { x: 383, y: 40 }, 
-//Point  { x: 368, y: 226 },
-// Point { x: 155, y: 219 }] and "http://localhost:3000/destinations" 
-
-useEffect(
-  () => {
-    console.log("dependency1 and dependency2", x1);
-    getVideo();
-  },
-  [x1]
-);
-
 
 
   useEffect(() => {
@@ -79,65 +63,75 @@ useEffect(
     let base64Format= newImg.src;
 
     const newBase64 = base64Format.substring(base64Format.indexOf('base64,') + 7);
+
     ctx.beginPath();
     ctx.lineWidth = 4;
     ctx.strokeStyle = "green";
+
     ctx.rect(x1,x1,y1,y1);
-
-    // ctx.rect(30,20,80,90);
-
-
     ctx.arc(x1,x1, 10, 0, 2 * Math.PI, true);
-
-    // ctx.arc(12,15, 10, 0, 2 * Math.PI, true);
 
 
     ctx.stroke();    
+
+
+    callRustFunc(newBase64);
+
   
+  };
+
+  var callRustFunc= function(newBase64){
 
     import('wasm').then(({decode_qr}) => {
       const decodeQr = decode_qr(newBase64);
       
       setScanResultWebCam(decodeQr);
+  
+    if(decodeQr!="[Error] No QR code detected in image"){ 
+  
+  
       console.log(decodeQr);
-
+  
       let a=decodeQr.split(",");
-
+  
       let X_BottomLeft=parseInt(a[0].replace(/[^0-9]/g, ""));
       let Y_BottomLeft=parseInt(a[1].replace(/[^0-9]/g, ""));
-
+  
+      console.log(X_BottomLeft, Y_BottomLeft, " asdf");
+  
       let X_BottomRight=parseInt(a[2].replace(/[^0-9]/g, ""));
       let Y_BottomRight=parseInt(a[3].replace(/[^0-9]/g, ""));
-
+  
       let X_TopRight=parseInt(a[4].replace(/[^0-9]/g, ""));
       let Y_TopRight=parseInt(a[5].replace(/[^0-9]/g, ""));
-
+  
       let X_TopLeft=parseInt(a[6].replace(/[^0-9]/g, ""));
       let Y_TopLeft=parseInt(a[7].replace(/[^0-9]/g, ""));
-
+  
       setcoorx1(X_BottomLeft);
       setcoory1(Y_BottomLeft);
-
+  
       setcoorx2(X_BottomRight);
       setcoory2(Y_BottomRight);
-
+  
       setcoorx3(X_TopRight);
       setcoory3(Y_TopRight);
-
+  
       setcoorx4(X_TopLeft);
       setcoory4(Y_TopLeft);
 
-      console.log(X_BottomLeft)
-
-      console.log(x1);
 
 
 
-      // console.log(output+" xxx");
+      console.log(x1, y1, " x1,y1")
+  
+  
       // console.log(X_BottomLeft+" "+Y_BottomLeft+" "+X_BottomRight+" "+Y_BottomRight+" "+X_TopRight+" "+Y_TopRight+" "+X_TopLeft+" "+Y_TopLeft);
-
+    }
     })
-  };
+  }
+
+
 
   return ( 
 <div>
