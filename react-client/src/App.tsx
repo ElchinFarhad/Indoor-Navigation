@@ -73,7 +73,6 @@ function App() {
     //Call Function Rust
     callRustFunc(newBase64);
 
-    
   };
 
   ////-----------------------------Draw rectangle----------------
