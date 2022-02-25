@@ -54,7 +54,7 @@ function App() {
     let video = videoRef.current;
     let canvas=canvasRef.current;
     let ctx = canvas.getContext("2d");
-    const width = 600;
+    const width = 500;
     const height = 400;
     canvas.width = width;
     canvas.height = height;
@@ -154,7 +154,6 @@ function App() {
 
   return ( 
 <div>
-  {console.log("render")}
   {isLoaded && drawRectangle()}
   <Container className={classes.conatiner}>
      <Card>

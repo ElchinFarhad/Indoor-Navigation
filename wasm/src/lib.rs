@@ -4,17 +4,8 @@ use base64::decode;
 // use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
 #[macro_use]
-extern crate serde_derive;
-extern crate serde;
-extern crate serde_json;
+// use tinyjson::JsonValue;
 
-// use json;
-
-#[derive(Serialize, Deserialize, Debug)]
-struct Greeting {
-    points: String,
-    content: String,
-}
 
 #[wasm_bindgen]
 pub fn decode_qr(a: &str) -> String {
@@ -62,6 +53,8 @@ pub fn decode_qr(a: &str) -> String {
     //      ],
     //     "content": "localhost:/dfdkj"
     // }
+
+    //    let parsed: JsonValue = s.parse().unwrap();
 
     return format!(
         " {{ points: {:?}, content: {:?} }}",
