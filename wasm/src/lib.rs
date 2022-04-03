@@ -1,11 +1,9 @@
 extern crate wasm_bindgen;
 use base64::decode;
-// use rqrr;
-// use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
-#[macro_use]
-// use tinyjson::JsonValue;
 
+mod cameraPoseEst;
+use cameraPoseEst::arrsac_manual;
 
 #[wasm_bindgen]
 pub fn decode_qr(a: &str) -> String {
@@ -37,27 +35,28 @@ pub fn decode_qr(a: &str) -> String {
         Err(_e) => return format!("{}", "[Error] Failed decoding the image"),
     };
 
-    // let resp = Greeting {
-    //     points: (grids[0].bounds),
+    let coordinates = grids[0].bounds;
 
-    //     content: content,
-    // };
+    let x1 = grids[0].bounds[0].x;
+    let y1 = grids[0].bounds[0].y;
 
-    // {
-    //     "points":
-    //      [
-    //       {"x":1, "y":2},
-    //       {"x":1, "y":2},
-    //       {"x":1, "y":2},
-    //       {"x":1, "y":2},
-    //      ],
-    //     "content": "localhost:/dfdkj"
-    // }
+    let x2 = grids[0].bounds[1].x;
+    let y2 = grids[0].bounds[1].y;
 
-    //    let parsed: JsonValue = s.parse().unwrap();
+    let x3 = grids[0].bounds[2].x;
+    let y3 = grids[0].bounds[2].y;
+
+    let x4 = grids[0].bounds[3].x;
+    let y4 = grids[0].bounds[3].y;
+
+    let res = arrsac_manual(
+        x1 as f64, y1 as f64, x2 as f64, y2 as f64, x3 as f64, y3 as f64, x4 as f64, y4 as f64,
+    );
+
+    // CameraPoseEst.arrsac_manual(x1, y1, x2, y2, x3, y3, x4, y4);
 
     return format!(
-        " {{ points: {:?}, content: {:?} }}",
-        &grids[0].bounds, content
+        " {{ points: {:?}, content: {:?}, RESULT: {:?} }}",
+        coordinates, content, res
     );
 }

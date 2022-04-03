@@ -83,21 +83,41 @@ function App() {
     let ctx = canvas.getContext("2d");
 
     ctx.beginPath();
+    // ctx.moveTo(x1, y1);
     ctx.lineWidth = 4;
     ctx.strokeStyle = "green";
 
     ctx.arc(x1,y1, 10, 0, 2 * Math.PI, true);
 
-    ctx.lineTo(x1, y1); 
+    ctx.lineTo(x1, y1);
     ctx.lineTo(x2, y2);
-
     ctx.lineTo(x3, y3);
     ctx.lineTo(x4, y4);
-
     ctx.lineTo(x1, y1);
-
-
     ctx.stroke();  
+    ctx.closePath();
+
+    //find center coordinate
+    ctx.beginPath();
+    var c1=(x1+x2+x3+x4)/4;
+    var c2=(y1+y2+y3+y4)/4
+    ctx.arc(c1,c2, 3, 0, 2 * Math.PI, true);
+    ctx.fillStyle='red';
+    ctx.fill();
+    ctx.stroke();  
+    ctx.closePath();
+
+    
+
+    //point for end of arrow
+    ctx.beginPath();
+    ctx.lineTo(c1, c2);
+    ctx.lineTo(c1+100, c2);
+    ctx.fill();
+    ctx.stroke();  
+    ctx.closePath();
+
+
 
     setloading(false);
 
@@ -169,7 +189,7 @@ function App() {
               <canvas id="qr-canvas" ref={canvasRef} />  
               <div className={classes.result} > 
               <h2>Scanned By WebCam Code:</h2>
-               <a href={scanResultWebCam} rel="noreferrer">{scanResultWebCam}</a> 
+               <a href={scanResultWebCam} rel="noreferrer">{scanResultWebCam}</a>
               </div>       
             </Grid>
          </Grid>
