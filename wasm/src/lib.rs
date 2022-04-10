@@ -4,7 +4,6 @@ use wasm_bindgen::prelude::*;
 
 mod cameraPoseEst;
 use cameraPoseEst::arrsac_manual;
-
 #[wasm_bindgen]
 pub fn decode_qr(a: &str) -> String {
     let img = decode(a);
@@ -49,14 +48,19 @@ pub fn decode_qr(a: &str) -> String {
     let x4 = grids[0].bounds[3].x;
     let y4 = grids[0].bounds[3].y;
 
+    let center_x = (x1 + x2 + x3 + x4) / 4;
+    let center_y = (y1 + y2 + y3 + y4) / 4;
+
     let res = arrsac_manual(
         x1 as f64, y1 as f64, x2 as f64, y2 as f64, x3 as f64, y3 as f64, x4 as f64, y4 as f64,
     );
 
+    //let res1 =;
+
     // CameraPoseEst.arrsac_manual(x1, y1, x2, y2, x3, y3, x4, y4);
 
     return format!(
-        " {{ points: {:?}, content: {:?}, RESULT: {:?} }}",
-        coordinates, content, res
+        " {{ points: {:?}, content: {:?}, RESULT: {:?}, CenterCoor: {:?}, {:?} }}",
+        coordinates, content, res, center_x, center_y
     );
 }

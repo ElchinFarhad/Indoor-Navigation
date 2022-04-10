@@ -10,6 +10,8 @@ ReactDOM.render(
   </React.StrictMode>,
   document.getElementById('root')
 );
+{/* <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/7.0.1/math.min.js"></script> */}
+
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

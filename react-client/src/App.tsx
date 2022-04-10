@@ -1,7 +1,11 @@
 import React, { useEffect, useRef, useState} from 'react';
 import {Container, Card, CardContent, Grid} from '@mui/material';
 import {makeStyles} from '@mui/styles';
-
+import * as math from 'mathjs';
+// import {
+//   matrix,
+//   math
+// } from 'mathjs'
 // import {decode_qr} from '../../wasm-build'
 
 function App() {
@@ -20,6 +24,9 @@ function App() {
 
   const [x4, setcoorx4] =  useState(0);
   const [y4, setcoory4] =  useState(0);
+
+  const [c1, setcoorc1] =  useState(0);
+  const [c2, setcoorc2] =  useState(0);
   const classes = useStyles();
 
   let videoRef = useRef<HTMLVideoElement>(null);
@@ -66,7 +73,6 @@ function App() {
     newImg.src = canvasRef.current.toDataURL("png", 0.90);
 
     let base64Format= newImg.src;
-
     
     const newBase64 = base64Format.substring(base64Format.indexOf('base64,') + 7);
 
@@ -81,6 +87,13 @@ function App() {
 
     let canvas=canvasRef.current;
     let ctx = canvas.getContext("2d");
+
+    // var centerX=(x1+x2+x3+x4)/4;
+    // var centerY=(y1+y2+y3+y4)/4;
+
+    // setcoorc1(centerX);
+    // setcoorc2(centerY);
+
 
     ctx.beginPath();
     // ctx.moveTo(x1, y1);
@@ -98,9 +111,11 @@ function App() {
     ctx.closePath();
 
     //find center coordinate
+
+    console.log(c1, c2, " asdf");
     ctx.beginPath();
-    var c1=(x1+x2+x3+x4)/4;
-    var c2=(y1+y2+y3+y4)/4
+
+
     ctx.arc(c1,c2, 3, 0, 2 * Math.PI, true);
     ctx.fillStyle='red';
     ctx.fill();
@@ -121,6 +136,8 @@ function App() {
 
     setloading(false);
 
+
+
   }
 
 ////----------------------------Call rust function--------------------
@@ -134,6 +151,8 @@ function App() {
     if(decodeQr!=="[Error] No QR code detected in image"){ 
 
       console.log(decodeQr);
+
+      let z=decodeQr.valueOf();
   
       let a=decodeQr.split(",");
 
@@ -149,7 +168,7 @@ function App() {
       let X_TopLeft=parseInt(a[6].replace(/[^0-9]/g, ""));
       let Y_TopLeft=parseInt(a[7].replace(/[^0-9]/g, ""));
 
-  
+
       setcoorx1(X_BottomLeft);
       setcoory1(Y_BottomLeft);
   
@@ -162,13 +181,52 @@ function App() {
       setcoorx4(X_TopLeft);
       setcoory4(Y_TopLeft);
 
+
+
+      var worldPoint = decodeQr.substring(
+        decodeQr.indexOf("matrix: Matrix { data:") + 24, 
+        decodeQr.lastIndexOf("] } },")
+    );
+
+    var centerCoor = decodeQr.substring(
+      decodeQr.indexOf("CenterCoor: ")+12, 
+      decodeQr.lastIndexOf("}")
+  );
+
+    var centerCoorArr = centerCoor.split(',').map(Number);;    
+
+    var worldPointArr = worldPoint.split(',').map(Number);
+
+
+    var threeDimensional =  [
+      [worldPointArr[0], worldPointArr[1], worldPointArr[2]],
+      [worldPointArr[3], worldPointArr[4], worldPointArr[5]],
+      [worldPointArr[6], worldPointArr[7], worldPointArr[8]]
+    ];
+    
+    let cx=centerCoorArr[0];
+    let cy=centerCoorArr[1];
+
+    var oneDimensional=[[cx], [cy], [1]];
+
+    var matrixMult=math.multiply(threeDimensional, oneDimensional);
+
+
+    setcoorc1(matrixMult[0][0]);
+    setcoorc2(matrixMult[1][0]);
+
+
+    console.log(threeDimensional);
+    console.log(oneDimensional);
+
+    console.log(matrixMult);
+
       setloading(true);  
 
       }
     })
 
   }
-
 
 
   return ( 
