@@ -69,9 +69,9 @@
     "workbox-webpack-plugin": "4.3.1"
   },
   "scripts": {
-    "start": "node scripts/start.js",
-    "build": "node scripts/build.js",
-    "test": "node scripts/test.js"
+    "start": "export SET NODE_OPTIONS=--openssl-legacy-provider && node scripts/start.js",
+    "build": "export SET NODE_OPTIONS=--openssl-legacy-provider && node scripts/build.js",
+    "test": "export SET NODE_OPTIONS=--openssl-legacy-provider && node scripts/test.js"
   },
   "eslintConfig": {
     "extends": "react-app"
