@@ -6,7 +6,6 @@ import {makeStyles} from '@mui/styles';
 function App() {
 
   const [isLoaded, setloading] =  useState(false);
-
   const [scanResultWebCam, setScanResultWebCam] =  useState('');
   // const [x1, setcoorx1] =  useState(0);
   // const [y1, setcoory1] =  useState(0);
@@ -76,7 +75,7 @@ function App() {
 
   };
 
-  ////-----------------------------Draw rectangle----------------
+  ////-----------------------------Draw ----------------
 
   var drawRectangle=()=>{
 
@@ -112,6 +111,9 @@ function App() {
     
     setloading(false);
   }
+
+
+  //--------------------------------------DRAW Arrow ------------------------------
 
   function drawArrow(ctx: CanvasRenderingContext2D, fromx: number, fromy: number, tox: number, toy: number, arrowWidth: number, color: string){
     //variables to be used when creating the arrow
@@ -173,7 +175,6 @@ function isJson(str) {
 
       console.log(decodeQr);
       let res=JSON.parse(decodeQr);
-      console.log(res.x);
       
       setcoorc1(res.x);
       setcoorc2(res.y);

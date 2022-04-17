@@ -11,6 +11,7 @@ use cameraPoseEst::arrsac_manual;
 struct Point {
     x: f64,
     y: f64,
+    content: String,
 }
 
 #[wasm_bindgen]
@@ -57,9 +58,6 @@ pub fn decode_qr(a: &str) -> String {
     let x4 = grids[0].bounds[3].x;
     let y4 = grids[0].bounds[3].y;
 
-    let center_x = (x1 + x2 + x3 + x4) / 4;
-    let center_y = (y1 + y2 + y3 + y4) / 4;
-
     let res = arrsac_manual(
         x1 as f64, y1 as f64, x2 as f64, y2 as f64, x3 as f64, y3 as f64, x4 as f64, y4 as f64,
     );
@@ -71,7 +69,11 @@ pub fn decode_qr(a: &str) -> String {
     //     coordinates, content, res, center_x, center_y
     // );
 
-    let p = Point { x: res.x, y: res.y };
+    let p = Point {
+        x: res.x,
+        y: res.y,
+        content: content,
+    };
     let serialize_json = serde_json::to_string(&p).unwrap();
     return serialize_json;
 }

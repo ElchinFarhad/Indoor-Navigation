@@ -1,8 +1,4 @@
-use approx::assert_relative_eq;
-use arraymap::ArrayMap;
-
 use arrsac::Arrsac;
-// use cv_core::nalgebra::Matrix;
 use cv_core::nalgebra::{Point2, Point3};
 use cv_core::sample_consensus::Consensus;
 use cv_core::{FeatureWorldMatch, Pose};
