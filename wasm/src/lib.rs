@@ -1,9 +1,18 @@
 extern crate wasm_bindgen;
 use base64::decode;
+use serde_derive::Deserialize;
+use serde_derive::Serialize;
 use wasm_bindgen::prelude::*;
 
 mod cameraPoseEst;
 use cameraPoseEst::arrsac_manual;
+
+#[derive(Serialize, Deserialize, Debug)]
+struct Point {
+    x: f64,
+    y: f64,
+}
+
 #[wasm_bindgen]
 pub fn decode_qr(a: &str) -> String {
     let img = decode(a);
@@ -55,12 +64,14 @@ pub fn decode_qr(a: &str) -> String {
         x1 as f64, y1 as f64, x2 as f64, y2 as f64, x3 as f64, y3 as f64, x4 as f64, y4 as f64,
     );
 
-    //let res1 =;
-
     // CameraPoseEst.arrsac_manual(x1, y1, x2, y2, x3, y3, x4, y4);
 
-    return format!(
-        " {{ points: {:?}, content: {:?}, RESULT: {:?}, CenterCoor: {:?}, {:?} }}",
-        coordinates, content, res, center_x, center_y
-    );
+    // return format!(
+    //     " {{ points: {:?}, content: {:?}, RESULT: {:?}, CenterCoor: {:?}, {:?} }}",
+    //     coordinates, content, res, center_x, center_y
+    // );
+
+    let p = Point { x: res.x, y: res.y };
+    let serialize_json = serde_json::to_string(&p).unwrap();
+    return serialize_json;
 }

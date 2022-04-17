@@ -2,6 +2,7 @@ use approx::assert_relative_eq;
 use arraymap::ArrayMap;
 
 use arrsac::Arrsac;
+// use cv_core::nalgebra::Matrix;
 use cv_core::nalgebra::{Point2, Point3};
 use cv_core::sample_consensus::Consensus;
 use cv_core::{FeatureWorldMatch, Pose};
@@ -9,8 +10,21 @@ use cv_pinhole::NormalizedKeyPoint;
 use lambda_twist::LambdaTwist;
 use rand::{rngs::SmallRng, SeedableRng};
 
-pub fn arrsac_manual(x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, x4: f64, y4: f64)
-//cv_core::WorldToCamera
+pub fn arrsac_manual(
+    x1: f64,
+    y1: f64,
+    x2: f64,
+    y2: f64,
+    x3: f64,
+    y3: f64,
+    x4: f64,
+    y4: f64,
+) -> cv_core::nalgebra::Matrix<
+    f64,
+    cv_core::nalgebra::U2,
+    cv_core::nalgebra::U1,
+    cv_core::nalgebra::ArrayStorage<f64, cv_core::nalgebra::U2, cv_core::nalgebra::U1>,
+>
 //[cv_core::nalgebra::Point<f64, cv_core::nalgebra::U3>; 4]
 //cv_core::WorldToCamera
 {
@@ -46,6 +60,7 @@ pub fn arrsac_manual(x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, x4: f
             )
         })
         .collect();
+
     let pose = arrsac
         .model(&LambdaTwist::new(), samples.iter().cloned())
         .unwrap()
@@ -67,5 +82,7 @@ pub fn arrsac_manual(x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, x4: f
     */
     let center_hom = pose * Point3::from([0.5, 0.5, 1.0]).to_homogeneous();
     let center = (center_hom / center_hom.z).xy();
-    println!("QR-CODE center is at coordinates {:?}", center);
+    // println!("QR-CODE center is at coordinates {:?}", center);
+
+    return center;
 }
