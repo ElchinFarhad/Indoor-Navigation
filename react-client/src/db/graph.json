@@ -1,0 +1,52 @@
+{
+  "nodes": [
+    {
+      "name": "A",
+      "id": 0,
+      "x": 1,
+      "y": 2,
+      "path": [
+        {
+          "nodeID": 9,
+          "weight": 2
+        },
+        {
+          "nodeID": 2,
+          "weight": 4
+        }
+      ]
+    },
+    {
+      "name": "B",
+      "id": 1,
+      "x": 3,
+      "y": 4,
+      "path": [
+        {
+          "nodeID": 0,
+          "weight": 2
+        },
+        {
+          "nodeID": 2,
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "name": "C",
+      "id": 2,
+      "x": 3,
+      "y": 4,
+      "path": [
+        {
+          "nodeID": 0,
+          "weight": 2
+        },
+        {
+          "nodeID": 2,
+          "weight": 2
+        }
+      ]
+    }
+  ]
+}

@@ -44,7 +44,7 @@ pub fn decode_qr(a: &str) -> String {
         Err(_e) => return format!("{}", "[Error] Failed decoding the image"),
     };
 
-    let coordinates = grids[0].bounds;
+    let _coordinates = grids[0].bounds;
 
     let x1 = grids[0].bounds[0].x;
     let y1 = grids[0].bounds[0].y;

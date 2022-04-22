@@ -21,7 +21,6 @@ base64 = "0.13.0"
 tinyjson = "2"
 p3p = "0.1.0"
 lambda-twist = "0.7.0"
-
 cv-core = "0.15.0"
 num-traits = { version = "0.2.12", default-features = false }
 arrayvec = { version = "0.5.1", default-features = false }
