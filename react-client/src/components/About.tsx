@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import Graph from '../Graph/Graph';
+import Graph from './Graph';
 import graph from '../db/graph.json'
 import { Navbar, Container, Nav } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-
+// import {test} from './test'
 
 class About extends Component {
   a=JSON.parse(JSON.stringify(graph));
@@ -40,15 +40,16 @@ class About extends Component {
       
         <div>
          <Navbar bg="dark" variant="dark">
-    <Container>
-    <Navbar.Brand >Indoor Navigation</Navbar.Brand>
-    <Nav className="me-auto">
-    <Link  to="/" style={{ marginRight: 10, color: 'GrayText', textDecoration: 'none'}}>Home </Link>
-      <Link  to="/about" style={{marginRight: 10, color: 'GrayText', textDecoration: 'none'}}>About</Link>
-    </Nav>
-    </Container>
-  </Navbar>
-  <p>About</p>
+          <Container>
+          <Navbar.Brand >Indoor Navigation</Navbar.Brand>
+          <Nav className="me-auto">
+          <Link  to="/" style={{ marginRight: 10, color: 'GrayText', textDecoration: 'none'}}>Home </Link>
+            <Link  to="/about" style={{marginRight: 10, color: 'GrayText', textDecoration: 'none'}}>About</Link>
+            <Graph></Graph>
+          </Nav>
+          </Container>
+        </Navbar>
+          <p>About</p>
         </div>
     );
   }

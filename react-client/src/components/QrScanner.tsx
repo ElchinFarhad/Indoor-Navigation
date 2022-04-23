@@ -1,9 +1,9 @@
-import React, { useEffect, useRef, useState} from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState} from 'react';
 import { Button, Card, Col, Container, Nav, Navbar, Row } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { decode_qr } from 'wasm';
 
-function QrScanner() {
+const QrScanner=()=> {
   
   const [isLoaded, setloading] =  useState(false);
   const [scanResultWebCam, setScanResultWebCam] =  useState('');
@@ -19,9 +19,19 @@ function QrScanner() {
     getVideo();
   }, [videoRef]); 
 
+  useLayoutEffect(() => {
+    stopVideo();
+}, [])
+
+const stopVideo = () => {
+
+  videoRef.current.pause();
+  videoRef.current.currentTime=0;
+
+}
+
 
   ////-----------------------------Get video----------------
-
 
 
 
@@ -41,6 +51,7 @@ function QrScanner() {
         if(video){
           video.srcObject = stream;
           video.play();
+          console.log(video, "video");
         }
       })
       .catch(err => {
@@ -49,6 +60,8 @@ function QrScanner() {
       setInterval(captureImage, 100);
   };
 
+
+//------------------------------Stop Video-------------- 
 
 ///-----------------------------Capture Image-------------------
   var captureImage = function() {
@@ -169,9 +182,9 @@ function isJson(str: any) {
        } )
   }
 
-
 return ( 
-<div >
+  
+<div>
 {isLoaded && drawRectangle()}
 <Navbar bg="dark" variant="dark">
     <Container>

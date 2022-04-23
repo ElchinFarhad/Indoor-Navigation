@@ -11,13 +11,17 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 class App extends Component {
   render() {
+
+    
     return (
     <BrowserRouter>
     <Routes>
              <Route path="/*"  element={<HomePage/>} />
-             <Route path="/qrScanner"  element={<QrScanner/>} />
+             <Route path="/qrScanner/"  element={<QrScanner/>} />
              <Route path="/about"  element={<About/>} />
            </Routes>
+
+           
     </BrowserRouter>
     );
   }

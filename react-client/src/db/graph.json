@@ -2,6 +2,7 @@
   "nodes": [
     {
       "name": "A",
+      "type": "room",
       "id": 0,
       "x": 1,
       "y": 2,
@@ -18,6 +19,7 @@
     },
     {
       "name": "B",
+      "type": "node",
       "id": 1,
       "x": 3,
       "y": 4,
@@ -34,6 +36,24 @@
     },
     {
       "name": "C",
+      "type": "node",
+      "id": 2,
+      "x": 3,
+      "y": 4,
+      "path": [
+        {
+          "nodeID": 0,
+          "weight": 2
+        },
+        {
+          "nodeID": 2,
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "name": "D",
+      "type": "room",
       "id": 2,
       "x": 3,
       "y": 4,
