@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import { Button, Card, Container, Dropdown, Nav, Navbar } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
-import QrScanner from './QrScanner';
+import graph from '../db/graph.json'
 
 const HomePage = () => {
   
+  var rooms = graph.nodes.filter( element => element.type =="room")
+
 
 return (
   <div>
@@ -23,81 +25,27 @@ return (
       <Card.Body>
         <Card.Text>
 
-              
+    {rooms.map((e)=>{
+      //  if(e.name==="" || e.name===null){
+       return (
         <Card style = {{
           width: '20rem',
           float: "left",
           margin: "10px"
-        }}>
+        }}
+        key={e.id}>
           <Card.Body>
-            <Card.Title>Room A</Card.Title>
+            <Card.Title>ROOM: {e.name}</Card.Title>
             <Card.Text>
             <Link to="/qrScanner" className="home_button">
-            <Button variant="primary">Scan to go Room A</Button>
-                  </Link>
+              <Button variant="primary">Scan to go Room {e.name}</Button>
+            </Link>
             </Card.Text>
           </Card.Body>
         </Card>
-
-        <Card style={{
-                      width: '20rem',
-                      float: "left",
-                      margin: "10px",
-                    }}>
-          <Card.Body>
-            <Card.Title>Room A</Card.Title>
-            <Card.Text>
-            <Link to="/qrScanner" className="home_button">
-            <Button variant="primary">Scan to go Room A</Button>
-                  </Link>
-            </Card.Text>
-          </Card.Body>
-        </Card>
-          
-        <Card style={{
-                      width: '20rem',
-                      float: "left",
-                      margin: "10px",
-                    }}>
-          <Card.Body>
-            <Card.Title>Room A</Card.Title>
-            <Card.Text>
-            <Link to="/qrScanner" className="home_button">
-            <Button variant="primary">Scan to go Room A</Button>
-                  </Link>
-            </Card.Text>
-          </Card.Body>
-        </Card>
-
-        <Card style={{
-                      width: '20rem',
-                      float: "left",
-                      margin: "20px",
-                    }}>
-          <Card.Body>
-            <Card.Title>Room A</Card.Title>
-            <Card.Text>
-            <Link to="/qrScanner" className="home_button">
-            <Button variant="primary">Scan to go Room A</Button>
-                  </Link>
-            </Card.Text>
-          </Card.Body>
-        </Card>
-
-        <Card style={{
-                      width: '20rem',
-                      float: "left",
-                      margin: "20px",
-                    }}>
-          <Card.Body>
-            <Card.Title>Room A</Card.Title>
-            <Card.Text>
-            <Link to="/qrScanner" className="home_button">
-            <Button variant="primary">Scan to go Room A</Button>
-                  </Link>
-            </Card.Text>
-          </Card.Body>
-        </Card>
+      );      
+      })}
+      
 
     </Card.Text>
   </Card.Body>

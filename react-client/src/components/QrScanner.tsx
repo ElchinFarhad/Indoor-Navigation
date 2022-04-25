@@ -47,25 +47,32 @@ const stopVideo = () => {
     navigator.mediaDevices
       .getUserMedia({ video: {facingMode: env}})
       .then(stream => {
+        
         let video = videoRef.current;
-        if(video){
+        if(video && stream !==null){
           video.srcObject = stream;
           video.play();
           console.log(video, "video");
+          setInterval(captureImage, 100);
+
         }
       })
       .catch(err => {
         console.error("error:", err);
       });
-      setInterval(captureImage, 100);
+
+
   };
 
 
 //------------------------------Stop Video-------------- 
 
-///-----------------------------Capture Image-------------------
+///-----------------------------Capture Image-----------
   var captureImage = function() {
+
   let video = videoRef.current;
+  if(video !==null){
+
   video!.setAttribute('autoplay', '');
   video!.setAttribute('muted', '');
   video!.setAttribute('playsinline', '');
@@ -74,8 +81,8 @@ const stopVideo = () => {
 
     let canvas=canvasRef.current;
     let ctx = canvas!.getContext("2d");
-    const width = 500;
-    const height = 400;
+    const width = 300;
+    const height = 300;
     canvas!.width = width;
     canvas!.height = height;
 
@@ -91,6 +98,10 @@ const stopVideo = () => {
 
     //Call Function Rust
     callRustFunc(newBase64);
+  }
+  else{
+    
+  }
 
   };
 
@@ -190,7 +201,7 @@ return (
     <Container>
     <Navbar.Brand >Indoor Navigation</Navbar.Brand>
     <Nav className="me-auto">
-    <Link  to="/" style={{ marginRight: 10, color: 'GrayText', textDecoration: 'none'}}>Home </Link>
+      <Link  to="/" style={{ marginRight: 10, color: 'GrayText', textDecoration: 'none'}}>Home </Link>
       <Link  to="/about" style={{marginRight: 10, color: 'GrayText', textDecoration: 'none'}}>About</Link>
     </Nav>
     </Container>

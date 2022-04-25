@@ -12,12 +12,16 @@ class About extends Component {
 
  graph: number[][]=[[this.r][this.r]];
 
+  graphJson=JSON.parse(JSON.stringify(graph));
+  xStart=this.graphJson.nodes.x.find(item => item.id === 2)
+
 
 
   
 
   render() {
 
+    console.log(this.xStart)
 
     this.graph=Array.from({ length: this.r}, () => (
       Array.from({ length: this.r }, ()=> 0)
@@ -33,9 +37,6 @@ class About extends Component {
     }
 
 
-
-
-    console.log(this.graph);
     return (
       
         <div>
@@ -45,11 +46,12 @@ class About extends Component {
           <Nav className="me-auto">
           <Link  to="/" style={{ marginRight: 10, color: 'GrayText', textDecoration: 'none'}}>Home </Link>
             <Link  to="/about" style={{marginRight: 10, color: 'GrayText', textDecoration: 'none'}}>About</Link>
-            <Graph></Graph>
           </Nav>
           </Container>
         </Navbar>
           <p>About</p>
+          <Graph></Graph>
+
         </div>
     );
   }

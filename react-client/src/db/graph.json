@@ -8,7 +8,7 @@
       "y": 2,
       "path": [
         {
-          "nodeID": 9,
+          "nodeID": 1,
           "weight": 2
         },
         {
@@ -29,7 +29,7 @@
           "weight": 2
         },
         {
-          "nodeID": 2,
+          "nodeID": 3,
           "weight": 2
         }
       ]
@@ -43,10 +43,10 @@
       "path": [
         {
           "nodeID": 0,
-          "weight": 2
+          "weight": 4
         },
         {
-          "nodeID": 2,
+          "nodeID": 4,
           "weight": 2
         }
       ]
@@ -54,17 +54,34 @@
     {
       "name": "D",
       "type": "room",
-      "id": 2,
+      "id": 3,
       "x": 3,
       "y": 4,
       "path": [
         {
-          "nodeID": 0,
+          "nodeID": 1,
           "weight": 2
         },
         {
+          "nodeID": 4,
+          "weight": 3
+        }
+      ]
+    },
+    {
+      "name": "E",
+      "type": "room",
+      "id": 4,
+      "x": 3,
+      "y": 4,
+      "path": [
+        {
           "nodeID": 2,
           "weight": 2
+        },
+        {
+          "nodeID": 3,
+          "weight": 3
         }
       ]
     }

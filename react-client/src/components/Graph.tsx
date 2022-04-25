@@ -15,13 +15,28 @@ const Graph=()=> {
   let r=graphJson.nodes.length;
   let graph: number[][]=[[r][r]];
 
-  var result:number[]= [0,2,3]
+  // var result:number[]= [0,1,3]
+  
+  var qrCodeId=0;
+  var res=1;
+
+
+  for(let i=0; i<r; i++){
+    let x=graphJson.nodes[i]
+  }
+
+  let xStart=graphJson.nodes.find(item => item.id === qrCodeId)
+  let yStart= graphJson.nodes.find(item => item.id === qrCodeId)
+
+  let xNext=graphJson.nodes.x.find(item => item.id === res)
+  let yNext= graphJson.nodes.y.find(item => item.id === res)
 
 
 
   const initalizeArray = () => {
     graph=Array.from({ length: r}, () => (
       Array.from({ length: r }, ()=> 0)
+      
    ))
 
     for(let i=0; i<r; i++){
@@ -32,6 +47,7 @@ const Graph=()=> {
         }
       }
     }
+
     dijkstra(graph, 0);
 
   };
@@ -68,7 +84,8 @@ function printSolution(dist)
         // document.write(i + " \t\t " +
         //          dist[i] + "<br>");
                  setSelectedValue(dist[i])
-        console.log(i," ", dist[i])
+        // console.log(i," ", dist[i])
+        // console.log(xNext, xStart, yNext, yStart);
 
     }
 
@@ -134,14 +151,11 @@ function dijkstra(graph, src)
     printSolution(dist);
   }
 
-
-
 return ( 
-
-  
     <div>
     <ul>
       {/* {{distValue}} */}
+      {{xStart}}
           </ul>
     </div>
 
