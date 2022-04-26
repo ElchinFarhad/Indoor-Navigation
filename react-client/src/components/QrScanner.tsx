@@ -30,10 +30,7 @@ const stopVideo = () => {
 
 }
 
-
   ////-----------------------------Get video----------------
-
-
 
   const getVideo = () => {
     let env;

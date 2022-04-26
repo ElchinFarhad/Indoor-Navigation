@@ -3,10 +3,16 @@ import { Button, Card, Container, Dropdown, Nav, Navbar } from 'react-bootstrap'
 import { Link, useNavigate } from 'react-router-dom';
 import graph from '../db/graph.json'
 
-const HomePage = () => {
-  
-  var rooms = graph.nodes.filter( element => element.type =="room")
 
+const HomePage = () => {
+
+  let navigate = useNavigate();
+
+  function handleClick(id:any) {
+    navigate(`qrScanner/${id}`)
+    }
+
+  var rooms = graph.nodes.filter( element => element.type =="room")
 
 return (
   <div>
@@ -26,7 +32,6 @@ return (
         <Card.Text>
 
     {rooms.map((e)=>{
-      //  if(e.name==="" || e.name===null){
        return (
         <Card style = {{
           width: '20rem',
@@ -37,16 +42,15 @@ return (
           <Card.Body>
             <Card.Title>ROOM: {e.name}</Card.Title>
             <Card.Text>
-            <Link to="/qrScanner" className="home_button">
-              <Button variant="primary">Scan to go Room {e.name}</Button>
-            </Link>
+            {/* <Link to="/qrScanner" className="home_button"> */}
+            <Button onClick={() => handleClick(e.id)} variant="primary">Scan to go Room {e.name}</Button>
+            {/* </Link> */}
             </Card.Text>
           </Card.Body>
         </Card>
       );      
       })}
       
-
     </Card.Text>
   </Card.Body>
   <Card.Footer className="text-muted">Polito</Card.Footer>

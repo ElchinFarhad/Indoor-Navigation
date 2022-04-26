@@ -17,7 +17,7 @@ class App extends Component {
     <BrowserRouter>
     <Routes>
              <Route path="/*"  element={<HomePage/>} />
-             <Route path="/qrScanner/"  element={<QrScanner/>} />
+             <Route path="/qrScanner/:id"  element={<QrScanner/>} />
              <Route path="/about"  element={<About/>} />
            </Routes>
 

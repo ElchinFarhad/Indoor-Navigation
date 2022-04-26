@@ -14,11 +14,7 @@ class About extends Component {
 
   graphJson=JSON.parse(JSON.stringify(graph));
   xStart=this.graphJson.nodes.x.find(item => item.id === 2)
-
-
-
   
-
   render() {
 
     console.log(this.xStart)
@@ -38,7 +34,6 @@ class About extends Component {
 
 
     return (
-      
         <div>
          <Navbar bg="dark" variant="dark">
           <Container>
