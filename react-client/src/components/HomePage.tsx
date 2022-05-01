@@ -24,7 +24,10 @@ return (
       </Container>
     </Navbar>
 
-      <Card className="mainCard" >
+      <Card className="mainCard" 
+      style = {{
+        backgroundColor: "#78938A"
+      }}>
       <Card.Header>Choose Your Destination</Card.Header>
       <Card.Body>
         <Card.Text>
@@ -35,7 +38,7 @@ return (
         <Card style = {{
           width: '20rem',
           float: "left",
-          margin: "10px"
+          margin: "10px",
         }}
           key={e.id}>
           <Card.Body>
