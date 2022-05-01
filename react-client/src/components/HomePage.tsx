@@ -5,9 +5,7 @@ import graph from '../db/graph.json'
 
 
 const HomePage = () => {
-
   let navigate = useNavigate();
-
   function handleClick(id:any) {
     navigate(`qrScanner/${id}`)
     }
@@ -16,7 +14,7 @@ const HomePage = () => {
 
 return (
   <div>
-    <Navbar bg="dark" variant="dark">
+    <Navbar className="navbar">
       <Container>
       <Navbar.Brand >Indoor Navigation</Navbar.Brand>
       <Nav className="me-auto">
@@ -26,19 +24,20 @@ return (
       </Container>
     </Navbar>
 
-      <Card className="text-center" >
+      <Card className="mainCard" >
       <Card.Header>Choose Your Destination</Card.Header>
       <Card.Body>
         <Card.Text>
 
-    {rooms.map((e)=>{
+    {rooms &&  rooms.map((e)=>{
        return (
+         <div>
         <Card style = {{
           width: '20rem',
           float: "left",
           margin: "10px"
         }}
-        key={e.id}>
+          key={e.id}>
           <Card.Body>
             <Card.Title>ROOM: {e.name}</Card.Title>
             <Card.Text>
@@ -48,6 +47,7 @@ return (
             </Card.Text>
           </Card.Body>
         </Card>
+        </div>
       );      
       })}
       

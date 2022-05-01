@@ -1,12 +1,15 @@
 import React, { useEffect, useLayoutEffect, useRef, useState} from 'react';
 import { Button, Card, Col, Container, Nav, Navbar, Row } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
-import { decode_qr } from 'wasm';
+import { Link, useParams } from 'react-router-dom';
+import graphDb from '../db/graph.json'
 
 const QrScanner=()=> {
-  
+
   const [isLoaded, setloading] =  useState(false);
   const [scanResultWebCam, setScanResultWebCam] =  useState('');
+
+  const [sourceID, setSourceId]=useState();
+  const [destinationID, setDestinationID]=useState<number | undefined>();
 
   const [c1, setcoorc1] =  useState(0);
   const [c2, setcoorc2] =  useState(0);
@@ -14,27 +17,29 @@ const QrScanner=()=> {
   let videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
+  let destId  = useParams();
+  let destination=destId.id;
 
   useEffect(() => {
     getVideo();
   }, [videoRef]); 
 
-  useLayoutEffect(() => {
-    stopVideo();
-}, [])
+//   useLayoutEffect(() => {
+//     stopVideo();
+// }, [])
 
-const stopVideo = () => {
-
-  videoRef.current.pause();
-  videoRef.current.currentTime=0;
-
-}
+// const stopVideo = () => {
+//   videoRef.current.pause();
+//   videoRef.current.currentTime=0;
+// }
 
   ////-----------------------------Get video----------------
 
   const getVideo = () => {
+
     let env;
     var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
     if (isMobile) {
        env={ exact: 'environment' }
     }
@@ -51,7 +56,6 @@ const stopVideo = () => {
           video.play();
           console.log(video, "video");
           setInterval(captureImage, 100);
-
         }
       })
       .catch(err => {
@@ -62,9 +66,8 @@ const stopVideo = () => {
   };
 
 
-//------------------------------Stop Video-------------- 
+///--------------------------Capture Image-----------
 
-///-----------------------------Capture Image-----------
   var captureImage = function() {
 
   let video = videoRef.current;
@@ -73,8 +76,6 @@ const stopVideo = () => {
   video!.setAttribute('autoplay', '');
   video!.setAttribute('muted', '');
   video!.setAttribute('playsinline', '');
-
-  // MediaStreamTrack.
 
     let canvas=canvasRef.current;
     let ctx = canvas!.getContext("2d");
@@ -101,6 +102,45 @@ const stopVideo = () => {
   }
 
   };
+  ////----------------------------Call rust function-----------------
+
+  var callRustFunc= (newBase64: string)=>{
+    import('wasm').then(({decode_qr}) => {
+      const decodeQr = decode_qr(newBase64);
+
+      setScanResultWebCam(decodeQr);
+
+      if(isJson(decodeQr)){
+
+      console.log(decodeQr);
+      let res=JSON.parse(decodeQr);
+      
+      setcoorc1(res.x);
+      setcoorc2(res.y);
+
+      let source=res.content.split('qrScanner/').pop();
+
+      setSourceId(source);
+      setDestinationID(parseInt(destination!));
+
+      setloading(true);  
+
+      }
+      else{
+        console.error(decodeQr);
+      }
+    })
+  }
+
+/// --------------------Check if result is Json----------------
+function isJson(str: any) {
+  try {
+      JSON.parse(str);
+  } catch (e) {
+      return false;
+  }
+  return true;
+}
 
   ////-----------------------------Draw ----------------
 
@@ -109,9 +149,38 @@ const stopVideo = () => {
     let canvas=canvasRef.current;
     let ctx = canvas?.getContext("2d");
 
-    drawArrow(ctx!, c1, c2, c1+120, c2, 15, 'red');
-    
+    let nextNode=shortestPath(sourceID, destinationID);
+
+    let nextNodeX=nextNode.nextNodeX;
+    let nextNodeY=nextNode.nextNodeY;
+
+    console.log(nextNode, "nexttt Node")
+
+    drawArrow(ctx!, c1, c2, nextNodeX, nextNodeY, 15, 'red');
+
+
     setloading(false);
+  }
+
+
+  function shortestPath(sourceID: number, destinationID: number){
+
+    //next node coordinates
+
+    //return whole path and I take res=arr[1]
+
+    let res=2;
+    
+    let nextNodeX=graphDb.nodes[res].x;
+    let nextNodeY=graphDb.nodes[res].y;
+
+    let nextNodeCoordinates={
+      nextNodeX:nextNodeX,
+      nextNodeY:nextNodeY
+    }
+
+    return nextNodeCoordinates;
+    
   }
 
 
@@ -155,46 +224,11 @@ const stopVideo = () => {
     ctx.restore();
 }
 
-/// --------------------- Check if result is Json------------------
-function isJson(str: any) {
-  try {
-      JSON.parse(str);
-  } catch (e) {
-      return false;
-  }
-  return true;
-}
-
-////----------------------------Call rust function-----------------
-
-  var callRustFunc= (newBase64: string)=>{
-    import('wasm').then(({decode_qr}) => {
-      const decodeQr = decode_qr(newBase64);
-      
-      setScanResultWebCam(decodeQr);
-
-      if(isJson(decodeQr)){
-
-      console.log(decodeQr);
-      let res=JSON.parse(decodeQr);
-      
-      setcoorc1(res.x);
-      setcoorc2(res.y);
-
-      setloading(true);  
-
-      }
-      else{
-        console.error(decodeQr);
-      }
-       } )
-  }
-
 return ( 
   
 <div>
 {isLoaded && drawRectangle()}
-<Navbar bg="dark" variant="dark">
+<Navbar>
     <Container>
     <Navbar.Brand >Indoor Navigation</Navbar.Brand>
     <Nav className="me-auto">
@@ -203,12 +237,10 @@ return (
     </Nav>
     </Container>
   </Navbar>
-  
 
   <Card className="text-center">
   <Card.Header>Scan QrCode and Find Your Destination</Card.Header>
   <Card.Body>
-    {/* <Card.Title>Special title treatment</Card.Title> */}
     <Card.Text>
     <div className="video-container">
                <video style={{display : "none"}}   loop muted    ref={videoRef}/>
@@ -219,13 +251,9 @@ return (
                <a href={scanResultWebCam} rel="noreferrer">{scanResultWebCam}</a>
               </div>
     </Card.Text>
-    {/* <Button variant="primary">Go somewhere</Button> */}
   </Card.Body>
   <Card.Footer className="text-muted">Polito</Card.Footer>
 </Card>
-
-        
-
 
 </div>
 

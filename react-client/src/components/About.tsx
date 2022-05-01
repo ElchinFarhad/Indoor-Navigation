@@ -1,23 +1,23 @@
 import React, { Component } from 'react';
 import Graph from './Graph';
-import graph from '../db/graph.json'
+import graphJson from '../db/graph.json'
 import { Navbar, Container, Nav } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 // import {test} from './test'
 
 class About extends Component {
-  a=JSON.parse(JSON.stringify(graph));
 
-  r=this.a.nodes.length;
+a=JSON.parse(JSON.stringify(graphJson));
 
- graph: number[][]=[[this.r][this.r]];
+r=this.a.nodes.length;
 
-  graphJson=JSON.parse(JSON.stringify(graph));
-  xStart=this.graphJson.nodes.x.find(item => item.id === 2)
-  
-  render() {
+graph: number[][]=[[this.r][this.r]];
 
-    console.log(this.xStart)
+result = graphJson.nodes.filter( (e) => e.id===3)
+
+render() {
+
+    console.log(this.result);
 
     this.graph=Array.from({ length: this.r}, () => (
       Array.from({ length: this.r }, ()=> 0)
@@ -35,7 +35,7 @@ class About extends Component {
 
     return (
         <div>
-         <Navbar bg="dark" variant="dark">
+         <Navbar>
           <Container>
           <Navbar.Brand >Indoor Navigation</Navbar.Brand>
           <Nav className="me-auto">
@@ -45,7 +45,7 @@ class About extends Component {
           </Container>
         </Navbar>
           <p>About</p>
-          <Graph></Graph>
+          {/* <Graph></Graph> */}
 
         </div>
     );
