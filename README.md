@@ -18,6 +18,8 @@ To Visit App:
 
 ## Rust code:
 
-Compile rust code if there is any changes:
+`cargo install`
+
+Compile rust code:
 
 `wasm-pack build --out-dir ../wasm-build`

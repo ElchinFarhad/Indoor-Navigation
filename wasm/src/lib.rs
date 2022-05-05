@@ -12,6 +12,14 @@ struct Point {
     x: f64,
     y: f64,
     content: String,
+    x1: i32,
+    y1: i32,
+    x2: i32,
+    y2: i32,
+    x3: i32,
+    y3: i32,
+    x4: i32,
+    y4: i32,
 }
 
 #[wasm_bindgen]
@@ -62,17 +70,18 @@ pub fn decode_qr(a: &str) -> String {
         x1 as f64, y1 as f64, x2 as f64, y2 as f64, x3 as f64, y3 as f64, x4 as f64, y4 as f64,
     );
 
-    // CameraPoseEst.arrsac_manual(x1, y1, x2, y2, x3, y3, x4, y4);
-
-    // return format!(
-    //     " {{ points: {:?}, content: {:?}, RESULT: {:?}, CenterCoor: {:?}, {:?} }}",
-    //     coordinates, content, res, center_x, center_y
-    // );
-
     let p = Point {
-        x: res.x,
+        x: res.x, //qr code center coordinates
         y: res.y,
         content: content,
+        x1: x1, //qr code border coordinates
+        y1: y1,
+        x2: x2,
+        y2: y2,
+        x3: x3,
+        y3: y3,
+        x4: x4,
+        y4: y4,
     };
     let serialize_json = serde_json::to_string(&p).unwrap();
     return serialize_json;
