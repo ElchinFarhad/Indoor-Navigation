@@ -180,21 +180,54 @@ const QrScanner = () => {
     ////////////////////////////////////
 
     //------ call djkstar for shortest path ------ 
+
+    let sourceNode = getCurrentNodeCoordinate(sourceID);
     let nextNode = shortestPath(sourceID, destinationID);
 
     let nextNodeX = nextNode.nextNodeX;
     let nextNodeY = nextNode.nextNodeY;
 
-    ctx.beginPath();
-    ctx.moveTo(c1, c2);
-    ctx.lineWidth = 10;
-    ctx.lineTo(nextNodeX, nextNodeY);
-    ctx.stroke();
+    let sourceNodeX = sourceNode.sourceNodeX;
+    let sourceNodeY = sourceNode.sourceNodeY;
+    console.log(sourceNode, " hhh ", nextNode)
 
-    drawArrow(ctx!, c1, c2, nextNodeX, nextNodeY, 10, 'red');
+    let arrowDirectionX: number;
+    let arrowDirectionY: number;
+
+    if (sourceNodeY - nextNodeY == 0) {
+      if (sourceNodeX - nextNodeX < 0) {
+        arrowDirectionX = 2; //right
+        arrowDirectionY = nextNodeY; //right
+
+      }
+      else {
+        arrowDirectionX = -2; //left
+        arrowDirectionY = nextNodeY;
+      }
+    }
+    else {
+      if (sourceNodeY - nextNodeY < 0) {
+        arrowDirectionX = nextNodeX; //up
+        arrowDirectionY = 2;
+      }
+      else {
+        arrowDirectionX = nextNodeX; //down
+        arrowDirectionY = -2;
+      }
+    }
+
+    // ctx.beginPath();
+    // ctx.moveTo(c1, c2);
+    // ctx.lineWidth = 10;
+    // ctx.lineTo(nextNodeX, nextNodeY);
+    // ctx.stroke();
+
+
+    drawArrow(ctx!, c1, c2, arrowDirectionX, arrowDirectionY, 10, 'blue');
 
     setloading(false);
   }
+
 
 
   function shortestPath(sourceID: number, destinationID: number) {
@@ -211,6 +244,20 @@ const QrScanner = () => {
     }
 
     return nextNodeCoordinates;
+
+  }
+
+  function getCurrentNodeCoordinate(sourceID: number) {
+
+    let sourceNodeX = graphDb.nodes[sourceID].x;
+    let sourceNodeY = graphDb.nodes[sourceID].y;
+
+    let sourceNodeCoordinates = {
+      sourceNodeX: sourceNodeX,
+      sourceNodeY: sourceNodeY
+    }
+
+    return sourceNodeCoordinates;
 
   }
 
@@ -254,8 +301,6 @@ const QrScanner = () => {
     ctx.stroke();
     ctx.restore();
   }
-
-  ////////////////////////////////////////////////////////////////
 
   return (
 
