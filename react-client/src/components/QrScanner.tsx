@@ -105,14 +105,19 @@ const QrScanner = () => {
       const decodeQr = decode_qr(newBase64);
 
       setScanResultWebCam(decodeQr);
+      console.log(decodeQr);
 
       if (isJson(decodeQr)) {
 
         let res = JSON.parse(decodeQr);
+        console.log(res, "  -------1")
 
+
+        //center of qr code in camera coordinates
         setcoorc1(res.x);
         setcoorc2(res.y);
 
+        //border coordinates
         setcoorx1(res.x1);
         setcoory1(res.y1);
         setcoorx2(res.x2);
@@ -149,7 +154,7 @@ const QrScanner = () => {
 
   ////-----------------------------Draw ----------------
 
-  var drawRectangle = () => {
+  var drawCanvas = () => {
 
     let canvas = canvasRef.current;
     let ctx = canvas?.getContext("2d");
@@ -160,8 +165,11 @@ const QrScanner = () => {
     var centerX = (x1 + x2 + x3 + x4) / 4;
     var centerY = (y1 + y2 + y3 + y4) / 4;
 
-    setcoorc1(centerX);
-    setcoorc2(centerY);
+    console.log(centerX, " ", centerY);
+    console.log(c1, " Real Center ", c2);
+
+    // setcoorc1(centerX);
+    // setcoorc2(centerY);
 
     ctx.beginPath();
     ctx.lineWidth = 4;
@@ -173,6 +181,7 @@ const QrScanner = () => {
     ctx.lineTo(x2, y2);
     ctx.lineTo(x3, y3);
     ctx.lineTo(x4, y4);
+
     ctx.lineTo(x1, y1);
     ctx.stroke();
     ctx.closePath();
@@ -181,8 +190,12 @@ const QrScanner = () => {
 
     //------ call djkstar for shortest path ------ 
 
+    console.log(sourceID, " current node coordinates");
+
     let sourceNode = getCurrentNodeCoordinate(sourceID);
     let nextNode = shortestPath(sourceID, destinationID);
+
+    console.log(sourceNode, " --- ", nextNode)
 
     let nextNodeX = nextNode.nextNodeX;
     let nextNodeY = nextNode.nextNodeY;
@@ -194,27 +207,48 @@ const QrScanner = () => {
     let arrowDirectionX: number;
     let arrowDirectionY: number;
 
-    if (sourceNodeY - nextNodeY == 0) {
-      if (sourceNodeX - nextNodeX < 0) {
-        arrowDirectionX = 2; //right
-        arrowDirectionY = nextNodeY; //right
+    console.log(nextNodeX, nextNodeY, " Directions")
+    console.log(sourceNodeX, sourceNodeY, " Source")
 
-      }
-      else {
-        arrowDirectionX = -2; //left
-        arrowDirectionY = nextNodeY;
-      }
-    }
-    else {
-      if (sourceNodeY - nextNodeY < 0) {
-        arrowDirectionX = nextNodeX; //up
-        arrowDirectionY = 2;
-      }
-      else {
-        arrowDirectionX = nextNodeX; //down
-        arrowDirectionY = -2;
-      }
-    }
+    arrowDirectionX = c1 + 100;
+    arrowDirectionY = c2 + 100;
+
+    let r1 = Math.atan((c2 - nextNodeY) / (nextNodeX - c1));
+
+    ctx.beginPath();
+    ctx!.moveTo(c1, c2);
+    ctx!.lineTo(c1 + 200 * Math.cos(Math.PI * r1 / 180.0), c2 + 200 * Math.sin(Math.PI * r1 / 180.0));
+    ctx.stroke();
+    ctx.closePath();
+    // if (c2 - nextNodeY === 0) {
+    //   console.log(sourceNodeX - nextNodeX)
+    //   if (sourceNodeX - nextNodeX < 0) {
+    //     arrowDirectionX = c1 + 200; //right
+    //     arrowDirectionY = nextNodeY; //right
+    //     console.log("Right---R")
+
+    //   }
+    //   else {
+    //     arrowDirectionX = c1 - 200; //left
+    //     arrowDirectionY = nextNodeY;
+    //     console.log("Left")
+
+    //   }
+    // }
+    // else {
+    //   if (sourceNodeY - nextNodeY < 0) {
+    //     arrowDirectionX = nextNodeX; //up
+    //     arrowDirectionY = c2 + 200;
+    //     console.log("Up")
+
+    //   }
+    //   else {
+    //     arrowDirectionX = nextNodeX; //down
+    //     arrowDirectionY = c2 - 200;
+    //     console.log("Down")
+
+    //   }
+    // }
 
     // ctx.beginPath();
     // ctx.moveTo(c1, c2);
@@ -223,6 +257,7 @@ const QrScanner = () => {
     // ctx.stroke();
 
 
+    console.log(arrowDirectionX, arrowDirectionY, " arrowss")
     drawArrow(ctx!, c1, c2, arrowDirectionX, arrowDirectionY, 10, 'blue');
 
     setloading(false);
@@ -233,7 +268,7 @@ const QrScanner = () => {
   function shortestPath(sourceID: number, destinationID: number) {
 
     //Return static id  - (dijkstra will be add)
-    let res = 2;
+    let res = 2; // 2 or 3
 
     let nextNodeX = graphDb.nodes[res].x;
     let nextNodeY = graphDb.nodes[res].y;
@@ -253,6 +288,7 @@ const QrScanner = () => {
     let sourceNodeY = graphDb.nodes[sourceID].y;
 
     let sourceNodeCoordinates = {
+
       sourceNodeX: sourceNodeX,
       sourceNodeY: sourceNodeY
     }
@@ -305,7 +341,7 @@ const QrScanner = () => {
   return (
 
     <div>
-      {isLoaded && drawRectangle()}
+      {isLoaded && drawCanvas()}
       <Navbar>
         <Container>
           <Navbar.Brand >Indoor Navigation</Navbar.Brand>
