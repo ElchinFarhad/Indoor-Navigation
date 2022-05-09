@@ -176,6 +176,9 @@ const QrScanner = () => {
     ctx.strokeStyle = "green";
 
     ctx.arc(x1, y1, 10, 0, 2 * Math.PI, true);
+    // ctx.arc(x4, y4, 20, 0, 2 * Math.PI, true);
+
+    // ctx.arc(x3, y3, 30, 0, 2 * Math.PI, true);
 
     ctx.lineTo(x1, y1);
     ctx.lineTo(x2, y2);
@@ -210,45 +213,48 @@ const QrScanner = () => {
     console.log(nextNodeX, nextNodeY, " Directions")
     console.log(sourceNodeX, sourceNodeY, " Source")
 
-    arrowDirectionX = c1 + 100;
-    arrowDirectionY = c2 + 100;
-
+    // arrowDirectionX = c1 + 100;
+    // arrowDirectionY = c2 + 100;
     let r1 = Math.atan((c2 - nextNodeY) / (nextNodeX - c1));
 
     ctx.beginPath();
     ctx!.moveTo(c1, c2);
-    ctx!.lineTo(c1 + 200 * Math.cos(Math.PI * r1 / 180.0), c2 + 200 * Math.sin(Math.PI * r1 / 180.0));
+    ctx!.lineTo(c1 + arrowDirectionX * Math.cos(Math.PI * r1 / 180.0), arrowDirectionY + 200 * Math.sin(Math.PI * r1 / 180.0));
     ctx.stroke();
     ctx.closePath();
-    // if (c2 - nextNodeY === 0) {
-    //   console.log(sourceNodeX - nextNodeX)
-    //   if (sourceNodeX - nextNodeX < 0) {
-    //     arrowDirectionX = c1 + 200; //right
-    //     arrowDirectionY = nextNodeY; //right
-    //     console.log("Right---R")
 
-    //   }
-    //   else {
-    //     arrowDirectionX = c1 - 200; //left
-    //     arrowDirectionY = nextNodeY;
-    //     console.log("Left")
 
-    //   }
-    // }
-    // else {
-    //   if (sourceNodeY - nextNodeY < 0) {
-    //     arrowDirectionX = nextNodeX; //up
-    //     arrowDirectionY = c2 + 200;
-    //     console.log("Up")
+    if (c2 - nextNodeY === 0) {
+      console.log(sourceNodeX - nextNodeX)
+      if (sourceNodeX - nextNodeX < 0) {
+        arrowDirectionX = c1 + 200; //right
+        arrowDirectionY = nextNodeY; //right
+        console.log("Right---R")
 
-    //   }
-    //   else {
-    //     arrowDirectionX = nextNodeX; //down
-    //     arrowDirectionY = c2 - 200;
-    //     console.log("Down")
+      }
+      else {
+        arrowDirectionX = c1 - 200; //left
+        arrowDirectionY = nextNodeY;
+        console.log("Left")
 
-    //   }
-    // }
+      }
+    }
+    else {
+      if (sourceNodeY - nextNodeY < 0) {
+        arrowDirectionX = nextNodeX; //up
+        arrowDirectionY = c2 + 200;
+        console.log("Up")
+
+      }
+      else {
+        arrowDirectionX = nextNodeX; //down
+        arrowDirectionY = c2 - 200;
+        console.log("Down")
+
+      }
+    }
+
+
 
     // ctx.beginPath();
     // ctx.moveTo(c1, c2);
@@ -257,7 +263,7 @@ const QrScanner = () => {
     // ctx.stroke();
 
 
-    console.log(arrowDirectionX, arrowDirectionY, " arrowss")
+    // console.log(arrowDirectionX, arrowDirectionY, " arrowss")
     drawArrow(ctx!, c1, c2, arrowDirectionX, arrowDirectionY, 10, 'blue');
 
     setloading(false);
