@@ -4,8 +4,8 @@ use serde_derive::Deserialize;
 use serde_derive::Serialize;
 use wasm_bindgen::prelude::*;
 
-mod cameraPoseEst;
-use cameraPoseEst::arrsac_manual;
+mod camera_pose_est;
+use camera_pose_est::arrsac_manual;
 
 #[derive(Serialize, Deserialize, Debug)]
 struct Point {
