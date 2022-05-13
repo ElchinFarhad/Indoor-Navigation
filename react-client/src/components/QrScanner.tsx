@@ -99,7 +99,9 @@ const QrScanner = () => {
 
   };
 
-  ////----------------------------Call rust function-----------------
+  /* 
+Call rust function
+*/
   var callRustFunc = (newBase64: string) => {
     import('wasm').then(({ decode_qr }) => {
       const decodeQr = decode_qr(newBase64);
@@ -110,8 +112,6 @@ const QrScanner = () => {
       if (isJson(decodeQr)) {
 
         let res = JSON.parse(decodeQr);
-        console.log(res, "  -------1")
-
 
         //center of qr code in camera coordinates
         setcoorc1(res.x);
@@ -142,7 +142,9 @@ const QrScanner = () => {
     })
   }
 
-  /// --------------------Check if result is Json----------------
+  /* 
+Check if result is Json
+*/
   function isJson(str: any) {
     try {
       JSON.parse(str);
@@ -152,119 +154,85 @@ const QrScanner = () => {
     return true;
   }
 
-  ////-----------------------------Draw ----------------
+  /* 
+  Draw Canvas
+  */
 
   var drawCanvas = () => {
 
     let canvas = canvasRef.current;
     let ctx = canvas?.getContext("2d");
 
-
-    ///////////////////////Draw Border/////////////////
-
-    var centerX = (x1 + x2 + x3 + x4) / 4;
-    var centerY = (y1 + y2 + y3 + y4) / 4;
-
-    console.log(centerX, " ", centerY);
-    console.log(c1, " Real Center ", c2);
-
-    // setcoorc1(centerX);
-    // setcoorc2(centerY);
-
+    /* Draw Border of QrCode */
     ctx.beginPath();
     ctx.lineWidth = 4;
     ctx.strokeStyle = "green";
-
     ctx.arc(x1, y1, 10, 0, 2 * Math.PI, true);
-    // ctx.arc(x4, y4, 20, 0, 2 * Math.PI, true);
-
-    // ctx.arc(x3, y3, 30, 0, 2 * Math.PI, true);
 
     ctx.lineTo(x1, y1);
     ctx.lineTo(x2, y2);
     ctx.lineTo(x3, y3);
     ctx.lineTo(x4, y4);
-
     ctx.lineTo(x1, y1);
     ctx.stroke();
     ctx.closePath();
 
-    ////////////////////////////////////
+    /////
+    ctx.beginPath();
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = "red";
+    ctx.arc(x2, y2, 10, 0, 2 * Math.PI, true);
+    ctx.stroke();
+    ctx.closePath();
+    ////
 
-    //------ call djkstar for shortest path ------ 
+    /////
+    ctx.beginPath();
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = "yellow";
+    ctx.arc(x3, y3, 10, 0, 2 * Math.PI, true);
+    ctx.stroke();
+    ctx.closePath();
+    ////
 
-    console.log(sourceID, " current node coordinates");
 
-    let sourceNode = getCurrentNodeCoordinate(sourceID);
+    /* call djkstar for shortest path */
     let nextNode = shortestPath(sourceID, destinationID);
-
-    console.log(sourceNode, " --- ", nextNode)
+    let sourceNode = getCurrentNodeCoordinate(sourceID);
 
     let nextNodeX = nextNode.nextNodeX;
     let nextNodeY = nextNode.nextNodeY;
 
     let sourceNodeX = sourceNode.sourceNodeX;
     let sourceNodeY = sourceNode.sourceNodeY;
-    console.log(sourceNode, " hhh ", nextNode)
 
-    let arrowDirectionX: number;
-    let arrowDirectionY: number;
+    let arrowEndCoorX;
+    let arrowEndCoorY;
 
-    console.log(nextNodeX, nextNodeY, " Directions")
-    console.log(sourceNodeX, sourceNodeY, " Source")
-
-    // arrowDirectionX = c1 + 100;
-    // arrowDirectionY = c2 + 100;
-    let r1 = Math.atan((c2 - nextNodeY) / (nextNodeX - c1));
-
-    ctx.beginPath();
-    ctx!.moveTo(c1, c2);
-    ctx!.lineTo(c1 + arrowDirectionX * Math.cos(Math.PI * r1 / 180.0), arrowDirectionY + 200 * Math.sin(Math.PI * r1 / 180.0));
-    ctx.stroke();
-    ctx.closePath();
-
-
-    if (c2 - nextNodeY === 0) {
-      console.log(sourceNodeX - nextNodeX)
-      if (sourceNodeX - nextNodeX < 0) {
-        arrowDirectionX = c1 + 200; //right
-        arrowDirectionY = nextNodeY; //right
-        console.log("Right---R")
-
+    if (sourceNodeY - nextNodeY === 0) {
+      if (sourceNodeX - nextNodeX < 0) {//right
+        arrowEndCoorX = (x2 + x3) / 2
+        arrowEndCoorY = (y2 + y3) / 2
       }
-      else {
-        arrowDirectionX = c1 - 200; //left
-        arrowDirectionY = nextNodeY;
-        console.log("Left")
-
+      else {                           //left
+        arrowEndCoorX = (x1 + x4) / 2
+        arrowEndCoorY = (y1 + y4) / 2
       }
     }
     else {
-      if (sourceNodeY - nextNodeY < 0) {
-        arrowDirectionX = nextNodeX; //up
-        arrowDirectionY = c2 + 200;
-        console.log("Up")
-
+      if (sourceNodeY - nextNodeY > 0) {//up
+        arrowEndCoorX = (x1 + x2) / 2
+        arrowEndCoorY = (y1 + y2) / 2
       }
-      else {
-        arrowDirectionX = nextNodeX; //down
-        arrowDirectionY = c2 - 200;
-        console.log("Down")
-
+      else {                            //down
+        arrowEndCoorX = (x4 + x3) / 2
+        arrowEndCoorY = (y4 + y3) / 2
       }
     }
 
 
 
-    // ctx.beginPath();
-    // ctx.moveTo(c1, c2);
-    // ctx.lineWidth = 10;
-    // ctx.lineTo(nextNodeX, nextNodeY);
-    // ctx.stroke();
-
-
-    // console.log(arrowDirectionX, arrowDirectionY, " arrowss")
-    drawArrow(ctx!, c1, c2, arrowDirectionX, arrowDirectionY, 10, 'blue');
+    drawArrow(ctx, c1, c2, arrowEndCoorX, arrowEndCoorY, 3, "yellow")
 
     setloading(false);
   }
@@ -283,9 +251,7 @@ const QrScanner = () => {
       nextNodeX: nextNodeX,
       nextNodeY: nextNodeY
     }
-
     return nextNodeCoordinates;
-
   }
 
   function getCurrentNodeCoordinate(sourceID: number) {
@@ -302,6 +268,7 @@ const QrScanner = () => {
     return sourceNodeCoordinates;
 
   }
+
 
 
   //--------------------------------------DRAW Arrow -----------------------
@@ -345,7 +312,6 @@ const QrScanner = () => {
   }
 
   return (
-
     <div>
       {isLoaded && drawCanvas()}
       <Navbar>
