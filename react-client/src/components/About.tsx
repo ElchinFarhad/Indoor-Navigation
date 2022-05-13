@@ -28,8 +28,6 @@ class About extends Component {
         }
       }
     }
-
-
     return (
       <div>
         <Navbar>
@@ -42,7 +40,6 @@ class About extends Component {
           </Container>
         </Navbar>
         <p>About</p>
-
       </div>
     );
   }

@@ -8,9 +8,7 @@ const HomePage = () => {
 
   let navigate = useNavigate();
   function handleClick(id: any) {
-    console.log(id, "id")
     navigate(`qrScanner/${id}`)
-
   }
 
   var rooms = graph.nodes.filter(element => element.type == "room")

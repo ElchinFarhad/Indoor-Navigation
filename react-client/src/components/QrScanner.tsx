@@ -230,9 +230,7 @@ Check if result is Json
       }
     }
 
-
-
-    drawArrow(ctx, c1, c2, arrowEndCoorX, arrowEndCoorY, 3, "yellow")
+    drawArrow(ctx, c1, c2, arrowEndCoorX, arrowEndCoorY, 10, "red")
 
     setloading(false);
   }

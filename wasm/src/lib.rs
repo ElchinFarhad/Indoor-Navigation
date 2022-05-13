@@ -35,10 +35,10 @@ pub fn decode_qr(a: &str) -> String {
 
     let res = k.to_luma8();
 
-    // // Prepare for detection
+    //  Prepare for detection
     let mut imgn = rqrr::PreparedImage::prepare(res);
 
-    // // Search for grids, without decoding
+    //  Search for grids, without decoding
     let grids = imgn.detect_grids();
     // print!("{:?}", &grids);
 
