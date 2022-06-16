@@ -5,3 +5,31 @@
 .mainCard{
     background-color: #78938A
 }
+
+img {
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    width: 30vh;
+    height: 30vh;
+ }
+
+ .--dimensions {
+    width: 90%;
+    height: 300px;
+}
+
+.--border {
+    border: 3px solid #333;
+}
+
+canvas {
+    display: block;
+    margin: 0 auto;
+}
+
+#test {
+    background: no-repeat center center;
+    background-size: cover;
+    margin: 1rem auto 0;
+}

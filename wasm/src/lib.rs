@@ -40,7 +40,6 @@ pub fn decode_qr(a: &str) -> String {
 
     //  Search for grids, without decoding
     let grids = imgn.detect_grids();
-    // print!("{:?}", &grids);
 
     if grids.len() != 1 {
         return format!("{}", "[Error] No QR code detected in image");

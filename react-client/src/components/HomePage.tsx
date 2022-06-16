@@ -21,6 +21,8 @@ const HomePage = () => {
           <Nav className="me-auto">
             <Link to="/" style={{ marginRight: 10, color: 'GrayText', textDecoration: 'none' }}>Home </Link>
             <Link to="/about" style={{ marginRight: 10, color: 'GrayText', textDecoration: 'none' }}>About</Link>
+            <Link to="/graph" style={{ marginRight: 10, color: 'GrayText', textDecoration: 'none' }}>Graph</Link>
+
           </Nav>
         </Container>
       </Navbar>
