@@ -3,13 +3,14 @@ import { Button, Card, Col, Container, Nav, Navbar, Row } from 'react-bootstrap'
 import { Link, useParams } from 'react-router-dom';
 import graphDb from '../db/graph.json'
 import pic from "../assets/map.png";
+import { shortestPathF } from '../db/dijkstra'
 
 const QrScanner = () => {
 
   const [isLoaded, setloading] = useState(false);
   const [scanResultWebCam, setScanResultWebCam] = useState('');
 
-  const [sourceID, setSourceId] = useState();
+  const [sourceID, setSourceId] = useState<number | undefined>();
   const [destinationID, setDestinationID] = useState<number | undefined>();
 
   //Qr Code center coordinates
@@ -26,11 +27,16 @@ const QrScanner = () => {
   const [x4, setcoorx4] = useState(0);
   const [y4, setcoory4] = useState(0);
 
+  const [shortestPathArr, setShortestPathArr] = useState([]);
+
+
   let videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const canvasMap = useRef<HTMLCanvasElement>(null);
   let destId = useParams();
   let destination = destId.id;
+
+  let finalPath = [];
 
   useEffect(() => {
     getVideo();
@@ -43,26 +49,37 @@ const QrScanner = () => {
     var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
 
-    // ///MAP background
-    // let canvas = canvasMap.current;
-    // let ctxM = canvas!.getContext("2d");
-    // const width = 300;
-    // const height = 300;
-    // canvas!.width = width;
-    // canvas!.height = height;
 
-    // var background = new Image();
-    // background.src = pic
+    ///MAP background
+    let canvas = canvasMap.current;
+    let ctxM = canvas!.getContext("2d");
+    const width = 300;
+    const height = 300;
+    canvas!.width = width;
+    canvas!.height = height;
+
+    var background = new Image();
+    background.src = pic
 
 
-    // background.onload = function () {
+    background.onload = function () {
 
-    //   ctxM.drawImage(background, 0, 0);
-    //   ctxM.beginPath();
-    //   ctxM.rect(20, 20, 150, 100);
-    //   ctxM.stroke();
-    // }
-    ////
+      // ctxM.drawImage(background, 0, 0);
+      var hRatio = canvas.width / background.width;
+      var vRatio = canvas.height / background.height;
+      var ratio = Math.min(hRatio, vRatio);
+      ctxM.drawImage(background, 0, 0, background.width, background.height, 0, 0, background.width * ratio, background.height * ratio);
+
+      // if (sourceID > 0) {
+
+
+      // }
+
+    }
+
+
+
+    //
 
     if (isMobile) {
       env = { exact: 'environment' }
@@ -88,6 +105,9 @@ const QrScanner = () => {
 
 
   };
+
+
+
 
 
   ///--------------------------Capture Image-----------
@@ -158,6 +178,81 @@ Call rust function
         setSourceId(source);
         setDestinationID(parseInt(destination!));
 
+        ////////////  
+
+
+        ///MAP background
+        let canvas = canvasMap.current;
+        let ctxM = canvas!.getContext("2d");
+        const width = 300;
+        const height = 300;
+        canvas!.width = width;
+        canvas!.height = height;
+
+
+        ctxM.beginPath();       // Start a new path
+        ctxM.moveTo(30, 50);    // Move the pen to (30, 50)
+        ctxM.lineTo(150, 100);  // Draw a line to (150, 100)
+        ctxM.stroke();
+
+
+        var background = new Image();
+        background.src = pic
+
+
+        background.onload = function () {
+
+          // ctxM.drawImage(background, 0, 0);
+          var hRatio = canvas.width / background.width;
+          var vRatio = canvas.height / background.height;
+          var ratio = Math.min(hRatio, vRatio);
+          ctxM.drawImage(background, 0, 0, background.width, background.height, 0, 0, background.width * ratio, background.height * ratio);
+          console.log(source, " coord")
+
+          // if (sourceID > 0) {
+
+          let sourceNode = JSON.parse(JSON.stringify(graphDb));
+
+          let x = sourceNode.nodes[source].x
+          let y = sourceNode.nodes[source].y
+
+          console.log(x, y, " coord")
+
+          ctxM.beginPath();
+          ctxM.arc(x, y, 10, 0, 2 * Math.PI);
+
+          ctxM.strokeStyle = "green";
+
+          ctxM.stroke();
+
+
+          console.log(finalPath, shortestPathArr, " qqq")
+
+
+
+          // for (let i = 0; i < shortestPathArr.length; i++) {
+
+
+          //   let x1 = sourceNode.nodes[i].x
+          //   let y1 = sourceNode.nodes[i].y
+
+          //   let x2 = sourceNode.nodes[i + 1].x
+          //   let y2 = sourceNode.nodes[i + 1].y
+
+          //   console.log(x1, y1, x2, y2, " COme to me")
+
+          //   ctxM.beginPath();
+          //   ctxM.moveTo(x1, y1);
+          //   ctxM.lineTo(x2, y2);
+          //   ctxM.strokeStyle = "red"
+          //   ctxM.stroke();
+          // }
+
+
+          // }
+
+        }
+
         setloading(true);
 
       }
@@ -165,6 +260,12 @@ Call rust function
         console.error(decodeQr);
       }
     })
+  }
+
+  function createCanvasMap() {
+
+
+
   }
 
   /* 
@@ -231,7 +332,9 @@ Check if result is Json
 
 
     /* call djkstar for shortest path */
-    let nextNode = shortestPath(sourceID, destinationID);
+    // let nextNode = shortestPath(sourceID, destinationID);
+
+    let nextNode = shortestPathF(sourceID, destinationID)
     let sourceNode = getCurrentNodeCoordinate(sourceID);
 
     let nextNodeX = nextNode.nextNodeX;
@@ -264,158 +367,9 @@ Check if result is Json
       }
     }
 
-    // drawArrow(ctx, c1, c2, arrowEndCoorX, arrowEndCoorY, 10, "red")
+    drawArrow(ctx, c1, c2, arrowEndCoorX, arrowEndCoorY, 10, "red")
 
     setloading(false);
-  }
-
-
-
-  function shortestPath(sourceID: number, destinationID: number) {
-
-
-    let NO_PARENT = -1;
-
-    function dijkstra(adjacencyMatrix, startVertex) {
-      let nVertices = adjacencyMatrix[0].length;
-
-      // shortestDistances[i] will hold the
-      // shortest distance from src to i
-      let shortestDistances = new Array(nVertices);
-
-      // added[i] will true if vertex i is
-      // included / in shortest path tree
-      // or shortest distance from src to
-      // i is finalized
-      let added = new Array(nVertices);
-
-      // Initialize all distances as
-      // INFINITE and added[] as false
-      for (let vertexIndex = 0; vertexIndex < nVertices;
-        vertexIndex++) {
-        shortestDistances[vertexIndex] = Number.MAX_VALUE;
-        added[vertexIndex] = false;
-      }
-
-      // Distance of source vertex from
-      // itself is always 0
-      shortestDistances[startVertex] = 0;
-
-      // Parent array to store shortest
-      // path tree
-      let parents = new Array(nVertices);
-
-      // The starting vertex does not
-      // have a parent
-      parents[startVertex] = NO_PARENT;
-
-      // Find shortest path for all
-      // vertices
-      for (let i = 1; i < nVertices; i++) {
-
-        // Pick the minimum distance vertex
-        // from the set of vertices not yet
-        // processed. nearestVertex is
-        // always equal to startNode in
-        // first iteration.
-        let nearestVertex = -1;
-        let shortestDistance = Number.MAX_VALUE;
-        for (let vertexIndex = 0;
-          vertexIndex < nVertices;
-          vertexIndex++) {
-          if (!added[vertexIndex] &&
-            shortestDistances[vertexIndex] <
-            shortestDistance) {
-            nearestVertex = vertexIndex;
-            shortestDistance = shortestDistances[vertexIndex];
-          }
-        }
-
-        // Mark the picked vertex as
-        // processed
-        added[nearestVertex] = true;
-
-        // Update dist value of the
-        // adjacent vertices of the
-        // picked vertex.
-        for (let vertexIndex = 0;
-          vertexIndex < nVertices;
-          vertexIndex++) {
-          let edgeDistance = adjacencyMatrix[nearestVertex][vertexIndex];
-
-          if (edgeDistance > 0
-            && ((shortestDistance + edgeDistance) <
-              shortestDistances[vertexIndex])) {
-            parents[vertexIndex] = nearestVertex;
-            shortestDistances[vertexIndex] = shortestDistance +
-              edgeDistance;
-          }
-        }
-      }
-
-      printSolution(startVertex, shortestDistances, parents);
-    }
-
-    function printSolution(startVertex, distances, parents) {
-      let nVertices = distances.length;
-      document.write("Vertex  DistancePath");
-
-      for (let vertexIndex = 0;
-        vertexIndex < nVertices;
-        vertexIndex++) {
-        if (vertexIndex != startVertex) {
-          document.write("<br>" + startVertex + " -> ");
-          document.write(vertexIndex + " 	 ");
-          document.write(distances[vertexIndex] + "	");
-          printPath(vertexIndex, parents);
-        }
-      }
-    }
-
-    function printPath(currentVertex, parents) {
-      // Base case : Source node has
-      // been processed
-      if (currentVertex == NO_PARENT) {
-        return;
-      }
-      printPath(parents[currentVertex], parents);
-      document.write(currentVertex + " ");
-    }
-
-
-    let graph = [[0, 4, 0, 0, 0, 0, 0, 8, 0],
-    [4, 0, 8, 0, 0, 0, 0, 11, 0],
-    [0, 8, 0, 7, 0, 4, 0, 0, 2],
-    [0, 0, 7, 0, 9, 14, 0, 0, 0],
-    [0, 0, 0, 9, 0, 10, 0, 0, 0],
-    [0, 0, 4, 14, 10, 0, 2, 0, 0],
-    [0, 0, 0, 0, 0, 2, 0, 1, 6],
-    [8, 11, 0, 0, 0, 0, 1, 0, 7],
-    [0, 0, 2, 0, 0, 0, 6, 7, 0]
-    ];
-    dijkstra(graph, 0)
-
-
-
-
-
-
-
-
-
-
-    //Return static id  - (dijkstra will be add)
-    // []// path arr[1]
-    let res = 2; // 2 or 3
-
-    let nextNodeX = graphDb.nodes[res].x;
-    let nextNodeY = graphDb.nodes[res].y;
-
-    let nextNodeCoordinates = {
-      nextNodeX: nextNodeX,
-      nextNodeY: nextNodeY
-    }
-    return nextNodeCoordinates;
   }
 
   function getCurrentNodeCoordinate(sourceID: number) {
@@ -508,8 +462,8 @@ Check if result is Json
         </Card.Body>
         <Card.Footer className="text-muted">Polito</Card.Footer>
       </Card>
-      <img src={pic} />
-      <canvas id="canvasMap" ref={canvasMap}> </canvas>
+      {/* <img src={pic} /> */}
+      <canvas className="canvasM" id="canvasMap" ref={canvasMap}> </canvas>
     </div>
 
   );

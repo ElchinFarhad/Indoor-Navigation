@@ -10,8 +10,8 @@ img {
     position: absolute;
     bottom: 0px;
     right: 0px;
-    width: 30vh;
-    height: 30vh;
+    width: 300px;
+    height: 300px;
  }
 
  .--dimensions {
@@ -32,4 +32,16 @@ canvas {
     background: no-repeat center center;
     background-size: cover;
     margin: 1rem auto 0;
+}
+
+/* #canvasMap{
+    background-size: 100% 100%;
+
+} */
+
+.canvasM{
+    background-repeat:no-repeat;
+    width: 40vh;
+    height: 40vh;
+
 }

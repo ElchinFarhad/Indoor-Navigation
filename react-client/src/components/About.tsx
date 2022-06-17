@@ -8,26 +8,30 @@ class About extends Component {
 
   a = JSON.parse(JSON.stringify(graphJson));
 
-  r = this.a.nodes.length;
+  nodesCount = this.a.nodes.length;
 
-  graph: number[][] = [[this.r][this.r]];
+  graph: number[][] = [[this.nodesCount][this.nodesCount]];
 
-  result = graphJson.nodes.filter((e) => e.id === 3)
+  // result = graphJson.nodes.filter((e) => e.id === 3)
 
   render() {
 
-    this.graph = Array.from({ length: this.r }, () => (
-      Array.from({ length: this.r }, () => 0)
+    this.graph = Array.from({ length: this.nodesCount }, () => (
+      Array.from({ length: this.nodesCount }, () => 0)
     ))
 
-    for (let i = 0; i < this.r; i++) {
+    for (let i = 0; i < this.nodesCount; i++) {
       let adjacentNodes = this.a.nodes[i].path
       for (let j = 0; j < adjacentNodes.length; j++) {
-        if (adjacentNodes[j].nodeID < this.r) {
+        if (adjacentNodes[j].nodeID < this.nodesCount) {
           this.graph[i][adjacentNodes[j].nodeID] = adjacentNodes[j].weight;
         }
       }
     }
+    console.log(this.graph);
+
+
+
     return (
       <div>
         <Navbar>
