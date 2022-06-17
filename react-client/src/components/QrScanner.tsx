@@ -4,6 +4,7 @@ import { Link, useParams } from 'react-router-dom';
 import graphDb from '../db/graph.json'
 import pic from "../assets/map.png";
 import { shortestPathF } from '../db/dijkstra'
+import NavbarComp from './NavbarComp';
 
 const QrScanner = () => {
 
@@ -28,6 +29,7 @@ const QrScanner = () => {
   const [y4, setcoory4] = useState(0);
 
   const [shortestPathArr, setShortestPathArr] = useState([]);
+  const [loading, setChanges] = useState(false);
 
 
   let videoRef = useRef<HTMLVideoElement>(null);
@@ -42,13 +44,15 @@ const QrScanner = () => {
     getVideo();
   }, [videoRef]);
 
+  useEffect(() => {
+    createCanvasMap(); // This is be executed when `loading` state changes
+  }, [loading]);
+
   ////-----------------------------Get video----------------
 
   const getVideo = () => {
     let env;
     var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-
-
 
     ///MAP background
     let canvas = canvasMap.current;
@@ -70,17 +74,7 @@ const QrScanner = () => {
       var ratio = Math.min(hRatio, vRatio);
       ctxM.drawImage(background, 0, 0, background.width, background.height, 0, 0, background.width * ratio, background.height * ratio);
 
-      // if (sourceID > 0) {
-
-
-      // }
-
     }
-
-
-
-    //
-
     if (isMobile) {
       env = { exact: 'environment' }
     }
@@ -105,10 +99,6 @@ const QrScanner = () => {
 
 
   };
-
-
-
-
 
   ///--------------------------Capture Image-----------
 
@@ -178,82 +168,9 @@ Call rust function
         setSourceId(source);
         setDestinationID(parseInt(destination!));
 
-        ////////////  
-
-
-        ///MAP background
-        let canvas = canvasMap.current;
-        let ctxM = canvas!.getContext("2d");
-        const width = 300;
-        const height = 300;
-        canvas!.width = width;
-        canvas!.height = height;
-
-
-        ctxM.beginPath();       // Start a new path
-        ctxM.moveTo(30, 50);    // Move the pen to (30, 50)
-        ctxM.lineTo(150, 100);  // Draw a line to (150, 100)
-        ctxM.stroke();
-
-
-        var background = new Image();
-        background.src = pic
-
-
-        background.onload = function () {
-
-          // ctxM.drawImage(background, 0, 0);
-          var hRatio = canvas.width / background.width;
-          var vRatio = canvas.height / background.height;
-          var ratio = Math.min(hRatio, vRatio);
-          ctxM.drawImage(background, 0, 0, background.width, background.height, 0, 0, background.width * ratio, background.height * ratio);
-          console.log(source, " coord")
-
-          // if (sourceID > 0) {
-
-          let sourceNode = JSON.parse(JSON.stringify(graphDb));
-
-          let x = sourceNode.nodes[source].x
-          let y = sourceNode.nodes[source].y
-
-          console.log(x, y, " coord")
-
-          ctxM.beginPath();
-          ctxM.arc(x, y, 10, 0, 2 * Math.PI);
-
-          ctxM.strokeStyle = "green";
-
-          ctxM.stroke();
-
-
-          console.log(finalPath, shortestPathArr, " qqq")
-
-
-
-          // for (let i = 0; i < shortestPathArr.length; i++) {
-
-
-          //   let x1 = sourceNode.nodes[i].x
-          //   let y1 = sourceNode.nodes[i].y
-
-          //   let x2 = sourceNode.nodes[i + 1].x
-          //   let y2 = sourceNode.nodes[i + 1].y
-
-          //   console.log(x1, y1, x2, y2, " COme to me")
-
-          //   ctxM.beginPath();
-          //   ctxM.moveTo(x1, y1);
-          //   ctxM.lineTo(x2, y2);
-          //   ctxM.strokeStyle = "red"
-          //   ctxM.stroke();
-          // }
-
-
-          // }
-
-        }
-
         setloading(true);
+        // setChanges(true);
+
 
       }
       else {
@@ -265,6 +182,76 @@ Call rust function
   function createCanvasMap() {
 
 
+    ///MAP background
+    let canvas = canvasMap.current;
+    let ctxM = canvas!.getContext("2d");
+    const width = 300;
+    const height = 300;
+    canvas!.width = width;
+    canvas!.height = height;
+
+
+    ctxM.beginPath();       // Start a new path
+    ctxM.moveTo(30, 50);    // Move the pen to (30, 50)
+    ctxM.lineTo(150, 100);  // Draw a line to (150, 100)
+    ctxM.stroke();
+
+
+    var background = new Image();
+    background.src = pic
+
+
+    background.onload = function () {
+
+      // ctxM.drawImage(background, 0, 0);
+      var hRatio = canvas.width / background.width;
+      var vRatio = canvas.height / background.height;
+      var ratio = Math.min(hRatio, vRatio);
+      ctxM.drawImage(background, 0, 0, background.width, background.height, 0, 0, background.width * ratio, background.height * ratio);
+      console.log(sourceID, " coord")
+
+      // if (sourceID > 0) {
+
+      let sourceNode = JSON.parse(JSON.stringify(graphDb));
+
+      let x = sourceNode.nodes[sourceID].x
+      let y = sourceNode.nodes[sourceID].y
+
+      console.log(x, y, " coord")
+      ctxM.beginPath();
+      ctxM.arc(x, y, 10, 0, 2 * Math.PI);
+
+      ctxM.strokeStyle = "green";
+
+      ctxM.stroke();
+
+
+      for (let i = 0; i < shortestPathArr.length - 1; i++) {
+
+
+        let x1 = sourceNode.nodes[shortestPathArr[i]].x
+        let y1 = sourceNode.nodes[shortestPathArr[i]].y
+
+        let x2 = sourceNode.nodes[shortestPathArr[i + 1]].x
+        let y2 = sourceNode.nodes[shortestPathArr[i + 1]].y
+        console.log(shortestPathArr[i], " aQQQsd")
+        console.log(x1, y1, x2, y2, " COme to me")
+
+
+        ctxM.beginPath();
+        ctxM.moveTo(x1, y1);
+        ctxM.lineTo(x2, y2);
+        ctxM.strokeStyle = "red"
+        ctxM.stroke();
+        ctxM.closePath();
+      }
+
+
+      // }
+
+    }
+
+    setChanges(false);
 
   }
 
@@ -334,42 +321,58 @@ Check if result is Json
     /* call djkstar for shortest path */
     // let nextNode = shortestPath(sourceID, destinationID);
 
-    let nextNode = shortestPathF(sourceID, destinationID)
-    let sourceNode = getCurrentNodeCoordinate(sourceID);
 
-    let nextNodeX = nextNode.nextNodeX;
-    let nextNodeY = nextNode.nextNodeY;
 
-    let sourceNodeX = sourceNode.sourceNodeX;
-    let sourceNodeY = sourceNode.sourceNodeY;
-
-    let arrowEndCoorX;
-    let arrowEndCoorY;
-
-    if (sourceNodeY - nextNodeY === 0) {
-      if (sourceNodeX - nextNodeX < 0) {//right
-        arrowEndCoorX = (x2 + x3) / 2
-        arrowEndCoorY = (y2 + y3) / 2
-      }
-      else {                           //left
-        arrowEndCoorX = (x1 + x4) / 2
-        arrowEndCoorY = (y1 + y4) / 2
-      }
+    if (sourceID == destinationID) {
+      alert("You are in destination")
+      setloading(false);
+      setChanges(true);
     }
     else {
-      if (sourceNodeY - nextNodeY > 0) {//up
-        arrowEndCoorX = (x1 + x2) / 2
-        arrowEndCoorY = (y1 + y2) / 2
+      let nextNode = shortestPathF(sourceID, destinationID)
+      let sourceNode = getCurrentNodeCoordinate(sourceID);
+
+
+
+      let shortestPathArrayOfMap = nextNode.shortestPathArray;
+      setShortestPathArr(shortestPathArrayOfMap);
+
+      let nextNodeX = nextNode.nextNodeX;
+      let nextNodeY = nextNode.nextNodeY;
+
+      let sourceNodeX = sourceNode.sourceNodeX;
+      let sourceNodeY = sourceNode.sourceNodeY;
+
+      let arrowEndCoorX;
+      let arrowEndCoorY;
+
+      if (sourceNodeY - nextNodeY === 0) {
+        if (sourceNodeX - nextNodeX < 0) {//right
+          arrowEndCoorX = (x2 + x3) / 2
+          arrowEndCoorY = (y2 + y3) / 2
+        }
+        else {                           //left
+          arrowEndCoorX = (x1 + x4) / 2
+          arrowEndCoorY = (y1 + y4) / 2
+        }
       }
-      else {                            //down
-        arrowEndCoorX = (x4 + x3) / 2
-        arrowEndCoorY = (y4 + y3) / 2
+      else {
+        if (sourceNodeY - nextNodeY > 0) {//up
+          arrowEndCoorX = (x1 + x2) / 2
+          arrowEndCoorY = (y1 + y2) / 2
+        }
+        else {                            //down
+          arrowEndCoorX = (x4 + x3) / 2
+          arrowEndCoorY = (y4 + y3) / 2
+        }
       }
+
+      drawArrow(ctx, c1, c2, arrowEndCoorX, arrowEndCoorY, 10, "red")
+
+
+      setloading(false);
+      setChanges(true);
     }
-
-    drawArrow(ctx, c1, c2, arrowEndCoorX, arrowEndCoorY, 10, "red")
-
-    setloading(false);
   }
 
   function getCurrentNodeCoordinate(sourceID: number) {
@@ -430,15 +433,8 @@ Check if result is Json
   return (
     <div>
       {isLoaded && drawCanvas()}
-      <Navbar>
-        <Container>
-          <Navbar.Brand >Indoor Navigation</Navbar.Brand>
-          <Nav className="me-auto">
-            <Link to="/" style={{ marginRight: 10, color: 'GrayText', textDecoration: 'none' }}>Home </Link>
-            <Link to="/about" style={{ marginRight: 10, color: 'GrayText', textDecoration: 'none' }}>About</Link>
-          </Nav>
-        </Container>
-      </Navbar>
+      <NavbarComp></NavbarComp>
+
 
       <Card className="text-center"
         style={{
@@ -450,14 +446,13 @@ Check if result is Json
           <Card.Text>
             <div className="video-container">
               <video style={{ display: "none" }} loop muted ref={videoRef} />
-
             </div>
             <canvas id="qr-canvas" ref={canvasRef} />
 
-            <div>
-              {/* <h3>Result Scanned By WebCam:</h3> */}
-              {/* <a href={scanResultWebCam} rel="noreferrer">{scanResultWebCam}</a> */}
-            </div>
+            {/* <div> */}
+            {/* <h3>Result Scanned By WebCam:</h3> */}
+            {/* <a href={scanResultWebCam} rel="noreferrer">{scanResultWebCam}</a> */}
+            {/* </div> */}
           </Card.Text>
         </Card.Body>
         <Card.Footer className="text-muted">Polito</Card.Footer>

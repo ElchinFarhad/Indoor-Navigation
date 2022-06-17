@@ -6,9 +6,6 @@ import About from './components/About';
 import QrScanner from './components/QrScanner';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import ScriptTag from 'react-script-tag';
-import { Helmet } from "react-helmet";
-import Graph from "./components/Graph";
 
 
 
@@ -22,7 +19,6 @@ class App extends Component {
             <Route path="/*" element={<HomePage />} />
             <Route path="/qrScanner/:id" element={<QrScanner />} />
             <Route path="/about" element={<About />} />
-            <Route path="/graph" element={<Graph />} />
 
           </Routes>
         </BrowserRouter>

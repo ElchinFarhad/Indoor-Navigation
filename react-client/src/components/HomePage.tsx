@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Button, Card, Container, Dropdown, Nav, Navbar } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import graph from '../db/graph.json'
+import NavbarComp from './NavbarComp';
 
 
 const HomePage = () => {
@@ -15,17 +16,8 @@ const HomePage = () => {
 
   return (
     <div>
-      <Navbar className="navbar">
-        <Container>
-          <Navbar.Brand >Indoor Navigation</Navbar.Brand>
-          <Nav className="me-auto">
-            <Link to="/" style={{ marginRight: 10, color: 'GrayText', textDecoration: 'none' }}>Home </Link>
-            <Link to="/about" style={{ marginRight: 10, color: 'GrayText', textDecoration: 'none' }}>About</Link>
-            <Link to="/graph" style={{ marginRight: 10, color: 'GrayText', textDecoration: 'none' }}>Graph</Link>
 
-          </Nav>
-        </Container>
-      </Navbar>
+      <NavbarComp></NavbarComp>
 
       <Card className="mainCard"
         style={{
