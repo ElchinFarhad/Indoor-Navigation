@@ -50,9 +50,18 @@ const QrScanner = () => {
 
   ////-----------------------------Get video----------------
 
+
   const getVideo = () => {
     let env;
     var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+
+    var times = [];
+    var fps;
+
+
+
+    refreshLoop(times, fps);
 
     ///MAP background
     let canvas = canvasMap.current;
@@ -99,6 +108,22 @@ const QrScanner = () => {
 
 
   };
+
+  function refreshLoop(times: any, fps: any) {
+    window.requestAnimationFrame(function () {
+      const now = performance.now();
+      while (times.length > 0 && times[0] <= now - 1000) {
+        times.shift();
+      }
+      times.push(now);
+      fps = times.length;
+      for (let i = 0; i < times.length; i++) {
+        console.log(times[i], " Qqqqqqqqq")
+
+      }
+      this.refreshLoop(times, fps);
+    });
+  }
 
   ///--------------------------Capture Image-----------
 
@@ -190,13 +215,6 @@ Call rust function
     canvas!.width = width;
     canvas!.height = height;
 
-
-    ctxM.beginPath();       // Start a new path
-    ctxM.moveTo(30, 50);    // Move the pen to (30, 50)
-    ctxM.lineTo(150, 100);  // Draw a line to (150, 100)
-    ctxM.stroke();
-
-
     var background = new Image();
     background.src = pic
 
@@ -217,7 +235,6 @@ Call rust function
       let x = sourceNode.nodes[sourceID].x
       let y = sourceNode.nodes[sourceID].y
 
-      console.log(x, y, " coord")
       ctxM.beginPath();
       ctxM.arc(x, y, 10, 0, 2 * Math.PI);
 
