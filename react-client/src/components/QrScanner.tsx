@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Button, Card, Col, Container, Nav, Navbar, Row } from 'react-bootstrap';
-import { Link, useParams } from 'react-router-dom';
+import { Card } from 'react-bootstrap';
+import { useParams } from 'react-router-dom';
 import graphDb from '../db/graph.json'
 import pic from "../assets/map.png";
 import { shortestPathF } from '../db/dijkstra'
@@ -38,8 +38,6 @@ const QrScanner = () => {
   let destId = useParams();
   let destination = destId.id;
 
-  let finalPath = [];
-
   useEffect(() => {
     getVideo();
   }, [videoRef]);
@@ -55,13 +53,6 @@ const QrScanner = () => {
     let env;
     var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-
-    var times = [];
-    var fps;
-
-
-
-    refreshLoop(times, fps);
 
     ///MAP background
     let canvas = canvasMap.current;
@@ -84,10 +75,10 @@ const QrScanner = () => {
       ctxM.drawImage(background, 0, 0, background.width, background.height, 0, 0, background.width * ratio, background.height * ratio);
 
     }
-    if (isMobile) {
+    if (isMobile) { //mobile browser
       env = { exact: 'environment' }
     }
-    else {
+    else { //web browser
       env = 'user'
     }
     navigator.mediaDevices
@@ -98,8 +89,7 @@ const QrScanner = () => {
         if (video && stream !== null) {
           video.srcObject = stream;
           video.play();
-          console.log(video, "video");
-          setInterval(captureImage, 100);
+          setInterval(captureImage, 10);
         }
       })
       .catch(err => {
@@ -108,22 +98,6 @@ const QrScanner = () => {
 
 
   };
-
-  function refreshLoop(times: any, fps: any) {
-    window.requestAnimationFrame(function () {
-      const now = performance.now();
-      while (times.length > 0 && times[0] <= now - 1000) {
-        times.shift();
-      }
-      times.push(now);
-      fps = times.length;
-      for (let i = 0; i < times.length; i++) {
-        console.log(times[i], " Qqqqqqqqq")
-
-      }
-      this.refreshLoop(times, fps);
-    });
-  }
 
   ///--------------------------Capture Image-----------
 
@@ -160,14 +134,14 @@ const QrScanner = () => {
   };
 
   /* 
-Call rust function
-*/
+  Call rust function
+  */
   var callRustFunc = (newBase64: string) => {
+
     import('wasm').then(({ decode_qr }) => {
       const decodeQr = decode_qr(newBase64);
 
       setScanResultWebCam(decodeQr);
-      console.log(decodeQr);
 
       if (isJson(decodeQr)) {
 
@@ -194,8 +168,6 @@ Call rust function
         setDestinationID(parseInt(destination!));
 
         setloading(true);
-        // setChanges(true);
-
 
       }
       else {
@@ -226,45 +198,51 @@ Call rust function
       var vRatio = canvas.height / background.height;
       var ratio = Math.min(hRatio, vRatio);
       ctxM.drawImage(background, 0, 0, background.width, background.height, 0, 0, background.width * ratio, background.height * ratio);
-      console.log(sourceID, " coord")
 
       // if (sourceID > 0) {
 
       let sourceNode = JSON.parse(JSON.stringify(graphDb));
 
-      let x = sourceNode.nodes[sourceID].x
-      let y = sourceNode.nodes[sourceID].y
+      if (sourceNode.nodes[sourceID]) {
+        let x = sourceNode.nodes[sourceID]!.x
+        let y = sourceNode.nodes[sourceID]!.y
 
-      ctxM.beginPath();
-      ctxM.arc(x, y, 10, 0, 2 * Math.PI);
+        ctxM.beginPath();
+        ctxM.arc(x, y, 10, 0, 2 * Math.PI);
 
-      ctxM.strokeStyle = "green";
+        ctxM.strokeStyle = "green";
 
-      ctxM.stroke();
+        ctxM.stroke();
+      }
+
 
 
       for (let i = 0; i < shortestPathArr.length - 1; i++) {
-
 
         let x1 = sourceNode.nodes[shortestPathArr[i]].x
         let y1 = sourceNode.nodes[shortestPathArr[i]].y
 
         let x2 = sourceNode.nodes[shortestPathArr[i + 1]].x
         let y2 = sourceNode.nodes[shortestPathArr[i + 1]].y
-        console.log(shortestPathArr[i], " aQQQsd")
-        console.log(x1, y1, x2, y2, " COme to me")
-
 
         ctxM.beginPath();
+        ctxM.lineWidth = 4;
         ctxM.moveTo(x1, y1);
         ctxM.lineTo(x2, y2);
         ctxM.strokeStyle = "red"
         ctxM.stroke();
         ctxM.closePath();
+        if (i == shortestPathArr.length - 2) {
+          ctxM.beginPath();
+          ctxM.strokeStyle = "blue";
+          ctxM.arc(sourceNode.nodes[shortestPathArr[shortestPathArr.length - 1]].x, sourceNode.nodes[shortestPathArr[shortestPathArr.length - 1]].y, 10, 0, 2 * Math.PI, true);
+          ctxM.stroke();
+          ctxM.closePath();
+        }
+
       }
 
 
-      // }
 
     }
 
@@ -293,53 +271,6 @@ Check if result is Json
     let canvas = canvasRef.current;
     let ctx = canvas?.getContext("2d");
 
-    /* Draw Border of QrCode */
-    ctx.beginPath();
-    ctx.lineWidth = 4;
-    ctx.strokeStyle = "green";
-    ctx.arc(x1, y1, 10, 0, 2 * Math.PI, true);
-
-    ctx.lineTo(x1, y1);
-    ctx.lineTo(x2, y2);
-    ctx.lineTo(x3, y3);
-    ctx.lineTo(x4, y4);
-    ctx.lineTo(x1, y1);
-    ctx.stroke();
-    ctx.closePath();
-
-    /////
-    ctx.beginPath();
-    ctx.lineWidth = 4;
-    ctx.strokeStyle = "red";
-    ctx.arc(x2, y2, 10, 0, 2 * Math.PI, true);
-    ctx.stroke();
-    ctx.closePath();
-    ////
-
-    /////
-    ctx.beginPath();
-    ctx.lineWidth = 4;
-    ctx.strokeStyle = "yellow";
-    ctx.arc(x3, y3, 10, 0, 2 * Math.PI, true);
-    ctx.stroke();
-    ctx.closePath();
-    ////
-
-    /////
-    ctx.beginPath();
-    ctx.lineWidth = 4;
-    ctx.strokeStyle = "blue";
-    ctx.arc(x4, y4, 10, 0, 2 * Math.PI, true);
-    ctx.stroke();
-    ctx.closePath();
-    ////
-
-
-    /* call djkstar for shortest path */
-    // let nextNode = shortestPath(sourceID, destinationID);
-
-
-
     if (sourceID == destinationID) {
       alert("You are in destination")
       setloading(false);
@@ -348,8 +279,6 @@ Check if result is Json
     else {
       let nextNode = shortestPathF(sourceID, destinationID)
       let sourceNode = getCurrentNodeCoordinate(sourceID);
-
-
 
       let shortestPathArrayOfMap = nextNode.shortestPathArray;
       setShortestPathArr(shortestPathArrayOfMap);
@@ -461,20 +390,14 @@ Check if result is Json
           <h6>Scan QrCode and Find Your Destination</h6></Card.Header>
         <Card.Body>
           <Card.Text>
-            <div className="video-container">
-              <video style={{ display: "none" }} loop muted ref={videoRef} />
+            <div >
+              <video className="video-container" style={{ display: "none" }} loop muted ref={videoRef} />
             </div>
             <canvas id="qr-canvas" ref={canvasRef} />
-
-            {/* <div> */}
-            {/* <h3>Result Scanned By WebCam:</h3> */}
-            {/* <a href={scanResultWebCam} rel="noreferrer">{scanResultWebCam}</a> */}
-            {/* </div> */}
           </Card.Text>
         </Card.Body>
         <Card.Footer className="text-muted">Polito</Card.Footer>
       </Card>
-      {/* <img src={pic} /> */}
       <canvas className="canvasM" id="canvasMap" ref={canvasMap}> </canvas>
     </div>
 

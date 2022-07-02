@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, Card, Container, Dropdown, Nav, Navbar } from 'react-bootstrap';
+import { Button, Card } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import graph from '../db/graph.json'
 import NavbarComp from './NavbarComp';
@@ -13,7 +13,6 @@ const HomePage = () => {
   }
 
   var rooms = graph.nodes.filter(element => element.type == "room")
-
   return (
     <div>
 
@@ -27,24 +26,22 @@ const HomePage = () => {
         <Card.Body>
           <Card.Text>
 
-            {rooms && rooms.map((e) => {
+            {rooms && rooms.map((e, key) => {
               return (
-                <div>
-                  <Card style={{
-                    width: '20rem',
-                    float: "left",
-                    margin: "10px",
-                    backgroundColor: "#DFDFDE"
-                  }}
-                    key={e.id}>
-                    <Card.Body>
-                      <Card.Title>ROOM: {e.name}</Card.Title>
-                      <Card.Text>
-                        <Button onClick={() => handleClick(e.id)} variant="secondary">Scan to go Room {e.name}</Button>
-                      </Card.Text>
-                    </Card.Body>
-                  </Card>
-                </div>
+                <Card key={key} style={{
+                  width: '20rem',
+                  float: "left",
+                  margin: "10px",
+                  backgroundColor: "#DFDFDE"
+                }}
+                >
+                  <Card.Body>
+                    <Card.Title>ROOM: {e.name}</Card.Title>
+                    <Card.Text>
+                      <Button onClick={() => handleClick(e.id)} variant="secondary">Scan to go Room {e.name}</Button>
+                    </Card.Text>
+                  </Card.Body>
+                </Card>
               );
             })}
 

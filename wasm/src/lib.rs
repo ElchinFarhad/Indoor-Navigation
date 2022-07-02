@@ -55,13 +55,10 @@ pub fn decode_qr(a: &str) -> String {
 
     let x1 = grids[0].bounds[0].x;
     let y1 = grids[0].bounds[0].y;
-
     let x2 = grids[0].bounds[1].x;
     let y2 = grids[0].bounds[1].y;
-
     let x3 = grids[0].bounds[2].x;
     let y3 = grids[0].bounds[2].y;
-
     let x4 = grids[0].bounds[3].x;
     let y4 = grids[0].bounds[3].y;
 

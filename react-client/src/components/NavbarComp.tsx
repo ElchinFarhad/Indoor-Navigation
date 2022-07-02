@@ -11,7 +11,7 @@ class NavbarComp extends Component {
                     <Navbar.Brand >Indoor Navigation</Navbar.Brand>
                     <Nav className="me-auto">
                         <Link to="/" style={{ marginRight: 10, color: 'GrayText', textDecoration: 'none' }}>Home </Link>
-                        <Link to="/about" style={{ marginRight: 10, color: 'GrayText', textDecoration: 'none' }}>About</Link>
+                        <Link to="/about" style={{ marginRight: 10, color: 'GrayText', textDecoration: 'none' }} >About</Link>
                     </Nav>
                 </Container>
             </Navbar>

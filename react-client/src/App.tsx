@@ -16,21 +16,20 @@ class App extends Component {
       <div>
         <BrowserRouter>
           <Routes>
-            <Route path="/*" element={<HomePage />} />
+            <Route path="/" element={<HomePage />} />
             <Route path="/qrScanner/:id" element={<QrScanner />} />
             <Route path="/about" element={<About />} />
-
           </Routes>
         </BrowserRouter>
 
-        <script src="https://aframe.io/releases/0.9.1/aframe.min.js"></script>
+        {/* <script src="https://aframe.io/releases/0.9.1/aframe.min.js"></script>
         <script src="https://rawgit.com/jeromeetienne/AR.js/master/aframe/build/aframe-ar.min.js"></script>
 
         <script src="https://rawgit.com/donmccurdy/aframe-extras/master/dist/aframe-extras.loaders.min.js"></script>
 
         <script src="https://cdn.jsdelivr.net/gh/aframevr/aframe@1c2407b26c61958baa93967b5412487cd94b290b/dist/aframe-master.min.js"></script>
         <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
-
+ */}
 
 
 

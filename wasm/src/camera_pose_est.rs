@@ -7,25 +7,17 @@ use lambda_twist::LambdaTwist;
 use rand::{rngs::SmallRng, SeedableRng};
 
 pub fn arrsac_manual(
-    x1: f64,
-    y1: f64,
-    x2: f64,
-    y2: f64,
-    x3: f64,
-    y3: f64,
-    x4: f64,
-    y4: f64,
+    x1: f64,  y1: f64,
+    x2: f64,  y2: f64,
+    x3: f64,  y3: f64,
+    x4: f64,  y4: f64,
 ) -> cv_core::nalgebra::Matrix<
     f64,
-    cv_core::nalgebra::U2,
-    cv_core::nalgebra::U1,
+    cv_core::nalgebra::U2, cv_core::nalgebra::U1,
     cv_core::nalgebra::ArrayStorage<f64, cv_core::nalgebra::U2, cv_core::nalgebra::U1>,
 >
-//[cv_core::nalgebra::Point<f64, cv_core::nalgebra::U3>; 4]
-//cv_core::WorldToCamera
 {
     let mut arrsac = Arrsac::new(0.01, SmallRng::from_seed([0; 16]));
-
     /*
        these are the corner of the QR-CODE as returned by the
        QR-CODE detection library
