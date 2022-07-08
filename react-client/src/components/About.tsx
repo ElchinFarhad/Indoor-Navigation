@@ -9,10 +9,10 @@ class About extends Component {
   render() {
 
     return (
-      <div>
+      <>
         <NavbarComp></NavbarComp>
         <p>About</p>
-      </div>
+      </>
     );
   }
 }

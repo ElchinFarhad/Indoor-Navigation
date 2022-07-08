@@ -377,7 +377,7 @@ Check if result is Json
   }
 
   return (
-    <div>
+    <>
       {isLoaded && drawCanvas()}
       <NavbarComp></NavbarComp>
 
@@ -390,16 +390,16 @@ Check if result is Json
           <h6>Scan QrCode and Find Your Destination</h6></Card.Header>
         <Card.Body>
           <Card.Text>
-            <div >
+            <>
               <video className="video-container" style={{ display: "none" }} loop muted ref={videoRef} />
-            </div>
+            </>
             <canvas id="qr-canvas" ref={canvasRef} />
           </Card.Text>
         </Card.Body>
         <Card.Footer className="text-muted">Polito</Card.Footer>
       </Card>
       <canvas className="canvasM" id="canvasMap" ref={canvasMap}> </canvas>
-    </div>
+    </>
 
   );
 }

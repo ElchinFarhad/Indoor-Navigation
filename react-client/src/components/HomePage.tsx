@@ -14,7 +14,7 @@ const HomePage = () => {
 
   var rooms = graph.nodes.filter(element => element.type == "room")
   return (
-    <div>
+    <>
 
       <NavbarComp></NavbarComp>
 
@@ -50,7 +50,7 @@ const HomePage = () => {
         <Card.Footer className="text-muted">Polito</Card.Footer>
       </Card>
 
-    </div>
+    </>
   );
 }
 

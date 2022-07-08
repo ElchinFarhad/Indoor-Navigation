@@ -13,7 +13,7 @@ class App extends Component {
   render() {
 
     return (
-      <div>
+      <>
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<HomePage />} />
@@ -42,7 +42,7 @@ class App extends Component {
           src="https://raw.githack.com/AR-js-org/AR.js/master/three.js/build/ar.js" />
         <ScriptTag isHydrating={true} type="text/javascript"
           src="https://raw.githack.com/AR-js-org/AR.js/3.0.0/aframe/build/aframe-ar-nft.js" /> */}
-      </div>
+      </>
     );
   }
 }
