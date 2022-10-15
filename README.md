@@ -1,6 +1,6 @@
 # Indoor-Navigation
 
-Indoor navigation system based on plain browser. It detect result on qr code and coordinates of qr code image.
+Indoor navigation system based on plain browser(mobile browsers). This is the visual-based navigation system which uses the device's camera to scan markers (QR codes) in the environment to determine orientation and position. It detect result text, destination coordinates and direction from qr code image. Project done by Rust, ReactJS and with the use of Lambda Twist algorithm.
 
 Clone down this repository. You will need `node` and `npm` installed globally on your machine.
 
