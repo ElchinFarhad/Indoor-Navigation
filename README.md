@@ -1,6 +1,6 @@
 # Indoor-Navigation
 
-Indoor navigation system based on plane browser. It detect result on qr code and coordinates of qr code image.
+Indoor navigation system based on plain browser. It detect result on qr code and coordinates of qr code image.
 
 Clone down this repository. You will need `node` and `npm` installed globally on your machine.
 
