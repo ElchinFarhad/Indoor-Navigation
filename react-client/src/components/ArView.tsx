@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { ArScene } from '../ar/ArScene';
+import { ArScene, XrPose } from '../ar/ArScene';
 import { Detection } from '../ar/types';
 import { floorPlanUrl } from '../assets/maps';
 import { Building } from '../nav/building';
@@ -11,13 +11,21 @@ import { attachStream } from '../sensors/camera';
 interface Props {
   building: Building;
   session: NavigationSession;
-  /** Camera stream, or null in demo mode. */
+  /** Camera stream shown behind the overlay (null in demo mode and while WebXR runs). */
   stream: MediaStream | null;
+  /** Demo mode: no camera, the floor plan is laid on the ground instead. */
+  demo: boolean;
   /** Current camera-to-map rotation, or null if unknown. Read every frame. */
   getCameraToWorld: () => Mat3 | null;
   /** Called once the video element shows frames (it is what the QR scanner reads). */
   onVideo?: (video: HTMLVideoElement | null) => void;
   detection?: Detection | null;
+  /** A WebXR `immersive-ar` session to hand the camera over to. */
+  xrSession?: any;
+  /** Position of the user as tracked by the WebXR session, a few times per second. */
+  onXrPose?: (pose: XrPose) => void;
+  /** The WebXR session ended or could not be started. */
+  onXrEnd?: (error?: any) => void;
 }
 
 /**
@@ -25,12 +33,17 @@ interface Props {
  * Without a camera stream (demo mode) the floor plan is laid on the ground
  * instead, which turns the same scene into a small 3D walk-through.
  */
-const ArView = ({ building, session, stream, getCameraToWorld, onVideo, detection }: Props) => {
+const ArView = ({ building, session, stream, demo, getCameraToWorld, onVideo, detection, xrSession, onXrPose, onXrEnd }: Props) => {
   const container = useRef<HTMLDivElement>(null);
   const video = useRef<HTMLVideoElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
+  const sceneRef = useRef<ArScene | null>(null);
   const poseSource = useRef(getCameraToWorld);
   poseSource.current = getCameraToWorld;
+  const xrPoseSink = useRef(onXrPose);
+  xrPoseSink.current = onXrPose;
+  const xrEndSink = useRef(onXrEnd);
+  xrEndSink.current = onXrEnd;
 
   // Camera stream -> <video>
   useEffect(() => {
@@ -61,8 +74,10 @@ const ArView = ({ building, session, stream, getCameraToWorld, onVideo, detectio
       el.classList.add('ar-view--no-webgl');
       return undefined;
     }
+    sceneRef.current = scene;
 
     const resize = () => {
+      if (scene.presenting) return; // the XR session sizes its own framebuffer
       const w = el.clientWidth;
       const h = el.clientHeight;
       if (!w || !h) return;
@@ -82,36 +97,63 @@ const ArView = ({ building, session, stream, getCameraToWorld, onVideo, detectio
     const v = video.current;
     if (v) v.addEventListener('loadedmetadata', resize);
 
-    if (!stream) {
+    if (demo) {
       const floor = building.floors[0];
       const plan = floorPlanUrl(floor && floor.map);
       if (plan) scene.showFloorPlan(plan, floor.width, floor.height);
     }
 
-    let raf = 0;
-    const loop = (time: number) => {
+    let lastXrFeed = 0;
+    // (setAnimationLoop instead of requestAnimationFrame: it keeps working when a WebXR session takes over.)
+    scene.renderer.setAnimationLoop((time: number) => {
       const snap = session.snapshot;
-      scene.render(
+      const xrPose = scene.render(
         {
           cameraToWorld: poseSource.current(),
           position: snap.position,
           route: snap.route,
           maneuvers: snap.maneuvers,
           arrived: snap.status === 'arrived',
+          heading: snap.heading,
         },
         time
       );
-      raf = requestAnimationFrame(loop);
-    };
-    raf = requestAnimationFrame(loop);
+      if (xrPose && time - lastXrFeed > 250 && xrPoseSink.current) {
+        lastXrFeed = time;
+        xrPoseSink.current(xrPose);
+      }
+    });
 
     return () => {
-      cancelAnimationFrame(raf);
+      sceneRef.current = null;
       window.removeEventListener('resize', resize);
       if (v) v.removeEventListener('loadedmetadata', resize);
       scene.dispose();
     };
-  }, [building, session, stream]);
+  }, [building, session, demo]);
+
+  // Hand over to WebXR when a session is provided.
+  useEffect(() => {
+    const scene = sceneRef.current;
+    if (!xrSession) return undefined;
+    const ended = (error?: any) => {
+      if (xrEndSink.current) xrEndSink.current(error);
+      window.dispatchEvent(new Event('resize')); // restore the overlay's own size
+    };
+    if (!scene) {
+      ended(new Error('no WebGL'));
+      return undefined;
+    }
+    scene.startXR(xrSession, () => ended()).catch((error) => {
+      try {
+        xrSession.end();
+      } catch (e) {
+        /* already ended */
+      }
+      ended(error);
+    });
+    return undefined;
+  }, [xrSession]);
 
   // Outline of the marker the scanner just recognised, in view coordinates.
   let outline: string | null = null;
@@ -126,7 +168,7 @@ const ArView = ({ building, session, stream, getCameraToWorld, onVideo, detectio
   }
 
   return (
-    <div className={`ar-view${stream ? '' : ' ar-view--demo'}`} ref={container}>
+    <div className={`ar-view${demo ? ' ar-view--demo' : ''}`} ref={container}>
       <video className="ar-view__video" ref={video} playsInline muted autoPlay />
       <canvas className="ar-view__canvas" ref={canvas} />
       {outline && (

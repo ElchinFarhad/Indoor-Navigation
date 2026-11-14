@@ -122,6 +122,92 @@ function installFakes() {
   };
 }
 
+/**
+ * A scripted stand-in for a WebXR `immersive-ar` session (headless browsers
+ * have no AR device). It implements just what Three.js uses and lets the test
+ * move the "phone" through XR space, to check that the building is aligned
+ * with the XR frame and that XR motion ends up on the right corridor.
+ */
+function installFakeXr() {
+  const pose = { x: 0, y: 0, z: 0, yaw: 0 }; // yaw about +Y: forward is (-sin, 0, -cos)
+  const listeners = {};
+  const projection = new Float32Array([1.3, 0, 0, 0, 0, 0.6, 0, 0, 0, 0, -1.001, -1, 0, 0, -0.1, 0]);
+  const matrix = () => {
+    const c = Math.cos(pose.yaw);
+    const s = Math.sin(pose.yaw);
+    return new Float32Array([c, 0, -s, 0, 0, 1, 0, 0, s, 0, c, 0, pose.x, pose.y, pose.z, 1]);
+  };
+  const session = {
+    renderState: {},
+    inputSources: [],
+    environmentBlendMode: 'alpha-blend',
+    addEventListener(type, fn) {
+      (listeners[type] = listeners[type] || []).push(fn);
+    },
+    removeEventListener() {},
+    updateRenderState(state) {
+      Object.assign(this.renderState, state);
+    },
+    requestReferenceSpace: async () => ({}),
+    requestAnimationFrame(callback) {
+      return requestAnimationFrame((time) => callback(time, frame));
+    },
+    cancelAnimationFrame(id) {
+      cancelAnimationFrame(id);
+    },
+    async end() {
+      window.__xr.active = false;
+      (listeners.end || []).forEach((fn) => fn({ session }));
+    },
+  };
+  const frame = {
+    session,
+    getViewerPose() {
+      const m = matrix();
+      return { transform: { matrix: m }, views: [{ eye: 'none', projectionMatrix: projection, transform: { matrix: m } }] };
+    },
+    getPose: () => null,
+  };
+  window.XRWebGLLayer = class {
+    constructor(_session, gl) {
+      this.gl = gl;
+      this.framebuffer = null; // draw straight to the canvas
+      this.framebufferWidth = gl.drawingBufferWidth;
+      this.framebufferHeight = gl.drawingBufferHeight;
+    }
+    getViewport() {
+      return { x: 0, y: 0, width: this.gl.drawingBufferWidth, height: this.gl.drawingBufferHeight };
+    }
+  };
+  for (const ctor of [window.WebGLRenderingContext, window.WebGL2RenderingContext]) {
+    if (ctor) ctor.prototype.makeXRCompatible = async () => undefined;
+  }
+  Object.defineProperty(navigator, 'xr', {
+    configurable: true,
+    value: {
+      isSessionSupported: async (mode) => mode === 'immersive-ar',
+      requestSession: async () => {
+        window.__xr.active = true;
+        return session;
+      },
+    },
+  });
+  window.__xr = {
+    active: false,
+    pose,
+    /** Walks `meters` straight ahead in small increments. */
+    async forward(meters) {
+      const n = Math.ceil(meters / 0.1);
+      for (let i = 0; i < n; i++) {
+        pose.x -= Math.sin(pose.yaw) * (meters / n);
+        pose.z -= Math.cos(pose.yaw) * (meters / n);
+        await new Promise((r) => setTimeout(r, 30));
+      }
+      await new Promise((r) => setTimeout(r, 500));
+    },
+  };
+}
+
 /** How a floor marker appears in the camera image to a user facing `headingDeg` on the map. */
 const markerRotation = (headingDeg) => -(headingDeg + 90);
 /** Sensor alpha for a user facing `headingDeg` on the map. */
@@ -172,7 +258,7 @@ async function run() {
   const errors = [];
   let shotIndex = 0;
 
-  const open = async (url) => {
+  const open = async (url, options = {}) => {
     const context = await browser.newContext({ ...devices['iPhone 13'] });
     const page = await context.newPage();
     page.on('pageerror', (e) => errors.push(e.message));
@@ -180,6 +266,7 @@ async function run() {
       if (m.type() === 'error') errors.push(m.text());
     });
     await page.addInitScript(installFakes);
+    if (options.xr) await page.addInitScript(installFakeXr);
     await page.goto(BASE + url);
     return page;
   };
@@ -323,6 +410,61 @@ async function run() {
       step('arrives at Room R');
       await page.waitForSelector('.sheet--arrival', { timeout: 60000 });
       await shot(page, 'demo-arrived');
+      await page.context().close();
+    }
+
+    /* ------------------------------------------------------------------ */
+    console.log('5. WebXR mode (scripted XR device): the browser\'s own tracking moves the user on the map');
+    {
+      const page = await open('/qrScanner/3', { xr: true });
+      await page.click('text=Start camera navigation');
+      await page.waitForSelector('.ar-view__video');
+      await page.evaluate((a) => {
+        window.__sensors.alpha = a;
+        window.__sensors.beta = 25;
+        window.__sensors.start();
+      }, alphaFor(90));
+      await page.evaluate(([url, rotation]) => window.__camera.show(url, { rotation }), [markerUrl(2), markerRotation(90)]);
+      await waitForBanner(page, /turn left/);
+      await page.evaluate(() => {
+        window.__camera.hide();
+        window.__sensors.beta = 68;
+      });
+      step('switch to precise AR');
+      await page.click('text=Precise AR (beta)');
+      await page.waitForFunction(() => window.__xr.active && !!document.querySelector('.nav-screen--xr'));
+      await page.waitForTimeout(600);
+      let s = await state(page);
+      near(s.y, 225, 4, 'still at C after the hand-over');
+
+      step('XR tracking: 3.5 m ahead = down the corridor to B');
+      await page.evaluate(() => window.__xr.forward(3.5));
+      s = await state(page);
+      near(s.x, 65, 1, 'on the left corridor');
+      near(s.y, 260, 4, 'reached B');
+      assert.strictEqual(s.banner, 'Turn left');
+
+      step('XR tracking: turn left, 5 m ahead = along the bottom corridor towards A');
+      await page.evaluate(() => {
+        window.__xr.pose.yaw += Math.PI / 2; // counter clockwise seen from above = left
+        window.__sensors.alpha = (window.__sensors.alpha + 90) % 360;
+      });
+      await page.evaluate(() => window.__xr.forward(5));
+      s = await state(page);
+      near(s.y, 260, 1, 'on the bottom corridor');
+      near(s.x, 65 + 50, 5, '5 m along it');
+      assert.ok(/^Continue \d+ m$/.test(s.banner), `banner: ${s.banner}`);
+      await shot(page, 'webxr-mode');
+
+      step('leaving XR brings the camera view and the scanner back');
+      await page.click('text=Exit precise AR');
+      await page.waitForFunction(() => !document.querySelector('.nav-screen--xr'));
+      await page.waitForFunction(() => {
+        const v = document.querySelector('.ar-view__video');
+        return !!v && !!v.srcObject && v.videoWidth > 0;
+      });
+      await page.evaluate(([url, rotation]) => window.__camera.show(url, { rotation }), [markerUrl(3), markerRotation(0)]);
+      await page.waitForSelector('.sheet--arrival', { timeout: 12000 });
       await page.context().close();
     }
 

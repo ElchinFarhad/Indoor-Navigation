@@ -445,3 +445,47 @@ describe('arrival and edge cases', () => {
     expect(p.x).toBeCloseTo(80, 0);
   });
 });
+
+describe('external (WebXR) position updates', () => {
+  it('follows a precisely tracked walk, matched to the corridors, and ignores the step counter meanwhile', () => {
+    const session = new NavigationSession(building, id('D'), { now: () => 0 });
+    const events: NavEvent[] = [];
+    session.subscribe((_s, e) => e && events.push(e));
+    session.handleOrientation(wrapAngle(Math.PI / 2 - 1.234));
+    session.handleSighting(sighting('C', Math.PI / 2));
+
+    // Walk C -> B -> A -> D reported every 20 cm, 30 cm off the corridor axis.
+    const path = [node('C'), node('B'), node('A'), node('D')];
+    for (let i = 1; i < path.length; i++) {
+      const a = path[i - 1];
+      const b = path[i];
+      const n = Math.ceil((distance(a, b) * MPU) / 0.2);
+      for (let k = 1; k <= n; k++) {
+        if (session.snapshot.status === 'arrived') break;
+        session.handleExternalPosition(a.x + ((b.x - a.x) * k) / n + 3, a.y + ((b.y - a.y) * k) / n + 3);
+        session.handleStep(); // must have no effect
+        if (i === 1 && k === Math.floor(n / 2)) {
+          const p = session.snapshot.position!;
+          expect(p.x).toBeCloseTo(65, 0); // snapped onto the corridor
+          expect(p.y).toBeCloseTo(225 + 17.5 + 3, -1);
+          expect(session.snapshot.wrongWay).toBe(false);
+        }
+      }
+    }
+    expect(session.snapshot.status).toBe('arrived');
+    expect(events.some((e) => e.type === 'reroute' || e.type === 'wrong-way')).toBe(false);
+    expect(session.snapshot.accuracy).toBeLessThan(1.5);
+  });
+
+  it('notices walking the wrong way and rejects points far from any corridor', () => {
+    const session = new NavigationSession(building, id('D'), { now: () => 0 });
+    session.handleSighting(sighting('A', 0));
+    for (let x = 155; x > 110; x -= 4) session.handleExternalPosition(x, 260);
+    expect(session.snapshot.wrongWay).toBe(true);
+    const before = session.snapshot.position!;
+    session.handleExternalPosition(150, 120); // middle of the central hall, 9 m from any corridor
+    expect(session.snapshot.position!.x).toBeCloseTo(before.x);
+    session.endExternalTracking();
+    session.handleOrientation(0);
+  });
+});

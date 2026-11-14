@@ -104,6 +104,9 @@ const QrScanner = () => {
   const [voice, setVoice] = useState(false);
   const [mapFloor, setMapFloor] = useState<number | null>(null);
   const [picking, setPicking] = useState(false);
+  const [xrSupported, setXrSupported] = useState(false);
+  const [xrSession, setXrSession] = useState<any>(null);
+  const root = useRef<HTMLDivElement>(null);
 
   const sensors = useRef<MotionSensors | null>(null);
   const scanner = useRef<FrameScanner | null>(null);
@@ -233,6 +236,62 @@ const QrScanner = () => {
   useEffect(() => {
     if (scanner.current) scanner.current.setRate(hungry ? 8 : 4);
   }, [hungry, stream]);
+
+  /* ------------------------------------------------------------------ WebXR */
+
+  // Phones with ARCore (Chrome on Android) can track their own motion in 3D.
+  // Where that exists it is offered as an upgrade over step counting.
+  useEffect(() => {
+    const xr = (navigator as any).xr;
+    if (!xr || !xr.isSessionSupported) return;
+    xr.isSessionSupported('immersive-ar').then(
+      (ok: boolean) => setXrSupported(!!ok),
+      () => undefined
+    );
+  }, []);
+
+  const restartCamera = useCallback(async () => {
+    try {
+      const media = await openCamera();
+      streamRef.current = media;
+      setStream(media);
+    } catch (err) {
+      setCameraProblem(err instanceof CameraError ? err.message : 'The camera could not be started.');
+    }
+  }, []);
+
+  const startXr = async () => {
+    const xr = (navigator as any).xr;
+    if (!xr || xrSession) return;
+    // The XR session needs the camera for itself: release ours first.
+    if (scanner.current) {
+      scanner.current.stop();
+      scanner.current = null;
+    }
+    closeCamera(streamRef.current);
+    streamRef.current = null;
+    setStream(null);
+    try {
+      const options: any = { optionalFeatures: ['dom-overlay'] };
+      if (root.current) options.domOverlay = { root: root.current };
+      setXrSession(await xr.requestSession('immersive-ar', options));
+    } catch (e) {
+      toast('Precise AR could not be started on this device', 'warn');
+      restartCamera();
+    }
+  };
+
+  const onXrEnd = useCallback(
+    (error?: any) => {
+      setXrSession(null);
+      session.endExternalTracking();
+      if (error) toast('Precise AR stopped: back to the standard camera view', 'warn');
+      restartCamera();
+    },
+    [session, toast, restartCamera]
+  );
+
+  const onXrPose = useCallback((pose: { x: number; y: number }) => session.handleExternalPosition(pose.x, pose.y), [session]);
 
   /* ---------------------------------------------------------------- startup */
 
@@ -399,7 +458,7 @@ const QrScanner = () => {
   }
 
   return (
-    <div className={`nav-screen nav-screen--${view}${phase === 'intro' ? ' nav-screen--intro' : ''}`}>
+    <div ref={root} className={`nav-screen nav-screen--${view}${phase === 'intro' ? ' nav-screen--intro' : ''}${xrSession ? ' nav-screen--xr' : ''}`}>
       <div className="nav-stage">
         {phase === 'running' && view === 'ar' && source !== 'manual' && (
           <Suspense fallback={<div className="nav-loading">Starting the camera view…</div>}>
@@ -407,9 +466,13 @@ const QrScanner = () => {
               building={building}
               session={session}
               stream={source === 'camera' ? stream : null}
+              demo={source === 'demo'}
               getCameraToWorld={getCameraToWorld}
               onVideo={onVideo}
               detection={detection}
+              xrSession={xrSession}
+              onXrPose={onXrPose}
+              onXrEnd={onXrEnd}
             />
           </Suspense>
         )}
@@ -474,6 +537,15 @@ const QrScanner = () => {
           {cameraProblem && <div className="nav-pill nav-pill--warn">{cameraProblem}</div>}
           {!locating && sensorsMissing && source === 'camera' && (
             <div className="nav-pill nav-pill--warn">Motion sensors unavailable: scan each marker you pass for directions</div>
+          )}
+          {xrSupported && source === 'camera' && view === 'ar' && !locating && snapshot.headingCalibrated && !pendingFloor && (
+            <button
+              type="button"
+              className="nav-pill nav-pill--action"
+              onClick={() => (xrSession ? xrSession.end() : startXr())}
+            >
+              {xrSession ? 'Exit precise AR' : 'Precise AR (beta)'}
+            </button>
           )}
           {snapshot.needsRecalibration && !sensorsMissing && (
             <div className="nav-pill nav-pill--warn">
@@ -547,7 +619,7 @@ const QrScanner = () => {
                 {voice ? <path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11" /> : <path d="M17 9l4 6M21 9l-4 6" />}
               </svg>
             </button>
-            {source !== 'manual' && (
+            {source !== 'manual' && !xrSession && (
               <button type="button" className="nav-icon-btn nav-icon-btn--wide" onClick={() => setView(view === 'ar' ? 'map' : 'ar')}>
                 {view === 'ar' ? 'Map' : source === 'demo' ? '3D' : 'AR'}
               </button>

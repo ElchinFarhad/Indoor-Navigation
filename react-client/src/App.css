@@ -366,6 +366,16 @@
   color: rgba(255, 255, 255, 0.7);
 }
 
+/* While a WebXR session runs the browser shows its own camera image behind
+   the page (DOM overlay): everything opaque of ours has to get out of the way. */
+.nav-screen--xr {
+  background: transparent;
+}
+
+.nav-screen--xr .nav-stage {
+  visibility: hidden;
+}
+
 /* --- AR view ------------------------------------------------------------ */
 
 .ar-view__video,

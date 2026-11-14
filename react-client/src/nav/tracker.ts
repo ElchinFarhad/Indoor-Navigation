@@ -17,7 +17,7 @@
  * and collapses again at the next marker.
  */
 import { Building, HalfEdge, NavNode } from './building';
-import { angleDiff, clamp, DEG, distance, lerp, wrapAngle } from './geometry';
+import { angleDiff, clamp, DEG, distance, lerp, projectOnSegment, wrapAngle } from './geometry';
 import { Route, walkingDistance } from './routing';
 
 export interface MarkerFix {
@@ -92,6 +92,7 @@ export class PositionTracker {
   private floorChangeDeclinedAt: number | null = null;
   private routeNext = new Map<number, number>();
   private lastTravelDir: number | null = null;
+  private external = false;
 
   constructor(building: Building, options: { stepLength?: number } = {}) {
     this.building = building;
@@ -291,6 +292,76 @@ export class PositionTracker {
     return true;
   }
 
+  /**
+   * Position measured by an external tracker (the WebXR session's own motion
+   * tracking). It is still matched to the corridor graph. From the first such
+   * update until `endExternalTracking()` the step counter is ignored.
+   * @returns false if the point is too far from any corridor to be believed
+   */
+  setExternalPosition(x: number, y: number): boolean {
+    if (!this.hasPosition || this.pendingFloor) return false;
+    const mpu = this.building.metersPerUnit;
+    const before = this.position!;
+    const point = { x, y };
+    let best: { e: HalfEdge; t: number } | null = null;
+    let bestDistance = Infinity;
+    for (const n of this.building.nodes) {
+      if (n.floor !== before.floor) continue;
+      for (const e of this.building.edgesFrom(n.id)) {
+        if (e.kind !== 'walk' || e.from > e.to) continue;
+        const projected = projectOnSegment(point, n, this.building.node(e.to)!);
+        const current = this.to !== null && ((e.from === this.from && e.to === this.to) || (e.from === this.to && e.to === this.from));
+        const d = projected.distance * mpu - (current ? 0.5 : 0); // stick to the current corridor
+        if (d < bestDistance) {
+          bestDistance = d;
+          best = { e, t: projected.t * e.length };
+        }
+      }
+    }
+    if (!best || bestDistance > 4) return false;
+
+    // Orient the corridor so that "forward" is the way the user is moving.
+    let e = best.e;
+    let t = best.t;
+    const flip = () => {
+      e = this.building.edge(e.to, e.from)!;
+      t = e.length - t;
+    };
+    const onSameCorridor = this.to !== null && ((e.from === this.from && e.to === this.to) || (e.from === this.to && e.to === this.from));
+    if (onSameCorridor) {
+      if (e.from !== this.from) flip(); // same orientation as before...
+      if (t < this.t - 0.4) flip(); // ...unless the user turned back
+    } else if (distance(before, this.building.node(e.to)!) < distance(before, this.building.node(e.from)!)) {
+      flip(); // entered a new corridor from its far end
+    }
+    const moved = distance(before, point) * mpu;
+    this.from = e.from;
+    this.to = e.to;
+    this.t = clamp(t, 0, e.length);
+    // Right at a junction the user is "at the node": the guidance then tells
+    // them which way to turn from where they are facing.
+    if (e.length - this.t < 0.3) {
+      this.from = e.to;
+      this.to = null;
+      this.t = 0;
+    } else if (this.t < 0.3) {
+      this.to = null;
+      this.t = 0;
+    }
+    this.walked += Math.min(moved, 3);
+    this.accuracyM = Math.max(0.6, this.accuracyM + 0.015 * Math.min(moved, 3));
+    this.lastTravelDir = e.dir;
+    this.external = true;
+    this.pendingTurn = null;
+    this.checkFloorChange();
+    return true;
+  }
+
+  /** The external tracker stopped (the WebXR session ended): steps count again. */
+  endExternalTracking() {
+    this.external = false;
+  }
+
   /** The user is not taking the stairs / elevator after all: keep tracking on this floor. */
   cancelFloorChange() {
     if (!this.pendingFloor) return;
@@ -306,6 +377,7 @@ export class PositionTracker {
     if (!this.hasPosition) return;
     this.steps++;
     if (this.pendingFloor) return; // on the stairs: horizontal position does not change
+    if (this.external) return; // an external tracker is in charge
 
     const L = this.stepLength * clamp(lengthFactor, 0.6, 1.4);
     const h = this.heading;

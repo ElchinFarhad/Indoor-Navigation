@@ -31,12 +31,22 @@ export interface ArFrame {
   route: Route | null;
   maneuvers: Maneuver[];
   arrived: boolean;
+  /** Direction the user faces on the map according to the tracker (used to align a WebXR session). */
+  heading?: number | null;
+}
+
+/** Where WebXR tracking says the user is, in map units / map heading. */
+export interface XrPose {
+  x: number;
+  y: number;
+  heading: number;
 }
 
 const EYE_HEIGHT = 1.45; // metres: a phone held in front of the chest / face
 const TRAIL_SPACING = 1.1; // metres between chevrons
 const TRAIL_LENGTH = 20; // metres of route shown ahead
 const MAX_CHEVRONS = 24;
+const TRAIL_START = 1.0; // metres ahead of the user where the trail begins
 
 const COLOR_ROUTE = 0x22b8f0;
 const COLOR_ROUTE_EDGE = 0xffffff;
@@ -124,6 +134,8 @@ export class ArScene {
   private hasPose = false;
   private lastTime = 0;
   private hudYaw = 0;
+  /** State of a running WebXR session: `yaw` rotates map directions into the XR frame. */
+  private xr: { yaw: number; aligned: boolean; frames: number } | null = null;
   private disposables: Array<{ dispose: () => void }> = [];
 
   constructor(canvas: HTMLCanvasElement, building: Building) {
@@ -287,13 +299,13 @@ export class ArScene {
       const phase = ((time / 1000) * 0.9) % TRAIL_SPACING;
       const floor = frame.position.floor;
       const end = Math.min(route.length, TRAIL_LENGTH);
-      for (let s = phase + 0.6; s < end && count < MAX_CHEVRONS; s += TRAIL_SPACING) {
+      for (let s = phase + TRAIL_START; s < end && count < MAX_CHEVRONS; s += TRAIL_SPACING) {
         const p = pointAlongRoute(route, s);
         const leg = route.legs[p.legIndex];
         if (leg.kind !== 'walk') break; // the trail stops at the stairs
         if (p.floor !== floor) break;
         // Grow in at the start, shrink away at the far end.
-        const grow = Math.min(1, (s - 0.6) / 1.0);
+        const grow = Math.min(1, (s - TRAIL_START) / 1.0);
         const fade = Math.min(1, (end - s) / 2.5);
         const scale = Math.max(0.001, Math.min(grow, fade));
         this.dummy.position.set(p.x * this.mpu, 0.02, p.y * this.mpu);
@@ -347,9 +359,12 @@ export class ArScene {
             mesh.rotation.set(leg.to.floor > leg.from.floor ? Math.PI / 2 : -Math.PI / 2, 0, 0);
           }
           // Keep it readable from far away without looming when close.
-          const range = this.turnSign.position.distanceTo(viewer);
-          this.turnSign.scale.setScalar(Math.min(2.2, Math.max(1, range / 6)));
-          shown = true;
+          // ...and shrink it away once the user is at the spot (the banner and
+          // the guidance arrow take over there; a sign at arm's length would fill the view).
+          const range = Math.hypot(this.turnSign.position.x - viewer.x, this.turnSign.position.z - viewer.z);
+          const near = Math.min(1, Math.max(0, (range - 1.6) / 1.6));
+          this.turnSign.scale.setScalar(Math.min(2.2, Math.max(1, range / 6)) * near);
+          shown = near > 0.02;
         }
       }
     }
@@ -363,6 +378,11 @@ export class ArScene {
     if (dest && showDest) {
       this.toWorld(dest, 1.15 + bob * 1.5, this.destPin.position);
       this.destPin.rotation.y = time / 1200;
+      // Up close only the ring on the floor remains.
+      const range = Math.hypot(this.destPin.position.x - viewer.x, this.destPin.position.z - viewer.z);
+      const near = Math.min(1, Math.max(0, (range - 1.4) / 1.6));
+      this.destPin.scale.setScalar(Math.max(0.001, near));
+      this.destPin.visible = near > 0.02;
       this.toWorld(dest, 0.03, this.destRing.position);
       const pulse = 1 + 0.25 * (0.5 + 0.5 * Math.sin(time / 300));
       this.destRing.scale.set(pulse, pulse, pulse);
@@ -395,31 +415,101 @@ export class ArScene {
     this.hudArrow.rotation.set(0.55, -this.hudYaw, 0, 'XYZ');
   }
 
+  /* ------------------------------------------------------------------ WebXR */
+
+  /** True while a WebXR session drives the camera. */
+  get presenting(): boolean {
+    return this.xr !== null;
+  }
+
   /**
-   * Draws one frame.
-   * @param xrHeading heading of the XR camera on the map when WebXR drives the camera, otherwise undefined
+   * Hands the camera over to a WebXR `immersive-ar` session. The browser then
+   * tracks the phone in 3D (visual-inertial odometry), which is far more
+   * precise than counting steps; the building is re-based onto the XR frame at
+   * the user's current estimated position and heading.
    */
-  render(frame: ArFrame, time: number, xrHeading?: number | null) {
+  async startXR(session: any, onEnd: () => void): Promise<void> {
+    this.renderer.xr.enabled = true;
+    this.renderer.xr.setReferenceSpaceType('local');
+    await this.renderer.xr.setSession(session);
+    this.xr = { yaw: 0, aligned: false, frames: 0 };
+    session.addEventListener('end', () => {
+      this.xr = null;
+      this.renderer.xr.enabled = false;
+      this.world.position.set(0, 0, 0);
+      this.world.rotation.set(0, 0, 0);
+      this.hasPose = false;
+      onEnd();
+    });
+  }
+
+  private static xrHeading(camera: THREE.Camera, forward: THREE.Vector3, up: THREE.Vector3): number {
+    forward.set(0, 0, -1).applyQuaternion(camera.quaternion);
+    up.set(0, 1, 0).applyQuaternion(camera.quaternion);
+    return Math.atan2(forward.z + up.z, forward.x + up.x);
+  }
+
+  /** Aligns the building with the XR frame and reports where XR tracking puts the user. */
+  private updateXr(frame: ArFrame): XrPose | null {
+    const xr = this.xr!;
+    xr.frames++;
+    if (xr.frames < 3) return null; // the first frames have no pose yet
+    const k = ArScene.xrHeading(this.camera, this.tmpA, this.tmpB);
+    if (!xr.aligned) {
+      if (!frame.position || frame.heading === null || frame.heading === undefined) return null;
+      // A rotation of the building by `yaw` about the vertical turns a map
+      // direction h into the XR direction h - yaw; the user faces `heading`
+      // on the map and `k` in XR right now.
+      xr.yaw = frame.heading - k;
+      this.world.rotation.set(0, xr.yaw, 0);
+      this.world.position.set(0, 0, 0);
+      this.world.updateMatrixWorld(true);
+      const here = this.world.localToWorld(this.toWorld(frame.position, 0, this.tmpC));
+      this.world.position.set(
+        this.camera.position.x - here.x,
+        this.camera.position.y - EYE_HEIGHT, // 'local' space: the origin is at phone height
+        this.camera.position.z - here.z
+      );
+      this.world.updateMatrixWorld(true);
+      xr.aligned = true;
+    }
+    const local = this.world.worldToLocal(this.tmpD.copy(this.camera.position));
+    return { x: local.x / this.mpu, y: local.z / this.mpu, heading: k + xr.yaw };
+  }
+
+  /**
+   * Draws one frame. In WebXR mode it returns the user's pose as tracked by
+   * the XR session (to be fed back into the position tracker), otherwise null.
+   */
+  render(frame: ArFrame, time: number): XrPose | null {
     const dt = this.lastTime ? Math.min(0.1, (time - this.lastTime) / 1000) : 0.016;
     this.lastTime = time;
 
     let heading: number | null;
-    if (xrHeading !== undefined) {
-      heading = xrHeading;
+    let posed: boolean;
+    let xrPose: XrPose | null = null;
+    if (this.xr) {
+      xrPose = this.updateXr(frame);
+      heading = xrPose ? xrPose.heading : null;
+      posed = this.xr.aligned;
     } else {
       this.applyPose(frame, dt);
       heading = frame.cameraToWorld ? headingOf(frame.cameraToWorld) : null;
+      posed = this.hasPose;
     }
-    const posed = xrHeading !== undefined || this.hasPose;
     this.world.visible = posed;
 
     this.updateTrail(frame, time);
     this.updateSigns(frame, time);
     this.updateHud(frame, posed ? heading : null, dt);
     this.renderer.render(this.scene, this.camera);
+    return xrPose;
   }
 
   dispose() {
+    this.renderer.setAnimationLoop(null);
+    const xrSession: any = this.renderer.xr.getSession();
+    if (xrSession) xrSession.end().catch(() => undefined);
     this.disposables.forEach((d) => d.dispose());
     this.trail.dispose();
     this.trailEdge.dispose();

@@ -185,6 +185,17 @@ export class NavigationSession {
     this.refresh([], false, true);
   }
 
+  /** Position from the WebXR session's motion tracking (map units). */
+  handleExternalPosition(x: number, y: number) {
+    if (!this.tracker.hasFix || this.status === 'arrived') return;
+    if (this.tracker.setExternalPosition(x, y)) this.refresh([], false, true);
+  }
+
+  /** The WebXR session ended: go back to counting steps. */
+  endExternalTracking() {
+    this.tracker.endExternalTracking();
+  }
+
   confirmFloorChange() {
     const pending = this.tracker.awaitingFloorChange;
     if (pending && this.tracker.confirmFloorChange()) {
