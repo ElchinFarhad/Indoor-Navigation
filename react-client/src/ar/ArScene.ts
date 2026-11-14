@@ -238,7 +238,7 @@ export class ArScene {
   showBuilding() {
     if (this.floorModels.size > 0) return;
     const mpu = this.mpu;
-    const wallMaterial = this.track(new THREE.MeshStandardMaterial({ color: 0xf2f3f6, roughness: 0.95 }));
+    const wallMaterial = this.track(new THREE.MeshStandardMaterial({ color: 0xe4e7ee, roughness: 0.95 }));
     const wallGeometry = this.track(new THREE.BoxGeometry(1, 1, 1));
     let widest = 0;
     let deepest = 0;
@@ -287,12 +287,10 @@ export class ArScene {
         if (!door || room.kind === 'lobby') continue;
         const plate = this.namePlate(room.short || room.name);
         // Nudge it out of the wall, towards the corridor side of the door.
-        const cx = room.x + room.w / 2;
         const cy = room.y + room.h / 2;
         const nx = Math.abs(door.x - room.x) < 0.5 ? -1 : Math.abs(door.x - (room.x + room.w)) < 0.5 ? 1 : 0;
         const ny = nx !== 0 ? 0 : door.y < cy ? -1 : 1;
         plate.position.set((door.x + nx * 2.5) * mpu, 2.25, (door.y + ny * 2.5) * mpu);
-        if (cx === door.x && cy === door.y) plate.visible = false;
         group.add(plate);
       }
 

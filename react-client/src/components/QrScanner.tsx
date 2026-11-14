@@ -740,13 +740,13 @@ const QrScanner = () => {
             <li>
               <b>1</b>
               <span>
-                <strong>Scan one QR marker.</strong> That tells the app where you are and which way you face.
+                <strong>Scan one QR marker</strong> so the app knows where you are.
               </span>
             </li>
             <li>
               <b>2</b>
               <span>
-                <strong>Just walk.</strong> Follow the arrows on the camera and the spoken directions. No more scanning.
+                <strong>Just walk.</strong> Arrows and spoken directions take you there. No more scanning.
               </span>
             </li>
           </ol>

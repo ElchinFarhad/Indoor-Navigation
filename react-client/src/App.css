@@ -356,15 +356,13 @@
 
 .nav-intro-backdrop {
   background: #dfe3ea;
-  bottom: 38%;
+  bottom: auto;
+  height: calc(30% + var(--safe-top));
+  padding-top: var(--safe-top);
 }
 
-.nav-intro-backdrop::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(15, 20, 29, 0.05) 40%, rgba(15, 20, 29, 0.55) 100%);
-  pointer-events: none;
+.nav-intro-backdrop .map-view__badge {
+  display: none;
 }
 
 .nav-loading {
@@ -590,54 +588,29 @@
   fill: var(--accent);
 }
 
-.map-view__controls {
+.map-view__floors {
   position: absolute;
-  right: 0.6rem;
-  top: 50%;
-  transform: translateY(-50%);
+  left: 50%;
+  top: 0.6rem;
+  transform: translateX(-50%);
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  pointer-events: none;
-}
-
-.map-view__controls > * {
-  pointer-events: auto;
-}
-
-.map-view__floors,
-.map-view__zoom {
-  display: flex;
-  flex-direction: column;
-  border-radius: 14px;
-  overflow: hidden;
-  background: #ffffff;
+  padding: 0.2rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.96);
   box-shadow: 0 4px 16px rgba(28, 35, 48, 0.18);
+  white-space: nowrap;
 }
 
-.map-view__floor,
-.map-view__zoom button,
-.map-view__locate {
+.map-view__floor {
   position: relative;
-  width: 2.75rem;
-  height: 2.75rem;
-  display: grid;
-  place-items: center;
+  min-height: 2.2rem;
+  padding: 0 0.9rem;
   border: 0;
-  background: #ffffff;
-  color: var(--ink);
-  font-weight: 700;
-  font-size: 1rem;
-}
-
-.map-view__zoom button {
-  font-size: 1.35rem;
-  font-weight: 500;
-}
-
-.map-view__zoom button + button,
-.map-view__floor + .map-view__floor {
-  border-top: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink-soft);
+  font-weight: 650;
+  font-size: 0.88rem;
 }
 
 .map-view__floor.is-active {
@@ -648,18 +621,72 @@
 .map-view__floor.has-me::after {
   content: '';
   position: absolute;
-  right: 0.4rem;
-  top: 0.4rem;
+  right: 0.3rem;
+  top: 0.3rem;
   width: 0.45rem;
   height: 0.45rem;
   border-radius: 50%;
   background: var(--accent);
+  box-shadow: 0 0 0 2px #ffffff;
+}
+
+.map-view__tools {
+  position: absolute;
+  right: 0.6rem;
+  bottom: 0.6rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.map-view__zoom {
+  display: none;
+  flex-direction: column;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #ffffff;
+  box-shadow: 0 4px 16px rgba(28, 35, 48, 0.18);
+}
+
+.map-view__zoom button,
+.map-view__locate {
+  width: 2.75rem;
+  height: 2.75rem;
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: #ffffff;
+  color: var(--ink);
+  font-size: 1.35rem;
+  font-weight: 500;
+}
+
+.map-view__zoom button + button {
+  border-top: 1px solid var(--line);
 }
 
 .map-view__locate {
-  border-radius: 14px;
+  border-radius: 50%;
   color: var(--accent);
   box-shadow: 0 4px 16px rgba(28, 35, 48, 0.18);
+}
+
+/* On a phone pinching does the zooming; the buttons are for mouse users. */
+@media (hover: hover) and (pointer: fine) {
+  .map-view__zoom {
+    display: flex;
+  }
+}
+
+/* Full-screen map of the navigation screen: keep clear of the banner and the bottom bar. */
+.nav-map .map-view__floors {
+  top: calc(6.1rem + var(--safe-top));
+}
+
+.nav-map .map-view__tools {
+  bottom: calc(9.8rem + var(--safe-bottom));
+  right: 0.85rem;
 }
 
 .map-view__badge {
@@ -1105,21 +1132,32 @@
 }
 
 .sheet__close {
-  position: absolute;
-  left: 0.8rem;
-  top: calc(-3.4rem);
+  position: fixed;
+  left: 0.75rem;
+  top: calc(0.75rem + var(--safe-top));
   width: 2.75rem;
   height: 2.75rem;
   margin: 0;
   display: grid;
   place-items: center;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.14);
-  color: #fff;
+  background: #ffffff;
+  color: var(--ink);
+  box-shadow: 0 4px 16px rgba(28, 35, 48, 0.25);
 }
 
 .sheet--intro {
-  overflow: visible;
+  max-height: 72%;
+  padding-top: 1.25rem;
+}
+
+.sheet--intro .steps {
+  margin: 0.9rem auto 1rem;
+  gap: 0.55rem;
+}
+
+.sheet--intro h2 {
+  font-size: clamp(1.5rem, 6.4vw, 2rem);
 }
 
 .sheet--arrival,

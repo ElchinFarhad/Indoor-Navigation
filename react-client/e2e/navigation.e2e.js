@@ -5,9 +5,11 @@
  *
  * Nothing is mocked inside the app. Instead the browser is given
  *  - a fake rear camera: a canvas stream on which the test draws the printed
- *    QR markers the way a phone held over them would see them, and
+ *    QR markers the way a phone held over them would see them,
  *  - fake motion sensors: `deviceorientation` / `devicemotion` events with the
- *    signature of a person walking.
+ *    signature of a person walking, and
+ *  - a fake speech synthesiser that records every sentence (and whether two
+ *    ever overlapped).
  * So the real pipeline runs: video frame -> WebAssembly QR detection + Lambda
  * Twist pose -> position fix -> step tracking -> routing -> guidance -> AR.
  *
@@ -23,6 +25,14 @@ const PORT = 5173;
 const BASE = `http://localhost:${PORT}`;
 const SHOTS = process.argv[2] ? path.resolve(process.argv[2]) : null;
 const MARKERS = path.resolve(__dirname, '../../QRCodeImages');
+const GRAPH = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../src/db/graph.json'), 'utf8'));
+
+/** Node of the building by its label (and floor). */
+function node(label, floor = 0) {
+  const n = GRAPH.nodes.find((x) => x.label === label && (x.floor || 0) === floor);
+  if (!n) throw new Error(`no node labelled ${label}`);
+  return n;
+}
 /** The sensors' "north" is unrelated to the map's: any constant will do. */
 const SENSOR_OFFSET = 137;
 
@@ -86,6 +96,39 @@ function installFakes() {
     }
     return canvas.captureStream(15);
   };
+
+  // ---- speech: record what is said and notice if two sentences ever overlap
+  window.__speech = { said: [], overlaps: 0 };
+  window.SpeechSynthesisUtterance = function (text) {
+    this.text = text;
+    this.volume = 1;
+  };
+  const synth = {
+    active: null,
+    getVoices: () => [
+      { name: 'Fred', lang: 'en-US', voiceURI: 'fred', localService: true, default: true },
+      { name: 'Samantha', lang: 'en-US', voiceURI: 'samantha', localService: true },
+      { name: 'Alice', lang: 'it-IT', voiceURI: 'alice', localService: true },
+    ],
+    speak(u) {
+      if (u.volume === 0) return;
+      if (this.active) window.__speech.overlaps++;
+      this.active = u;
+      window.__speech.said.push({ text: u.text, voice: u.voice ? u.voice.name : null });
+      u.timer = setTimeout(() => {
+        if (this.active === u) this.active = null;
+        if (u.onend) u.onend();
+      }, 250 + u.text.length * 16);
+    },
+    cancel() {
+      const u = this.active;
+      this.active = null;
+      if (u) clearTimeout(u.timer);
+    },
+    addEventListener() {},
+    removeEventListener() {},
+  };
+  Object.defineProperty(window, 'speechSynthesis', { configurable: true, value: synth });
 
   // ---- motion sensors
   window.__sensors = {
@@ -220,6 +263,10 @@ async function state(page) {
       return el ? el.textContent.trim() : null;
     };
     const me = document.querySelector('.map-view__me');
+    const tail = (sel) => {
+      const el = document.querySelector(sel);
+      return el ? el.textContent.replace(/^.*·\s*/, '').trim() : null;
+    };
     const cone = document.querySelector('.map-view__cone');
     const xy = me ? /translate\(([-\d.]+) ([-\d.]+)\)/.exec(me.getAttribute('transform')) : null;
     const rot = cone ? /rotate\(([-\d.]+)\)/.exec(cone.getAttribute('transform')) : null;
@@ -227,13 +274,16 @@ async function state(page) {
       banner: text('.nav-banner__text strong'),
       detail: text('.nav-banner__text span'),
       remaining: text('.nav-bar__summary strong'),
-      accuracy: text('.nav-chip'),
+      accuracy: tail('.nav-bar__summary span'),
       x: xy ? parseFloat(xy[1]) : null,
       y: xy ? parseFloat(xy[2]) : null,
       heading: rot ? parseFloat(rot[1]) : null,
       toasts: Array.from(document.querySelectorAll('.nav-toast')).map((t) => t.textContent),
       pills: Array.from(document.querySelectorAll('.nav-pill')).map((t) => t.textContent),
       arrived: !!document.querySelector('.sheet--arrival'),
+      arrivalText: text('.sheet--arrival p'),
+      spoken: (window.__speech ? window.__speech.said : []).map((s) => s.text),
+      sounds: (window.__indoorNavAudio || []).map((p) => p.sound).filter(Boolean),
     };
   });
 }
@@ -254,7 +304,9 @@ const near = (actual, expected, tolerance, what) =>
 
 async function run() {
   const server = createServer(path.resolve(__dirname, '../build')).listen(PORT);
-  const browser = await chromium.launch({ args: ['--use-gl=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
+  const browser = await chromium.launch({
+    args: ['--use-gl=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist', '--autoplay-policy=no-user-gesture-required'],
+  });
   const errors = [];
   let shotIndex = 0;
 
@@ -276,155 +328,273 @@ async function run() {
     await page.screenshot({ path: path.join(SHOTS, `${String(++shotIndex).padStart(2, '0')}-${name}.png`) });
   };
   const step = (name) => console.log(`  - ${name}`);
+  const face = (page, headingDeg, beta) =>
+    page.evaluate(
+      ([a, b]) => {
+        window.__sensors.alpha = a;
+        if (b !== null) window.__sensors.beta = b;
+        window.__sensors.start();
+      },
+      [alphaFor(headingDeg), beta === undefined ? null : beta]
+    );
+  const showMarker = (page, n, headingDeg, options) =>
+    page.evaluate(([url, o]) => window.__camera.show(url, o), [markerUrl(n.id), Object.assign({ rotation: markerRotation(headingDeg) }, options || {})]);
+  const walk = (page, steps) => page.evaluate((n) => window.__sensors.walk(n), steps);
+  const waitForToast = (page, pattern, timeout = 12000) =>
+    page.waitForFunction((source) => Array.from(document.querySelectorAll('.nav-toast')).some((t) => new RegExp(source).test(t.textContent)), pattern.source, { timeout });
+  /** Waits until the app has nothing left to say. */
+  const quiet = async (page) => {
+    await page.waitForTimeout(900); // a sound effect may still be leading in the sentence
+    await page.waitForFunction(() => !window.speechSynthesis.active, null, { timeout: 15000 });
+    await page.waitForTimeout(600);
+  };
+
+  const entrance = node('Main entrance');
+  const lobby = node('Lobby');
+  const cafe = node('Café');
+  const classroom = node('Classroom 0.40');
 
   try {
     /* ------------------------------------------------------------------ */
-    console.log('1. One scan, then walk: C -> B -> A -> D (the route of the thesis demo)');
+    console.log('0. Choosing a destination on the floor plan');
     {
       const page = await open('/');
-      await page.click('[aria-label="Navigate to Room D"]');
+      await page.waitForSelector('.map-view__room');
+      await shot(page, 'home');
+      await page.click('[data-room="0.40"]');
+      await page.waitForSelector('.browse__selected');
+      assert.strictEqual(await page.textContent('.browse__selected strong'), 'Classroom 0.40');
+      await shot(page, 'home-room-selected');
+      await page.click('text=Navigate');
       await page.waitForSelector('.sheet--intro');
+      assert.ok(page.url().endsWith(`/qrScanner/${classroom.id}`), page.url());
       await shot(page, 'intro');
-      await page.click('text=Start camera navigation');
-      await page.waitForSelector('.ar-view__video');
-
-      step('scan marker C while facing down the corridor');
-      await page.evaluate((a) => {
-        window.__sensors.alpha = a;
-        window.__sensors.beta = 25; // phone tipped towards the floor
-        window.__sensors.start();
-      }, alphaFor(90));
-      let s = await state(page);
-      assert.strictEqual(s.banner, 'Find your position');
-      await shot(page, 'locating');
-      await page.evaluate(([url, rotation]) => window.__camera.show(url, { rotation }), [markerUrl(2), markerRotation(90)]);
-      await waitForBanner(page, /turn left/);
-      await page.waitForTimeout(300);
-      await shot(page, 'marker-recognised');
-      s = await state(page);
-      assert.strictEqual(s.banner, 'In 4 m, turn left');
-      assert.strictEqual(s.detail, 'at marker B');
-      near(s.x, 65, 4, 'x at C');
-      near(s.y, 225, 4, 'y at C');
-      near(s.heading, 90, 6, 'heading from the marker pose');
-      assert.ok(s.toasts.some((t) => /You are at Marker C/.test(t)), 'first fix is announced');
-
-      step('raise the phone and walk 5 steps to the corner');
-      await page.evaluate(() => {
-        window.__camera.hide();
-        window.__sensors.beta = 68;
-      });
-      await page.waitForTimeout(500);
-      await shot(page, 'ar-arrows');
-      await page.evaluate(() => window.__sensors.walk(5));
-      s = await state(page);
-      near(s.y, 260, 8, 'walked down to B');
-      assert.strictEqual(s.banner, 'Turn left');
-      near(s.heading, 90, 8, 'heading kept by the orientation sensor');
-      await shot(page, 'at-the-corner');
-
-      step('turn left and walk on: the turn is recognised without a scan');
-      await page.evaluate((a) => (window.__sensors.alpha = a), alphaFor(0));
-      await page.waitForTimeout(400);
-      await page.evaluate(() => window.__sensors.walk(8));
-      s = await state(page);
-      near(s.y, 260, 1, 'on the bottom corridor');
-      assert.ok(s.x > 65 + 35 && s.x < 155, `moved along the corridor towards A (x=${s.x})`);
-      assert.ok(/^Continue \d+ m$/.test(s.banner), `banner: ${s.banner}`);
-      near(s.heading, 0, 8, 'heading after the turn');
-      await shot(page, 'after-the-turn');
-
-      step('marker A passes through the camera view: silent re-calibration');
-      await page.evaluate(([url, rotation]) => window.__camera.show(url, { rotation, size: 300, y: 900 }), [markerUrl(0), markerRotation(0)]);
-      await page.waitForFunction(() => Array.from(document.querySelectorAll('.nav-toast')).some((t) => /marker A/.test(t.textContent)), null, { timeout: 12000 });
-      s = await state(page);
-      // The marker is seen from a short distance, so the fix lands next to it rather than on it.
-      near(s.x, 155, 16, 'position corrected to A');
-      assert.ok(parseFloat(s.accuracy.replace('±', '')) <= 1.0, `accuracy after the fix: ${s.accuracy}`);
-      await shot(page, 'recalibrated');
-      await page.evaluate(() => window.__camera.hide());
-
-      step('walk to the destination');
-      await page.evaluate(() => window.__sensors.walk(12));
-      await page.waitForSelector('.sheet--arrival', { timeout: 8000 });
-      await shot(page, 'arrived');
-      s = await state(page);
-      assert.strictEqual(s.banner, 'You have arrived');
       await page.context().close();
     }
 
     /* ------------------------------------------------------------------ */
-    console.log('2. No motion sensors: scanning each marker still works (the original behaviour)');
+    console.log('1. ONE scan at the entrance, then only walking: entrance -> lobby -> corner -> Classroom 0.40');
     {
-      const page = await open('/qrScanner/3');
+      const page = await open(`/qrScanner/${classroom.id}`);
       await page.click('text=Start camera navigation');
       await page.waitForSelector('.ar-view__video');
-      await page.evaluate(([url, rotation]) => window.__camera.show(url, { rotation }), [markerUrl(2), markerRotation(90)]);
+
+      step('scan the marker at the main entrance');
+      await face(page, -90, 25); // facing into the building, phone tipped towards the floor
+      let s = await state(page);
+      assert.strictEqual(s.banner, 'Find your position');
+      await shot(page, 'locating');
+      await showMarker(page, entrance, -90);
       await waitForBanner(page, /turn left/);
+      await page.waitForTimeout(300);
+      await shot(page, 'marker-recognised');
+      s = await state(page);
+      assert.strictEqual(s.banner, 'In 8 m, turn left');
+      assert.strictEqual(s.detail, 'at the lobby');
+      near(s.x, entrance.x, 6, 'x at the entrance');
+      near(s.y, entrance.y, 6, 'y at the entrance');
+      near(s.heading, -90, 6, 'heading from the marker pose');
+
+      step('put the marker out of sight for the rest of the trip and walk to the lobby');
+      await page.evaluate(() => {
+        window.__camera.hide();
+        window.__sensors.beta = 68;
+      });
+      await quiet(page);
+      await shot(page, 'ar-arrows');
+      await walk(page, 10);
+      s = await state(page);
+      near(s.y, lobby.y, 12, 'walked up to the lobby junction');
+      assert.strictEqual(s.banner, 'Turn left');
+      await shot(page, 'at-the-junction');
+
+      step('turn left: recognised from the motion sensors alone');
+      await face(page, 180);
+      await page.waitForTimeout(400);
+      await walk(page, 14);
+      s = await state(page);
+      near(s.y, lobby.y, 1, 'on the south corridor');
+      assert.ok(s.x < lobby.x - 60 && s.x > classroom.x + 40, `moving west along the corridor (x=${s.x})`);
+      assert.ok(/turn right/.test(s.banner), `banner: ${s.banner}`);
+      await shot(page, 'along-the-corridor');
+      await walk(page, 16);
+      s = await state(page);
+      assert.ok(/^(In \d+ m, t|T)urn right$/.test(s.banner), `banner at the corner: ${s.banner}`);
+      near(s.x, classroom.x, 30, 'near the south-west corner');
+
+      step('turn right and arrive');
+      await face(page, -90);
+      await page.waitForTimeout(400);
+      await walk(page, 9);
+      s = await state(page);
+      assert.ok(/^Continue \d+ m$/.test(s.banner), `banner on the last stretch: ${s.banner}`);
+      await walk(page, 12);
+      await page.waitForSelector('.sheet--arrival', { timeout: 8000 });
+      await quiet(page);
+      await shot(page, 'arrived');
+      s = await state(page);
+      assert.strictEqual(s.banner, 'You have arrived');
+      assert.ok(/Classroom 0\.40 · Ground floor · on your left/.test(s.arrivalText), s.arrivalText);
+
+      step('check what was heard on the way');
+      assert.strictEqual(s.spoken[0], 'Starting navigation to Classroom 0 40. In about 8 metres, turn left, at the lobby.');
+      assert.ok(s.spoken.includes('Turn left.'), `spoken: ${JSON.stringify(s.spoken)}`);
+      assert.ok(s.spoken.some((t) => /^In about \d+ metres, turn right, at the south-west corner\.$/.test(t)), JSON.stringify(s.spoken));
+      assert.ok(s.spoken.includes('Turn right.'), JSON.stringify(s.spoken));
+      assert.strictEqual(s.spoken[s.spoken.length - 1], "You've arrived at Classroom 0 40, on your left.");
+      assert.ok(s.spoken.length <= 8, `not chatty: ${s.spoken.length} sentences`);
+      assert.strictEqual(new Set(s.spoken).size, s.spoken.length, 'nothing is said twice');
+      const speech = await page.evaluate(() => window.__speech);
+      assert.strictEqual(speech.overlaps, 0, 'sentences never overlap');
+      assert.ok(speech.said.every((x) => x.voice === 'Samantha'), 'the natural voice is chosen over the robotic default');
+      assert.strictEqual(s.sounds[0], 'start');
+      assert.strictEqual(s.sounds[s.sounds.length - 1], 'arrive');
+      assert.strictEqual(s.sounds.filter((x) => x === 'turn').length, 2);
+      assert.ok(s.sounds.length <= 6, `few sound effects: ${s.sounds}`);
+
+      step('measure the sound effects themselves');
+      const measured = await page.evaluate(() =>
+        Promise.all(['start', 'turn', 'checkpoint', 'reroute', 'warning', 'floor', 'arrive'].map((n) => window.__indoorNavMeasure(n).then((m) => Object.assign({ name: n }, m))))
+      );
+      for (const m of measured) {
+        assert.ok(m.peak > 0.02 && m.peak < 0.6, `${m.name}: peak ${m.peak}`);
+        assert.ok(m.seconds < (m.name === 'arrive' ? 2.3 : 1.2), `${m.name}: lasts ${m.seconds}s`);
+        console.log(`      ${m.name.padEnd(10)} peak ${m.peak.toFixed(2)}  rms ${m.rms.toFixed(3)}  ${m.seconds.toFixed(2)} s`);
+      }
+      await page.context().close();
+    }
+
+    /* ------------------------------------------------------------------ */
+    console.log('2. Recovering from a wrong position: re-scan on purpose, or point at the map');
+    {
+      const page = await open(`/qrScanner/${cafe.id}`);
+      await page.click('text=Start camera navigation');
+      await page.waitForSelector('.ar-view__video');
+      await face(page, -90, 25);
+      await showMarker(page, entrance, -90);
+      await waitForBanner(page, /turn right/);
+      await page.evaluate(() => window.__camera.hide());
+      await quiet(page);
+
+      step('"Fix my position" -> scan a marker: the user is really at the far corner');
+      await page.click('[aria-label="Fix my position"]');
+      await page.waitForSelector('.panel');
+      await shot(page, 'fix-position');
+      await page.click('text=Scan a marker');
+      await waitForBanner(page, /Point at any marker/);
+      await page.waitForSelector('.nav-reticle');
+      const corner = node('Office 0.20');
+      await showMarker(page, corner, 90);
+      await waitForToast(page, /Position corrected · route updated/);
+      await page.evaluate(() => window.__camera.hide());
+      let s = await state(page);
+      near(s.x, corner.x, 8, 'position moved to the scanned marker');
+      near(s.y, corner.y, 8, 'position moved to the scanned marker');
+      assert.ok(!/Point at any marker/.test(s.banner), 'scan mode ends by itself');
+      await quiet(page);
+      s = await state(page);
+      assert.ok(s.spoken.some((t) => t.indexOf("I've updated your position and the route.") === 0), JSON.stringify(s.spoken));
+      assert.ok(s.sounds.includes('reroute'));
+
+      step('"Fix my position" -> choose on the map');
+      await page.click('[aria-label="Fix my position"]');
+      await page.click('text=Choose on the map');
+      await page.waitForSelector(`[data-node="${lobby.id}"]`);
+      await shot(page, 'pick-on-map');
+      await page.click(`[data-node="${lobby.id}"]`);
+      await page.waitForFunction(() => !document.querySelector('.map-view__marker.is-pickable'));
+      s = await state(page);
+      near(s.x, lobby.x, 1, 'position set on the map');
+      near(s.y, lobby.y, 1, 'position set on the map');
+      await page.context().close();
+    }
+
+    /* ------------------------------------------------------------------ */
+    console.log('3. No motion sensors: scanning each marker still works (the original behaviour)');
+    {
+      const page = await open(`/qrScanner/${cafe.id}`);
+      await page.click('text=Start camera navigation');
+      await page.waitForSelector('.ar-view__video');
+      await showMarker(page, entrance, -90);
+      await waitForBanner(page, /turn right/);
       await page.waitForTimeout(600);
-      await shot(page, 'no-sensors-arrow-on-marker');
+      await shot(page, 'no-sensors');
       await page.waitForFunction(() => Array.from(document.querySelectorAll('.nav-pill')).some((p) => /Motion sensors unavailable/.test(p.textContent)), null, { timeout: 6000 });
-      step('scan B, then A, then D');
-      await page.evaluate(([url, rotation]) => window.__camera.show(url, { rotation }), [markerUrl(1), markerRotation(90)]);
-      await waitForBanner(page, /^Turn left$/);
-      await page.evaluate(([url, rotation]) => window.__camera.show(url, { rotation }), [markerUrl(0), markerRotation(0)]);
-      await waitForBanner(page, /^Continue 7 m$/);
-      await page.evaluate(([url, rotation]) => window.__camera.show(url, { rotation }), [markerUrl(3), markerRotation(0)]);
+      step('scan the lobby marker, then the café marker');
+      await showMarker(page, lobby, -90);
+      await waitForBanner(page, /^Turn right$/);
+      await showMarker(page, cafe, 0);
       await page.waitForSelector('.sheet--arrival', { timeout: 12000 });
       await page.context().close();
     }
 
     /* ------------------------------------------------------------------ */
-    console.log('3. Camera refused: choose the start position on the map');
+    console.log('4. Camera refused: choose the start position on the map');
     {
-      const page = await open('/qrScanner/3');
+      const page = await open(`/qrScanner/${cafe.id}`);
       await page.evaluate(() => (window.__camera.deny = true));
       await page.click('text=Start camera navigation');
       await page.waitForSelector('.nav-map');
       let s = await state(page);
       assert.ok(s.pills.some((p) => /Camera access was denied/.test(p)), 'explains the problem');
-      assert.ok(s.pills.some((p) => /Tap the marker/.test(p)), 'offers the manual start');
+      assert.strictEqual(s.banner, 'Find your position');
       await shot(page, 'camera-denied');
-      await page.click('[data-node="2"]');
-      await waitForBanner(page, /turn left/);
+      await page.click(`[data-node="${entrance.id}"]`);
+      await waitForBanner(page, /turn right/);
       s = await state(page);
-      near(s.x, 65, 1, 'manual start at C');
+      near(s.x, entrance.x, 1, 'manual start at the entrance');
       await shot(page, 'manual-start');
       await page.context().close();
     }
 
     /* ------------------------------------------------------------------ */
-    console.log('4. Another floor, simulated walk: A (ground floor) -> R (first floor)');
+    console.log('5. Another floor, step-free, simulated walk: entrance -> lift -> Lab 1.30');
     {
-      const page = await open('/qrScanner/16?from=0&demo=1');
+      const lab = node('Lab 1.30', 1);
+      const page = await open(`/qrScanner/${lab.id}`);
+      await page.waitForSelector('.sheet--intro');
+      await page.click('.switch-row');
+      await page.click('text=Try a simulated walk');
       await page.waitForSelector('.ar-view__canvas');
-      await page.waitForTimeout(1500);
-      await shot(page, 'demo-start');
-      step('reaches the stairs and changes floor');
+      await page.waitForTimeout(2500);
+      await shot(page, 'demo-3d');
+      await page.click('text=Map');
+      await page.waitForTimeout(600);
+      await shot(page, 'demo-map');
+      await page.click('[aria-label="Directions list"]');
+      await page.waitForSelector('.route-steps');
+      const steps = await page.textContent('.route-steps');
+      assert.ok(/Take the lift up/.test(steps) && !/stairs/.test(steps), steps);
+      await shot(page, 'directions');
+      await page.click('[aria-label="Close"]');
+      await page.click('text=3D');
+      step('reaches the lift and changes floor');
       await page.waitForSelector('.nav-card', { timeout: 90000 });
-      await shot(page, 'stairs');
+      await shot(page, 'lift');
       const card = await page.textContent('.nav-card');
-      assert.ok(/Take the stairs to First floor/.test(card), card);
-      await page.waitForFunction(() => Array.from(document.querySelectorAll('.nav-toast')).some((t) => /Now on First floor/.test(t.textContent)), null, { timeout: 15000 });
+      assert.ok(/Take the lift to First floor/.test(card), card);
+      await waitForToast(page, /Now on First floor/, 20000);
+      await page.waitForTimeout(1500);
       await shot(page, 'first-floor');
-      step('arrives at Room R');
-      await page.waitForSelector('.sheet--arrival', { timeout: 60000 });
+      step('arrives at Lab 1.30');
+      await page.waitForSelector('.sheet--arrival', { timeout: 90000 });
+      await quiet(page);
+      const s = await state(page);
+      assert.ok(s.spoken.some((t) => /take the lift up to the first floor/i.test(t)), JSON.stringify(s.spoken));
+      assert.ok(s.spoken.some((t) => /^You're on the first floor\./.test(t)), JSON.stringify(s.spoken));
+      assert.strictEqual((await page.evaluate(() => window.__speech)).overlaps, 0);
       await shot(page, 'demo-arrived');
       await page.context().close();
     }
 
     /* ------------------------------------------------------------------ */
-    console.log('5. WebXR mode (scripted XR device): the browser\'s own tracking moves the user on the map');
+    console.log('6. WebXR mode (scripted XR device): the browser\'s own tracking moves the user on the map');
     {
-      const page = await open('/qrScanner/3', { xr: true });
+      const page = await open(`/qrScanner/${classroom.id}`, { xr: true });
       await page.click('text=Start camera navigation');
       await page.waitForSelector('.ar-view__video');
-      await page.evaluate((a) => {
-        window.__sensors.alpha = a;
-        window.__sensors.beta = 25;
-        window.__sensors.start();
-      }, alphaFor(90));
-      await page.evaluate(([url, rotation]) => window.__camera.show(url, { rotation }), [markerUrl(2), markerRotation(90)]);
+      await face(page, -90, 25);
+      await showMarker(page, entrance, -90);
       await waitForBanner(page, /turn left/);
       await page.evaluate(() => {
         window.__camera.hide();
@@ -435,25 +605,24 @@ async function run() {
       await page.waitForFunction(() => window.__xr.active && !!document.querySelector('.nav-screen--xr'));
       await page.waitForTimeout(600);
       let s = await state(page);
-      near(s.y, 225, 4, 'still at C after the hand-over');
+      near(s.y, entrance.y, 6, 'still at the entrance after the hand-over');
 
-      step('XR tracking: 3.5 m ahead = down the corridor to B');
-      await page.evaluate(() => window.__xr.forward(3.5));
+      step('XR tracking: 7.7 m ahead = up to the lobby junction');
+      await page.evaluate(() => window.__xr.forward(7.7));
       s = await state(page);
-      near(s.x, 65, 1, 'on the left corridor');
-      near(s.y, 260, 4, 'reached B');
+      near(s.x, lobby.x, 1, 'on the entrance axis');
+      near(s.y, lobby.y, 4, 'reached the lobby junction');
       assert.strictEqual(s.banner, 'Turn left');
 
-      step('XR tracking: turn left, 5 m ahead = along the bottom corridor towards A');
+      step('XR tracking: turn left, 8 m ahead = west along the south corridor');
       await page.evaluate(() => {
         window.__xr.pose.yaw += Math.PI / 2; // counter clockwise seen from above = left
         window.__sensors.alpha = (window.__sensors.alpha + 90) % 360;
       });
-      await page.evaluate(() => window.__xr.forward(5));
+      await page.evaluate(() => window.__xr.forward(8));
       s = await state(page);
-      near(s.y, 260, 1, 'on the bottom corridor');
-      near(s.x, 65 + 50, 5, '5 m along it');
-      assert.ok(/^Continue \d+ m$/.test(s.banner), `banner: ${s.banner}`);
+      near(s.y, lobby.y, 1, 'on the south corridor');
+      near(s.x, lobby.x - 80, 6, '8 m along it');
       await shot(page, 'webxr-mode');
 
       step('leaving XR brings the camera view and the scanner back');
@@ -463,7 +632,7 @@ async function run() {
         const v = document.querySelector('.ar-view__video');
         return !!v && !!v.srcObject && v.videoWidth > 0;
       });
-      await page.evaluate(([url, rotation]) => window.__camera.show(url, { rotation }), [markerUrl(3), markerRotation(0)]);
+      await showMarker(page, classroom, -90);
       await page.waitForSelector('.sheet--arrival', { timeout: 12000 });
       await page.context().close();
     }

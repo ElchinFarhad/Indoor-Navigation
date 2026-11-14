@@ -12,7 +12,7 @@
  *    playing, and effects are rate limited, so it never turns into beeping.
  */
 import { Cue } from '../nav/announcer';
-import { SoundEngine } from './sounds';
+import { measureEffect, SoundEngine } from './sounds';
 import { VoiceEngine } from './voice';
 
 export type AudioMode = 'voice' | 'sounds' | 'off';
@@ -62,6 +62,7 @@ export class AudioGuide {
 
   constructor() {
     (window as any).__indoorNavAudio = this.played;
+    (window as any).__indoorNavMeasure = measureEffect;
   }
 
   get mode(): AudioMode {

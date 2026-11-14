@@ -93,6 +93,9 @@ export class PositionTracker {
   private routeNext = new Map<number, number>();
   private lastTravelDir: number | null = null;
   private external = false;
+  private holdNode: number | null = null;
+  private holdDist = 0;
+  private holdDir = 0;
 
   constructor(building: Building, options: { stepLength?: number } = {}) {
     this.building = building;
@@ -216,6 +219,7 @@ export class PositionTracker {
     this.from = node.id;
     this.to = null;
     this.t = 0;
+    this.holdNode = null;
     this.pendingTurn = null;
     this.pendingFloor = null;
     this.lateralSteps = 0;
@@ -352,6 +356,7 @@ export class PositionTracker {
     this.accuracyM = Math.max(0.6, this.accuracyM + 0.015 * Math.min(moved, 3));
     this.lastTravelDir = e.dir;
     this.external = true;
+    this.holdNode = null;
     this.pendingTurn = null;
     this.checkFloorChange();
     return true;
@@ -401,6 +406,28 @@ export class PositionTracker {
         this.lateral(L);
         return;
       }
+      if (
+        this.holdNode === this.from &&
+        start.to !== this.routeNext.get(this.from) &&
+        Math.abs(angleDiff(start.dir, this.holdDir)) < 50 * DEG
+      ) {
+        // The route turns at this junction but the user keeps walking straight
+        // on. Most likely they have not quite reached it yet (the travelled
+        // distance is only known to within a few percent), so the estimate
+        // waits here - and the guidance keeps saying "turn" - until they have
+        // walked further than that error can explain.
+        this.holdDist += L * Math.cos(angleDiff(h, start.dir));
+        this.accuracyM += 0.08 * L;
+        if (this.holdDist < clamp(1.5 + this.accuracyM, 2.5, 6)) return;
+        // They really did go straight past it.
+        this.to = start.to;
+        this.t = Math.min(this.holdDist, start.length);
+        this.walked += this.holdDist;
+        this.lastTravelDir = start.dir;
+        this.holdNode = null;
+        return;
+      }
+      this.holdNode = null;
       this.to = start.to;
       this.t = 0;
     }
@@ -434,6 +461,7 @@ export class PositionTracker {
         this.t = Math.min(this.pendingTurn.dist, turn.edge.length);
         this.walked += this.pendingTurn.dist;
         this.accuracyM = Math.max(1, this.accuracyM * 0.5);
+        this.holdNode = null;
         this.pendingTurn = null;
         this.lateralSteps = 0;
         this.alignedSteps = 0;
@@ -478,16 +506,26 @@ export class PositionTracker {
       if (this.t <= e.length) break;
       const overflow = this.t - e.length;
       const arrivedAt = this.to;
-      const next = this.bestEdgeFrom(arrivedAt, heading, 50 * DEG, this.from);
+      const cameFrom = this.from;
+      const next = this.bestEdgeFrom(arrivedAt, heading, 50 * DEG, cameFrom);
+      const routeTo = this.routeNext.get(arrivedAt);
+      // The corridor goes on, but the route turns off here.
+      const routeTurnsHere = next !== null && routeTo !== undefined && routeTo !== next.to && routeTo !== cameFrom;
       this.from = arrivedAt;
-      if (next && !this.floorChangeAt(arrivedAt)) {
+      if (next && !this.floorChangeAt(arrivedAt) && !routeTurnsHere) {
         this.to = next.to;
         this.t = overflow;
         this.lastTravelDir = next.dir;
       } else {
-        // Nothing continues in this direction: wait at the node for the user to turn.
+        // Wait at the node for the user to turn (see the junction hold in onStep).
         this.to = null;
         this.t = 0;
+        this.walked -= overflow;
+        if (routeTurnsHere) {
+          this.holdNode = arrivedAt;
+          this.holdDist = overflow;
+          this.holdDir = e.dir;
+        }
       }
     }
     this.checkFloorChange();

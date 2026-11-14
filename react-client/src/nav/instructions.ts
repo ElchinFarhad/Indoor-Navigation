@@ -58,7 +58,8 @@ export function classifyTurn(angle: number): ManeuverType {
 export function landmark(building: Building, node: NavNode): string {
   if (!node.label) return `at marker ${node.name}`;
   if (node.type === 'node') return `at the ${node.label.toLowerCase()}`;
-  if (node.type === 'stairs' || node.type === 'elevator') return `at ${node.label}`;
+  if (node.type === 'elevator') return 'at the lift';
+  if (node.type === 'stairs') return `at ${node.label}`;
   return `by ${building.displayName(node)}`;
 }
 

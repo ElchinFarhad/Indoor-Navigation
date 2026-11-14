@@ -382,6 +382,41 @@ describe('tracking between markers', () => {
   });
 });
 
+describe('junctions where the corridor goes on but the route turns', () => {
+  // B -> A, then the route turns up to I while the corridor continues to D.
+  const start = () => {
+    const session = new NavigationSession(building, id('I'), { now: () => 0 });
+    session.handleOrientation(wrapAngle(0 - 1.234));
+    session.handleSighting(sighting('B', 0));
+    return session;
+  };
+
+  it('does not tell the user to turn around for overshooting the junction a little', () => {
+    const session = start();
+    // The user's steps are longer than assumed: after 13 "steps" the estimate has passed A.
+    for (let i = 0; i < 15; i++) session.handleStep(1.1);
+    const snap = session.snapshot;
+    expect(snap.position!.x).toBeCloseTo(node('A').x);
+    expect(snap.position!.to).toBeNull();
+    expect(snap.guidance!.headline).toBe('Turn left');
+    expect(snap.wrongWay).toBe(false);
+    // Turning now is recognised straight away.
+    session.handleOrientation(wrapAngle(-Math.PI / 2 - 1.234));
+    for (let i = 0; i < 3; i++) session.handleStep();
+    expect(session.snapshot.position!.to).toBe(id('I'));
+    expect(session.snapshot.guidance!.maneuver.type).toBe('arrive');
+  });
+
+  it('accepts that the user went straight on once they are clearly past it', () => {
+    const session = start();
+    for (let i = 0; i < 19; i++) session.handleStep(1.1);
+    const snap = session.snapshot;
+    expect(snap.position!.to).toBe(id('D'));
+    expect(snap.position!.x).toBeGreaterThan(node('A').x + 20);
+    expect(snap.guidance!.maneuver.type).toBe('uturn');
+  });
+});
+
 describe('floors', () => {
   it('guides up the stairs and continues on the other floor', () => {
     const session = new NavigationSession(building, id('R', 1), { now: () => 0 });

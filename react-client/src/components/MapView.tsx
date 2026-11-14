@@ -82,15 +82,18 @@ const MapView = ({ building, floor, onFloorChange, snapshot, destinationId, comp
   // A manual view belongs to the floor it was made on.
   useEffect(() => setManual(null), [f.id]);
 
+  const picking = !!onPickNode;
+
   // The automatic view: follow the user if they are on this floor, otherwise show the whole floor.
   const auto: View = useMemo(() => {
-    if (here) {
+    // (While a marker is being picked the whole floor has to be in reach.)
+    if (here && !picking) {
       const span = compact ? COMPACT_SPAN : FOLLOW_SPAN;
       return { cx: here.x, cy: here.y, upp: span / Math.min(size.w, size.h) };
     }
     const upp = Math.max((f.width + 2 * MARGIN) / size.w, (f.height + 2 * MARGIN) / size.h);
     return { cx: f.width / 2, cy: f.height / 2, upp };
-  }, [here, compact, size.w, size.h, f.width, f.height]);
+  }, [here, picking, compact, size.w, size.h, f.width, f.height]);
 
   const view = (!compact && manual) || auto;
   const upp = view.upp;
@@ -354,36 +357,24 @@ const MapView = ({ building, floor, onFloorChange, snapshot, destinationId, comp
         )}
       </svg>
 
+      {!compact && building.floors.length > 1 && (
+        <div className="map-view__floors" role="tablist" aria-label="Floor">
+          {building.floors.map((fl) => (
+            <button
+              key={fl.id}
+              type="button"
+              role="tab"
+              aria-selected={fl.id === f.id}
+              className={`map-view__floor${fl.id === f.id ? ' is-active' : ''}${position && position.floor === fl.id ? ' has-me' : ''}`}
+              onClick={() => onFloorChange && onFloorChange(fl.id)}
+            >
+              {fl.name}
+            </button>
+          ))}
+        </div>
+      )}
       {!compact && (
-        <div className="map-view__controls">
-          {building.floors.length > 1 && (
-            <div className="map-view__floors" role="tablist" aria-label="Floor">
-              {building.floors
-                .slice()
-                .reverse()
-                .map((fl) => (
-                  <button
-                    key={fl.id}
-                    type="button"
-                    role="tab"
-                    aria-selected={fl.id === f.id}
-                    className={`map-view__floor${fl.id === f.id ? ' is-active' : ''}${position && position.floor === fl.id ? ' has-me' : ''}`}
-                    onClick={() => onFloorChange && onFloorChange(fl.id)}
-                    title={fl.name}
-                  >
-                    {fl.short}
-                  </button>
-                ))}
-            </div>
-          )}
-          <div className="map-view__zoom">
-            <button type="button" aria-label="Zoom in" onClick={() => zoom(1 / 1.4)}>
-              +
-            </button>
-            <button type="button" aria-label="Zoom out" onClick={() => zoom(1.4)}>
-              −
-            </button>
-          </div>
+        <div className="map-view__tools">
           {manual && (
             <button type="button" className="map-view__locate" aria-label={here ? 'Follow my position' : 'Show the whole floor'} onClick={() => setManual(null)}>
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
@@ -393,6 +384,14 @@ const MapView = ({ building, floor, onFloorChange, snapshot, destinationId, comp
               </svg>
             </button>
           )}
+          <div className="map-view__zoom">
+            <button type="button" aria-label="Zoom in" onClick={() => zoom(1 / 1.4)}>
+              +
+            </button>
+            <button type="button" aria-label="Zoom out" onClick={() => zoom(1.4)}>
+              −
+            </button>
+          </div>
         </div>
       )}
       {compact && <span className="map-view__badge">{f.short}</span>}

@@ -136,6 +136,35 @@ export function scheduleEffect(ctx: BaseAudioContext, destination: AudioNode, na
   }
 }
 
+/**
+ * Renders an effect offline and measures it. Used by the end-to-end test to
+ * check that every effect is audible, does not clip and is as short as intended.
+ */
+export function measureEffect(name: SoundName): Promise<{ peak: number; rms: number; seconds: number } | null> {
+  const w = window as any;
+  const Offline = w.OfflineAudioContext || w.webkitOfflineAudioContext;
+  if (!Offline) return Promise.resolve(null);
+  const rate = 44100;
+  const ctx = new Offline(2, Math.ceil(rate * (effectDuration(name) + 0.6)), rate);
+  const master = ctx.createGain();
+  master.gain.value = 0.5;
+  master.connect(ctx.destination);
+  scheduleEffect(ctx, master, name, 0.02, 0);
+  return ctx.startRendering().then((buffer: AudioBuffer) => {
+    const data = buffer.getChannelData(0);
+    let peak = 0;
+    let sum = 0;
+    let last = 0;
+    for (let i = 0; i < data.length; i++) {
+      const v = Math.abs(data[i]);
+      if (v > peak) peak = v;
+      sum += v * v;
+      if (v > 0.003) last = i;
+    }
+    return { peak, rms: Math.sqrt(sum / data.length), seconds: last / rate };
+  });
+}
+
 export class SoundEngine {
   private ctx: AudioContext | null = null;
   private master: GainNode | null = null;
