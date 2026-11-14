@@ -41,7 +41,7 @@ export class StepDetector {
   private samples = 0;
 
   constructor(options: StepDetectorOptions = {}) {
-    this.threshold = options.threshold !== undefined ? options.threshold : 1.1;
+    this.threshold = options.threshold !== undefined ? options.threshold : 0.9;
     this.minInterval = options.minInterval !== undefined ? options.minInterval : 300;
     this.k = options.weinbergK !== undefined ? options.weinbergK : 0.47;
   }

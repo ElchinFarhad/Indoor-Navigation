@@ -102,6 +102,25 @@ describe('QR pose interpretation', () => {
     expect(s.offset!.y).toBeCloseTo(0);
   });
 
+  it('recovers heading, offset and height from a tilted phone (full 3D pose)', () => {
+    // A phone held at chest height, tipped 40 degrees below the horizon, facing
+    // a bit left of map-right, standing 0.9 m "before" marker A.
+    const cameraToWorld = mat3Multiply(yawMatrix(0.4), cameraToSensorWorld(-200, 50, 4));
+    const heading = headingOf(cameraToWorld);
+    const size = 0.18;
+    const camera = [-0.9 * Math.cos(heading), -0.9 * Math.sin(heading), -1.4]; // metres; z is down
+    // What the scanner would report: R takes marker axes to camera axes, t is the marker centre seen from the camera.
+    const r = [0, 1, 2].map((row) => [0, 1, 2].map((col) => cameraToWorld[col * 3 + row])).reduce((a, b) => a.concat(b), []);
+    const t = [0, 1, 2].map((row) => -(r[row * 3] * camera[0] + r[row * 3 + 1] * camera[1] + r[row * 3 + 2] * camera[2]) / size);
+    const s = interpretCode(building, code('http://x/qrScanner/0', r, t))!;
+    expect(angleDiff(s.heading!, heading)).toBeCloseTo(0);
+    expect(pitchOf(s.cameraToWorld!)).toBeCloseTo(pitchOf(cameraToWorld));
+    expect(s.offset!.x * MPU).toBeCloseTo(camera[0]);
+    expect(s.offset!.y * MPU).toBeCloseTo(camera[1]);
+    expect(s.cameraHeight!).toBeCloseTo(1.4);
+    expect(s.range!).toBeCloseTo(Math.hypot(0.9, 1.4));
+  });
+
   it('handles wall mounted markers', () => {
     // A wall marker facing map-down (the wall is "above" it on the map); the user faces it head on.
     const m = markerToWorld({ mount: 'wall', rotation: 0, facing: Math.PI / 2, size: 0.2 });
