@@ -1,4 +1,27 @@
 {
+  "meta": {
+    "name": "Demo building",
+    "metersPerUnit": 0.1,
+    "qrSize": 0.18,
+    "floors": [
+      {
+        "id": 0,
+        "name": "Ground floor",
+        "short": "G",
+        "map": "map.png",
+        "width": 300,
+        "height": 300
+      },
+      {
+        "id": 1,
+        "name": "First floor",
+        "short": "1",
+        "map": "map.png",
+        "width": 300,
+        "height": 300
+      }
+    ]
+  },
   "nodes": [
     {
       "name": "A",
@@ -6,31 +29,37 @@
       "id": 0,
       "x": 155,
       "y": 260,
+      "floor": 0,
       "path": [
         {
           "nodeID": 1,
-          "weight": 2
+          "weight": 9
         },
         {
           "nodeID": 3,
-          "weight": 4
+          "weight": 7.3
+        },
+        {
+          "nodeID": 8,
+          "weight": 4.7
         }
       ]
-    }, 
+    },
     {
       "name": "B",
       "type": "node",
       "id": 1,
       "x": 65,
       "y": 260,
+      "floor": 0,
       "path": [
         {
           "nodeID": 0,
-          "weight": 2
+          "weight": 9
         },
         {
           "nodeID": 2,
-          "weight": 2
+          "weight": 3.5
         }
       ]
     },
@@ -40,10 +69,15 @@
       "id": 2,
       "x": 65,
       "y": 225,
+      "floor": 0,
       "path": [
         {
           "nodeID": 1,
-          "weight": 4
+          "weight": 3.5
+        },
+        {
+          "nodeID": 5,
+          "weight": 8.6
         }
       ]
     },
@@ -53,14 +87,15 @@
       "id": 3,
       "x": 228,
       "y": 260,
+      "floor": 0,
       "path": [
         {
           "nodeID": 0,
-          "weight": 2
+          "weight": 7.3
         },
         {
           "nodeID": 4,
-          "weight": 3
+          "weight": 3.5
         }
       ]
     },
@@ -70,10 +105,234 @@
       "id": 4,
       "x": 230,
       "y": 225,
+      "floor": 0,
       "path": [
         {
           "nodeID": 3,
-          "weight": 2
+          "weight": 3.5
+        },
+        {
+          "nodeID": 11,
+          "weight": 12.1
+        }
+      ]
+    },
+    {
+      "name": "F",
+      "type": "room",
+      "id": 5,
+      "x": 68,
+      "y": 139,
+      "floor": 0,
+      "path": [
+        {
+          "nodeID": 2,
+          "weight": 8.6
+        },
+        {
+          "nodeID": 6,
+          "weight": 9.9
+        }
+      ]
+    },
+    {
+      "name": "G",
+      "type": "room",
+      "id": 6,
+      "x": 67,
+      "y": 40,
+      "floor": 0,
+      "path": [
+        {
+          "nodeID": 5,
+          "weight": 9.9
+        },
+        {
+          "nodeID": 7,
+          "weight": 8.3
+        }
+      ]
+    },
+    {
+      "name": "H",
+      "type": "room",
+      "id": 7,
+      "x": 150,
+      "y": 40,
+      "floor": 0,
+      "label": "Main hall (north door)",
+      "path": [
+        {
+          "nodeID": 6,
+          "weight": 8.3
+        },
+        {
+          "nodeID": 9,
+          "weight": 2.9
+        }
+      ]
+    },
+    {
+      "name": "I",
+      "type": "room",
+      "id": 8,
+      "x": 153,
+      "y": 213,
+      "floor": 0,
+      "label": "Main hall (south door)",
+      "path": [
+        {
+          "nodeID": 0,
+          "weight": 4.7
+        }
+      ]
+    },
+    {
+      "name": "J",
+      "type": "stairs",
+      "id": 9,
+      "x": 149,
+      "y": 11,
+      "floor": 0,
+      "path": [
+        {
+          "nodeID": 7,
+          "weight": 2.9
+        },
+        {
+          "nodeID": 10,
+          "weight": 8.3
+        },
+        {
+          "nodeID": 12,
+          "weight": 12,
+          "kind": "stairs",
+          "length": 8
+        }
+      ]
+    },
+    {
+      "name": "K",
+      "type": "room",
+      "id": 10,
+      "x": 232,
+      "y": 11,
+      "floor": 0,
+      "label": "Restroom",
+      "path": [
+        {
+          "nodeID": 9,
+          "weight": 8.3
+        },
+        {
+          "nodeID": 11,
+          "weight": 9.3
+        }
+      ]
+    },
+    {
+      "name": "L",
+      "type": "room",
+      "id": 11,
+      "x": 228,
+      "y": 104,
+      "floor": 0,
+      "path": [
+        {
+          "nodeID": 10,
+          "weight": 9.3
+        },
+        {
+          "nodeID": 4,
+          "weight": 12.1
+        }
+      ]
+    },
+    {
+      "name": "N",
+      "type": "stairs",
+      "id": 12,
+      "x": 149,
+      "y": 11,
+      "floor": 1,
+      "path": [
+        {
+          "nodeID": 13,
+          "weight": 2.9
+        },
+        {
+          "nodeID": 15,
+          "weight": 8.3
+        },
+        {
+          "nodeID": 9,
+          "weight": 12,
+          "kind": "stairs",
+          "length": 8
+        }
+      ]
+    },
+    {
+      "name": "O",
+      "type": "node",
+      "id": 13,
+      "x": 150,
+      "y": 40,
+      "floor": 1,
+      "path": [
+        {
+          "nodeID": 12,
+          "weight": 2.9
+        },
+        {
+          "nodeID": 14,
+          "weight": 8.3
+        }
+      ]
+    },
+    {
+      "name": "P",
+      "type": "room",
+      "id": 14,
+      "x": 67,
+      "y": 40,
+      "floor": 1,
+      "path": [
+        {
+          "nodeID": 13,
+          "weight": 8.3
+        }
+      ]
+    },
+    {
+      "name": "Q",
+      "type": "room",
+      "id": 15,
+      "x": 232,
+      "y": 11,
+      "floor": 1,
+      "path": [
+        {
+          "nodeID": 12,
+          "weight": 8.3
+        },
+        {
+          "nodeID": 16,
+          "weight": 9.3
+        }
+      ]
+    },
+    {
+      "name": "R",
+      "type": "room",
+      "id": 16,
+      "x": 228,
+      "y": 104,
+      "floor": 1,
+      "path": [
+        {
+          "nodeID": 15,
+          "weight": 9.3
         }
       ]
     }

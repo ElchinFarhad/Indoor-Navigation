@@ -1,6 +1,5 @@
 'use strict';
 
-const RqrrWasmPlugin = require('rqrr-wasm/dist/webpack-plugins');
 const fs = require('fs');
 const path = require('path');
 const webpack = require('webpack');
@@ -324,17 +323,6 @@ module.exports = function (webpackEnv) {
       rules: [
         // Disable require.ensure as it's not a standard language feature.
         { parser: { requireEnsure: false } },
-        {
-          // only load WASM files (ending in WASM)
-          test: /\.wasm$/,
-          // only files in our src/ folder
-          include: path.resolve(__dirname, "src"),
-          use: [{
-            // load and use the wasm-loader dictionary
-            loader: require.resolve("wasm-loader"),
-            options: {}
-          }],
-        },
         // First, run the linter.
         // It's important to do this before Babel processes the JS.
         {
@@ -545,7 +533,6 @@ module.exports = function (webpackEnv) {
             : undefined
         )
       ),
-      new RqrrWasmPlugin(), // put this last
 
       // Inlines the webpack runtime script. This script is too small to warrant
       // a network request.
