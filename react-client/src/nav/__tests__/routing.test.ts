@@ -204,7 +204,7 @@ describe('the shipped building', () => {
     expect(stepFree.legs.filter((l) => l.kind === 'elevator').length).toBe(1);
     const lift = buildManeuvers(shipped, stepFree).find((m) => m.type === 'elevator-up')!;
     expect(lift.text).toBe('Take the lift up');
-    expect(lift.detail).toBe('to First floor (Lift)');
+    expect(lift.detail).toBe('to First floor');
   });
 
   it('names landmarks in turn instructions', () => {

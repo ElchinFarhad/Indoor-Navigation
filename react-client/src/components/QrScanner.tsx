@@ -471,8 +471,8 @@ const QrScanner = () => {
     bannerTitle = 'Point at any marker';
     bannerDetail = 'Your position will be corrected';
   } else if (picking && !locating) {
-    bannerTitle = 'Where are you?';
-    bannerDetail = 'Tap the marker you are standing at';
+    bannerTitle = 'Tap where you are';
+    bannerDetail = 'Choose the nearest marker';
   } else if (snapshot.status === 'unreachable') {
     bannerIcon = 'uturn';
     bannerTitle = 'No route from here';

@@ -29,8 +29,10 @@ What changed, and why:
 | Position | known only at the moment of a scan | tracked continuously between scans |
 | Direction | one of four fixed arrows drawn on the code | heading in degrees; 3D arrows over the camera image |
 | Routing | N×N matrix, crashed on unreachable/unknown nodes, asymmetric weights | adjacency lists + heap, starts anywhere on a corridor, floors, `null` when there is no path |
-| Map | fixed 300×300 canvas | responsive SVG with position, heading, accuracy, floors |
-| UI | Bootstrap cards | mobile-first navigation screen, search, instructions, fallbacks |
+| Map | fixed 300×300 canvas over a picture | vector floor plan (rooms, corridors, doors) as SVG: pan, zoom, tap a room; position, heading, accuracy, floors |
+| Scanning habit | a scan at every marker | one scan per trip; later sightings are opportunistic corrections |
+| Audio | none | spoken directions and synthesised sound cues, queued so they never collide |
+| UI | Bootstrap cards | mobile-first navigation screen, search and map browsing, directions list, fallbacks |
 
 Removed: dependencies nothing imported (`@mui/*`, `@emotion/*`, `fabric`, `indoorjs`, `mathjs`,
 `@ar-js-org/ar.js`, `react-qr-reader`, `react-helmet`, `react-script-tag`, `rqrr-wasm`, `wasm-loader`,
@@ -57,6 +59,9 @@ Removed: dependencies nothing imported (`@mui/*`, `@emotion/*`, `fabric`, `indoo
                                      ┌───────────┼─────────────┐
                               components/      ar/ArScene.ts   components/MapView.tsx
                               QrScanner.tsx    (Three.js)      (SVG)
+                                     │
+                              nav/announcer.ts ──cues──► audio/guide.ts ──► audio/sounds.ts (Web Audio)
+                              (what to say, when)        (queue, priorities)  audio/voice.ts  (speech)
 ```
 
 Everything under `src/nav/` is plain TypeScript with no DOM access, which is what makes it unit-testable
@@ -120,6 +125,28 @@ and the heading from the `deviceorientation` sensor.
   with no motion sensors at all the position only changes at markers, i.e. the original behaviour.
 - **Floors.** Reaching a staircase the route uses puts the tracker in a "changing floor" state: steps are
   ignored until a marker on the other floor is seen or the user confirms (or declines).
+- **Junction hold.** Where the corridor continues but the route turns off, the estimate does not run
+  straight past the junction the moment the counted distance exceeds it: the travelled distance is only
+  known to a few percent, so most likely the user has simply not reached the junction yet. The estimate
+  waits at the junction, with the guidance still saying "turn", until the user has walked on further
+  than that error can explain (2.5 to 6 m, growing with the uncertainty). Only then is "went straight
+  on" accepted, and the route re-planned.
+
+### One scan per trip
+
+The design goal is that the first scan is the only deliberate one.
+
+- The first sighting sets position and heading however it can (full 3D pose, or the outline of the code).
+- Later sightings happen in passing, often at a bad angle. They always correct the *position* (a decoded
+  marker is ground truth for where the user is), but they only overrule the *heading* calibration when
+  the pose is solid; a rough outline is not allowed to disturb a calibration that is working.
+- The scanner runs at 8 frames per second before the first fix, while the user asked to re-scan and while
+  the estimate is vague, and at 3 otherwise.
+- A sighting at a place the current plan does not pass through re-plans the route; the event says so
+  (`fix.rerouted`), and the UI and the voice report "position corrected, route updated".
+- Recovery is explicit and always available ("Fix my position"): scan any marker on purpose, or tap the
+  position on the map. Both end up in the same `applyFix`.
+- The app itself asks for a marker only when the accuracy radius exceeds 5 m.
 
 ## 6. Routing and guidance
 
@@ -156,7 +183,48 @@ The scene is the building in metres. Two ways of moving the virtual camera:
 
 Three.js is loaded lazily with the AR view, so the destination list does not pay for it.
 
-## 8. Limits to be aware of
+## 8. The floor plan as data
+
+`graph.json` carries, per floor, the rooms (axis-aligned rectangles with a kind, a name and door
+positions) and the corridor areas, next to the navigation graph. `nav/building.ts` validates it and links
+each node to the room it is the door of; `map/plan.ts` holds what is common to every rendering of it
+(colours per kind, wall segments with the door openings cut out, a canvas renderer).
+
+- `components/MapView.tsx` draws it as SVG. The view is a centre and a scale: it follows the user, or
+  fits the floor, until the user pans or zooms (pointer events; pinch, drag, wheel), and a button returns
+  to the automatic view. Labels are chosen per zoom level (full name, short name, nothing). Rooms are
+  elements, so they can be tapped to choose a destination and highlighted as one.
+- `ar/ArScene.ts` builds the 3D walk-through of the demo mode from the same data: the plan as a ground
+  texture, instanced wall boxes with the door openings, and a name plate at every door.
+
+The demo building is generated by `scripts/build-demo-building.js`, which also derives the graph from
+the geometry (a node in front of each door, links along the corridor centre lines), so plan and graph
+cannot disagree. The unit tests check that every node lies in a corridor in front of its door and that
+every link is a straight corridor segment.
+
+## 9. Voice and sound
+
+Three layers, so that what is said can be tested without any audio:
+
+1. **`nav/announcer.ts`** turns session updates into *cues*: a sentence and/or a named sound, a priority
+   and a time-to-live. It stages the guidance like a person would: when a route starts, the destination
+   and the first instruction; an early heads-up 6 to 16 m before a maneuver; a short prompt 3.5 m before
+   it (with the turn sound, panned to that side); "continue straight" only after a turn onto a long
+   stretch; a sentence for a new floor, a changed route or the wrong direction; the arrival with the side
+   the door is on. Each stage of each maneuver is announced once. Text is written for the ear: rounded
+   distances, room codes as spoken, landmarks from the building data.
+2. **`audio/guide.ts`** plays cues one at a time: the sound first, the sentence when the sound's body is
+   over, then a short gap. Equal or lower priority waits (a short queue; stale cues are dropped); higher
+   priority interrupts. Marker ticks are skipped while anything plays and rate limited.
+3. **`audio/sounds.ts`** synthesises the effects with the Web Audio API (sine partials, 12 ms attack,
+   exponential decay, low-pass, one quiet echo, a limiter on the output). **`audio/voice.ts`** speaks
+   through `speechSynthesis`, choosing the most natural installed voice by name and type
+   (`scoreVoice`), with the user's choice stored locally.
+
+Browsers only allow audio after a tap, so the audio context and the speech synthesiser are unlocked in
+the handler of the start button.
+
+## 10. Limits to be aware of
 
 - Corridors are modelled as graph edges only; there is no wall geometry. Wandering through an open hall
   off the edges shows up as growing uncertainty rather than as movement.
@@ -165,4 +233,7 @@ Three.js is loaded lazily with the AR view, so the destination list does not pay
   tracker ignores.
 - All floor markers must share one orientation (or declare their own `rotation`). A mislaid marker gives
   a wrong heading, which the corridor-based correction then has to fight.
+- Rooms of the floor plan are rectangles. Irregular rooms have to be approximated (or shown with a raster
+  plan underneath).
+- Speech quality is whatever the device's voices offer; the app can only choose well among them.
 - See the README for what has been verified and which constants need tuning on real hardware.

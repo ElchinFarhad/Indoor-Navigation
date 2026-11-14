@@ -95,7 +95,7 @@ export function buildManeuvers(building: Building, route: Route, incomingDir?: n
     if (leg.kind !== 'walk') {
       const up = leg.to.floor > leg.from.floor;
       const floor = building.floor(leg.to.floor);
-      const via = node && node.label ? ` (${node.label})` : '';
+      const via = node && node.label && leg.kind === 'stairs' ? ` via ${node.label}` : '';
       const type = (`${leg.kind === 'elevator' ? 'elevator' : 'stairs'}-${up ? 'up' : 'down'}`) as ManeuverType;
       out.push({
         type,

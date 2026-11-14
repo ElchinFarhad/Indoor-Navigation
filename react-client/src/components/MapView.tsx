@@ -182,6 +182,7 @@ const MapView = ({ building, floor, onFloorChange, snapshot, destinationId, comp
   const accuracyUnits = here && snapshot ? clamp(snapshot.accuracy / mpu, px(10), 90) : 0;
   const showMarkers = !!onPickNode || (!compact && upp < 0.9);
   const flow = px(16);
+  const mark = onPickNode ? 11 : 7; // marker size in pixels
 
   // Without a vector plan (an old graph file) fall back to drawing the corridor network.
   const corridors: string[] = [];
@@ -260,13 +261,9 @@ const MapView = ({ building, floor, onFloorChange, snapshot, destinationId, comp
           .filter((r) => r.kind === 'stairs')
           .map((r) => (
             <g key={`treads-${r.id}`} className="map-view__treads" strokeWidth={Math.max(0.8, px(0.8))}>
-              {[0.2, 0.32, 0.44, 0.56, 0.68, 0.8].map((t) =>
-                r.w >= r.h ? (
-                  <line key={t} x1={r.x + r.w * t} y1={r.y + r.h * 0.18} x2={r.x + r.w * t} y2={r.y + r.h * 0.62} />
-                ) : (
-                  <line key={t} x1={r.x + r.w * 0.38} y1={r.y + r.h * t} x2={r.x + r.w * 0.82} y2={r.y + r.h * t} />
-                )
-              )}
+              {[0.2, 0.32, 0.44, 0.56, 0.68, 0.8].map((t) => (
+                <line key={t} x1={r.x + r.w * t} y1={r.y + r.h * 0.16} x2={r.x + r.w * t} y2={r.y + r.h * 0.6} />
+              ))}
             </g>
           ))}
 
@@ -276,12 +273,13 @@ const MapView = ({ building, floor, onFloorChange, snapshot, destinationId, comp
           const heightPx = room.h / upp;
           const size = compact ? 9 : 11;
           const fits = Math.floor(widthPx / (size * 0.56)) - 1;
-          let lines = heightPx > size * 3.2 ? wrapLabel(room.name, fits) : null;
-          if (!lines && room.short && room.short.length <= fits && heightPx > size * 1.6) lines = [room.short];
+          const stairs = room.kind === 'stairs';
+          // (the name of a staircase goes under its treads, if there is room for it)
+          let lines = !stairs && heightPx > size * 3.2 ? wrapLabel(room.name, fits) : null;
+          if (!lines && room.short && room.short.length <= fits && heightPx > size * (stairs ? 5 : 1.6)) lines = [room.short];
           if (!lines) return null;
           const isDest = !!destRoom && destRoom.id === room.id && destHere;
-          // (stairs: below the treads)
-          const cy = room.y + room.h * (room.kind === 'stairs' && room.w >= room.h ? 0.8 : 0.5);
+          const cy = room.y + room.h * (stairs ? 0.82 : 0.5);
           return (
             <text
               key={`label-${room.id}`}
@@ -328,8 +326,8 @@ const MapView = ({ building, floor, onFloorChange, snapshot, destinationId, comp
                 onClick={onPickNode ? () => tapped() && onPickNode(n) : undefined}
                 data-node={n.id}
               >
-                {onPickNode && <circle r={px(15)} className="map-view__hit" strokeWidth={px(1)} />}
-                <rect x={-px(3.5)} y={-px(3.5)} width={px(7)} height={px(7)} rx={px(1.6)} strokeWidth={px(1.2)} />
+                {onPickNode && <circle r={px(13)} className="map-view__hit" />}
+                <rect x={-px(mark / 2)} y={-px(mark / 2)} width={px(mark)} height={px(mark)} rx={px(mark * 0.25)} strokeWidth={px(1.3)} />
               </g>
             ))}
 
@@ -357,7 +355,7 @@ const MapView = ({ building, floor, onFloorChange, snapshot, destinationId, comp
         )}
       </svg>
 
-      {!compact && building.floors.length > 1 && (
+      {!compact && !!onFloorChange && building.floors.length > 1 && (
         <div className="map-view__floors" role="tablist" aria-label="Floor">
           {building.floors.map((fl) => (
             <button
@@ -366,7 +364,7 @@ const MapView = ({ building, floor, onFloorChange, snapshot, destinationId, comp
               role="tab"
               aria-selected={fl.id === f.id}
               className={`map-view__floor${fl.id === f.id ? ' is-active' : ''}${position && position.floor === fl.id ? ' has-me' : ''}`}
-              onClick={() => onFloorChange && onFloorChange(fl.id)}
+              onClick={() => onFloorChange(fl.id)}
             >
               {fl.name}
             </button>

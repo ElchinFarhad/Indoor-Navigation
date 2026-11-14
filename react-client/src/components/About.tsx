@@ -18,7 +18,7 @@ const About = () => (
         <li>
           <b>1</b>
           <span>
-            <Link to="/">Choose a destination</Link>.
+            <Link to="/">Choose a destination</Link>: search, pick a category, or tap a room on the floor plan.
           </span>
         </li>
         <li>
@@ -28,15 +28,15 @@ const About = () => (
         <li>
           <b>3</b>
           <span>
-            Hold the phone up and follow the arrows drawn over the camera image. The banner at the top tells you
+            Hold the phone up and follow the arrows drawn over the camera image. A banner and a voice announce
             the next turn; the small map shows where you are.
           </span>
         </li>
         <li>
           <b>4</b>
           <span>
-            Just walk. Markers that pass through the camera's view correct the position by themselves. If the
-            app says the position is uncertain, glance at the next marker.
+            Just walk: there is nothing more to scan. Markers that pass through the camera's view correct the
+            position by themselves. If the blue dot is ever wrong, the scan button fixes it.
           </span>
         </li>
       </ol>
@@ -61,6 +61,11 @@ const About = () => (
         <li>
           <strong>Augmented reality.</strong> A WebGL scene (Three.js) aligned with the building is drawn over
           the camera image. On phones that support WebXR the browser's own AR tracking can take over.
+        </li>
+        <li>
+          <strong>Voice and sound.</strong> Directions are spoken with the most natural voice installed on
+          your device (you can pick another under Sound), with a few soft sound cues. Everything can be
+          switched off.
         </li>
         <li>
           <strong>Privacy.</strong> No GPS, no account, no server: the camera image and sensor data never leave

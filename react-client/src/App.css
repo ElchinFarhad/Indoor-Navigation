@@ -550,8 +550,7 @@
 }
 
 .map-view__hit {
-  fill: rgba(20, 131, 221, 0.14);
-  stroke: var(--accent);
+  fill: transparent;
 }
 
 .map-view__dest path {
@@ -1293,8 +1292,34 @@
   overflow: hidden;
 }
 
+.browse__floors {
+  display: flex;
+  margin: 0.6rem 0.6rem 0;
+  padding: 0.22rem;
+  border-radius: 13px;
+  background: #eef0f4;
+}
+
+.browse__floors button {
+  flex: 1;
+  min-height: 2.3rem;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--ink-soft);
+  font-weight: 650;
+  font-size: 0.92rem;
+}
+
+.browse__floors button.is-active {
+  background: #ffffff;
+  color: var(--ink);
+  box-shadow: 0 1px 4px rgba(28, 35, 48, 0.18);
+}
+
 .browse__map {
-  height: min(62vw, 340px);
+  height: min(64vw, 340px);
+  margin-top: 0.6rem;
 }
 
 .browse__selected {

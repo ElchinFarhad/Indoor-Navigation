@@ -98,8 +98,17 @@ const HomePage = () => {
 
         {building.hasPlan && (
           <section className="browse" aria-label="Floor plan">
+            {building.floors.length > 1 && (
+              <div className="browse__floors" role="tablist" aria-label="Floor">
+                {building.floors.map((f) => (
+                  <button key={f.id} type="button" role="tab" aria-selected={floor === f.id} className={floor === f.id ? 'is-active' : ''} onClick={() => setFloor(f.id)}>
+                    {f.name}
+                  </button>
+                ))}
+              </div>
+            )}
             <div className="browse__map">
-              <MapView building={building} floor={floor} onFloorChange={setFloor} destinationId={selected ? selected.id : null} onSelectRoom={selectOnMap} />
+              <MapView building={building} floor={floor} destinationId={selected ? selected.id : null} onSelectRoom={selectOnMap} />
             </div>
             {selected ? (
               <div className="browse__selected">
