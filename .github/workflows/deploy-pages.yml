@@ -1,0 +1,64 @@
+# Builds the React client and publishes it to GitHub Pages.
+#
+# One-time setup in the repository: Settings -> Pages -> Build and deployment
+# -> Source: "GitHub Actions". After that every push to the default branch
+# deploys, and the workflow can also be started by hand from the Actions tab.
+#
+# The site is served from https://<user>.github.io/<repository>/, so the app is
+# built for that sub-path; 404.html is a copy of index.html so that deep links
+# such as /qrScanner/3 open the single-page app.
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [master, main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: react-client/package-lock.json
+      - name: Install
+        working-directory: react-client
+        run: npm ci
+      - name: Test
+        working-directory: react-client
+        run: npm test -- --watchAll=false
+        env:
+          CI: 'true'
+      - name: Build
+        working-directory: react-client
+        run: npm run build
+        env:
+          PUBLIC_URL: /${{ github.event.repository.name }}
+      - name: Single-page-app fallback
+        run: cp react-client/build/index.html react-client/build/404.html
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: react-client/build
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,8 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "installCommand": "cd react-client && npm ci",
+  "buildCommand": "cd react-client && npm run build",
+  "outputDirectory": "react-client/build",
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+}

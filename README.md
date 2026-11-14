@@ -12,6 +12,7 @@ TypeScript, Three.js for the AR overlay, Dijkstra for routing. No backend, no GP
 - [Do I have to scan every marker?](#do-i-have-to-scan-every-marker)
 - [Run it](#run-it)
 - [Try it on a phone](#try-it-on-a-phone)
+- [Deploy](#deploy)
 - [The building](#the-building)
 - [Voice and sounds](#voice-and-sounds)
 - [Tests](#tests)
@@ -126,6 +127,24 @@ On iPhone the first tap on *Start camera navigation* asks for motion-sensor acce
 
 Print a few markers from `QRCodeImages/`, lay them on the floor **all with the same edge pointing to the
 top of the map** (the sheets say which edge), and make the building data match where you put them.
+
+## Deploy
+
+The app is a static site and needs HTTPS (for the camera and motion sensors); both free options below
+provide it.
+
+**GitHub Pages** (`.github/workflows/deploy-pages.yml`). Once: *Settings → Pages → Build and deployment →
+Source: GitHub Actions*. Every push to the default branch then runs the tests, builds the client for
+the `/<repository>/` sub-path and publishes it at `https://<user>.github.io/<repository>/`. It can also
+be started by hand from the *Actions* tab.
+
+**Vercel** (`vercel.json`). Import the repository at vercel.com with the default settings; the file tells
+Vercel how to build `react-client` and to serve `index.html` for deep links. Every branch gets its own
+preview URL.
+
+Any other static host works too: run `npm run build` in `react-client` (set `PUBLIC_URL=/sub/path` if the
+site is not served from the root), upload `react-client/build`, and make unknown paths fall back to
+`index.html`.
 
 ## The building
 
