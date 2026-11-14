@@ -1,6 +1,9 @@
 import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Detection } from '../ar/types';
+import { AudioGuide, AudioMode } from '../audio/guide';
 import { building } from '../db/dijkstra';
+import { Announcer } from '../nav/announcer';
 import { NavNode } from '../nav/building';
 import { formatDistance, Mat3, mat3Multiply } from '../nav/geometry';
 import { NavEvent, NavigationSession, NavSnapshot } from '../nav/navigator';
@@ -10,19 +13,21 @@ import { WalkSimulator } from '../nav/simulator';
 import { CameraError, closeCamera, openCamera } from '../sensors/camera';
 import { MotionSensors, requestMotionPermission } from '../sensors/motion';
 import { QrScanner as FrameScanner, ScanFrame } from '../sensors/qrScanner';
-import { Detection } from '../ar/types';
+import KindIcon from './KindIcon';
 import ManeuverIcon from './ManeuverIcon';
 import MapView from './MapView';
+import { AudioPanel, FixPanel, StepsPanel } from './NavPanels';
 
 // Three.js is only needed once the camera view opens: keep it out of the first load.
 const ArView = React.lazy(() => import('./ArView'));
 
-/** Accuracy radius (metres) above which the chip turns red. */
+/** Accuracy radius (metres) above which the position is shown as uncertain. */
 const RECAL = 5;
 
 type Phase = 'intro' | 'running';
 type Source = 'camera' | 'demo' | 'manual';
 type View = 'ar' | 'map';
+type PanelName = 'steps' | 'audio' | 'fix' | null;
 
 interface Toast {
   id: number;
@@ -30,15 +35,15 @@ interface Toast {
   tone: 'info' | 'good' | 'warn';
 }
 
-function useSnapshot(session: NavigationSession, onEvent: (e: NavEvent, s: NavSnapshot) => void): NavSnapshot {
+function useSnapshot(session: NavigationSession, onUpdate: (s: NavSnapshot, e?: NavEvent) => void): NavSnapshot {
   const [snapshot, setSnapshot] = useState(session.snapshot);
-  const handler = useRef(onEvent);
-  handler.current = onEvent;
+  const handler = useRef(onUpdate);
+  handler.current = onUpdate;
   useEffect(() => {
     setSnapshot(session.snapshot);
     return session.subscribe((s, e) => {
       setSnapshot(s);
-      if (e) handler.current(e, s);
+      handler.current(s, e);
     });
   }, [session]);
   return snapshot;
@@ -55,26 +60,17 @@ function vibrate(pattern: number | number[]) {
   }
 }
 
-function speak(text: string) {
-  try {
-    const synth = window.speechSynthesis;
-    if (!synth) return;
-    synth.cancel();
-    synth.speak(new SpeechSynthesisUtterance(text));
-  } catch (e) {
-    /* not supported */
-  }
-}
-
 /**
  * The navigation screen.
  *
  * It keeps the route (`/qrScanner/:id`, the id being the destination) and the
- * name of the original component, but scanning a marker is now only the way to
- * find out where the user is: afterwards the position is tracked with the
- * phone's motion sensors and the guidance is drawn over the live camera image.
- * Every marker that happens to come into view while walking silently
- * re-calibrates the position.
+ * name of the original component, but a QR marker is now scanned once: it
+ * tells the app where the user is and which way they face. From then on the
+ * position is tracked with the phone's motion sensors all the way to the
+ * destination, with arrows over the camera image, a live map and spoken
+ * directions. Markers that happen to pass through the camera's view tidy the
+ * position up silently, and "fix my position" lets the user scan one on
+ * purpose (or point at the map) if the estimate has drifted.
  */
 const QrScanner = () => {
   const params = useParams();
@@ -91,6 +87,8 @@ const QrScanner = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [destId]
   );
+  const announcer = useMemo(() => new Announcer(building), [session]); // eslint-disable-line react-hooks/exhaustive-deps
+  const guide = useMemo(() => new AudioGuide(), []);
 
   const [phase, setPhase] = useState<Phase>('intro');
   const [source, setSource] = useState<Source>('camera');
@@ -101,9 +99,12 @@ const QrScanner = () => {
   const [sensorsMissing, setSensorsMissing] = useState(false);
   const [detection, setDetection] = useState<Detection | null>(null);
   const [toasts, setToasts] = useState<Toast[]>([]);
-  const [voice, setVoice] = useState(false);
+  const [audioMode, setAudioMode] = useState<AudioMode>(guide.mode);
   const [mapFloor, setMapFloor] = useState<number | null>(null);
   const [picking, setPicking] = useState(false);
+  const [scanning, setScanning] = useState(false);
+  const [panel, setPanel] = useState<PanelName>(null);
+  const [stepFree, setStepFree] = useState(false);
   const [xrSupported, setXrSupported] = useState(false);
   const [xrSession, setXrSession] = useState<any>(null);
   const root = useRef<HTMLDivElement>(null);
@@ -114,8 +115,6 @@ const QrScanner = () => {
   const streamRef = useRef<MediaStream | null>(null);
   const sensorMatrix = useRef<Mat3 | null>(null);
   const detectionTimer = useRef<number | null>(null);
-  const voiceRef = useRef(voice);
-  voiceRef.current = voice;
   const toastId = useRef(1);
 
   const toast = useCallback((text: string, tone: Toast['tone'] = 'info') => {
@@ -124,29 +123,33 @@ const QrScanner = () => {
     window.setTimeout(() => setToasts((list) => list.filter((t) => t.id !== id)), 3800);
   }, []);
 
-  const onEvent = useCallback(
-    (event: NavEvent, snap: NavSnapshot) => {
+  const onUpdate = useCallback(
+    (snap: NavSnapshot, event?: NavEvent) => {
+      // Voice and sound: the announcer decides what is worth hearing, the guide when it is heard.
+      for (const cue of announcer.update(snap, event)) guide.push(cue);
+      if (!event) return;
       switch (event.type) {
         case 'fix':
+          setScanning(false);
+          setPicking(false);
           if (event.first) {
-            toast(`You are at ${building.displayName(event.node)}`, 'good');
+            toast(`You're at ${building.displayName(event.node)}`, 'good');
             vibrate(60);
-          } else if (event.correction !== null && event.correction > 1) {
-            toast(`Position corrected at marker ${event.node.name} (${event.correction.toFixed(1)} m)`, 'good');
+          } else if (event.rerouted) {
+            toast('Position corrected · route updated', 'good');
+            vibrate([40, 60, 40]);
+          } else if (event.correction !== null && event.correction > 1.5) {
+            toast(`Position corrected at ${building.displayName(event.node)}`, 'good');
             vibrate(40);
-          } else {
-            toast(`Passed marker ${event.node.name}`, 'good');
           }
           break;
         case 'reroute':
           toast('Route updated', 'info');
           vibrate([40, 60, 40]);
-          if (voiceRef.current) speak('Route updated');
           break;
         case 'wrong-way':
           toast('Wrong way: turn around', 'warn');
           vibrate([120, 80, 120]);
-          if (voiceRef.current) speak('Wrong way. Turn around.');
           break;
         case 'floor': {
           const f = building.floor(event.floor);
@@ -156,20 +159,19 @@ const QrScanner = () => {
         }
         case 'approach':
           vibrate(50);
-          if (voiceRef.current) speak(`${event.maneuver.text}${event.maneuver.detail ? ` ${event.maneuver.detail}` : ''}`);
           break;
         case 'arrived':
           vibrate([80, 60, 80, 60, 200]);
-          if (voiceRef.current) speak(`You have arrived at ${building.displayName(snap.destination)}`);
+          setPanel(null);
           break;
         default:
           break;
       }
     },
-    [toast]
+    [toast, announcer, guide]
   );
 
-  const snapshot = useSnapshot(session, onEvent);
+  const snapshot = useSnapshot(session, onUpdate);
 
   /* ------------------------------------------------------------ pose source */
 
@@ -231,10 +233,12 @@ const QrScanner = () => {
     [onFrame, toast]
   );
 
-  // Scan eagerly while lost or unsure, lazily once the position is trusted.
-  const hungry = snapshot.status === 'locating' || snapshot.accuracy > 3 || !snapshot.headingCalibrated;
+  // The camera keeps looking for markers in the background the whole time, but
+  // only works hard at it when it matters: before the first fix, when the user
+  // asked to re-scan, or when the estimate has become vague.
+  const hungry = snapshot.status === 'locating' || scanning || snapshot.accuracy > 3 || !snapshot.headingCalibrated;
   useEffect(() => {
-    if (scanner.current) scanner.current.setRate(hungry ? 8 : 4);
+    if (scanner.current) scanner.current.setRate(hungry ? 8 : 3);
   }, [hungry, stream]);
 
   /* ------------------------------------------------------------------ WebXR */
@@ -299,6 +303,7 @@ const QrScanner = () => {
     if (starting) return;
     setStarting(true);
     setCameraProblem(null);
+    guide.unlock(); // audio is only allowed to start from inside a tap
     // Motion permission first: iOS only shows its prompt inside the tap handler.
     await requestMotionPermission();
     const motion = new MotionSensors(sensorCallbacks);
@@ -326,22 +331,31 @@ const QrScanner = () => {
   };
 
   const startDemo = () => {
+    guide.unlock();
     const sim = new WalkSimulator(session, sensorCallbacks);
     simulator.current = sim;
     setSource('demo');
     setView('ar');
     setPhase('running');
-    // Start somewhere that makes for an interesting walk: the marker furthest
-    // away on the destination's floor, or the requested start.
+    // Walk in from the main entrance (or, when that is the destination, from
+    // the marker furthest away from it).
     let from = startId;
     if (from === null && destination) {
-      let best = -1;
-      for (const n of building.markers()) {
-        if (n.id === destination.id || n.floor !== destination.floor) continue;
-        const d = Math.hypot(n.x - destination.x, n.y - destination.y);
-        if (d > best) {
-          best = d;
-          from = n.id;
+      const entrance = building.nodes.find((n) => {
+        const room = building.roomOf(n);
+        return !!room && room.kind === 'lobby';
+      });
+      if (entrance && entrance.id !== destination.id) {
+        from = entrance.id;
+      } else {
+        let best = -1;
+        for (const n of building.markers()) {
+          if (n.id === destination.id || n.floor !== destination.floor) continue;
+          const d = Math.hypot(n.x - destination.x, n.y - destination.y);
+          if (d > best) {
+            best = d;
+            from = n.id;
+          }
         }
       }
     }
@@ -354,7 +368,7 @@ const QrScanner = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [destId]);
 
-  // Release the camera, sensors and timers when leaving the screen.
+  // Release the camera, sensors, audio and timers when leaving the screen.
   useEffect(
     () => () => {
       if (scanner.current) scanner.current.stop();
@@ -362,13 +376,9 @@ const QrScanner = () => {
       if (simulator.current) simulator.current.stop();
       closeCamera(streamRef.current);
       if (detectionTimer.current !== null) window.clearTimeout(detectionTimer.current);
-      try {
-        if (window.speechSynthesis) window.speechSynthesis.cancel();
-      } catch (e) {
-        /* ignore */
-      }
+      guide.dispose();
     },
-    []
+    [guide]
   );
 
   // Keep the screen awake while navigating.
@@ -421,6 +431,7 @@ const QrScanner = () => {
   const locating = snapshot.status === 'locating';
   const pendingFloor = snapshot.floorChange;
   const pendingFloorName = pendingFloor ? (building.floor(pendingFloor.toFloor) || { name: `floor ${pendingFloor.toFloor}` }).name : '';
+  const uncertain = snapshot.accuracy >= RECAL;
 
   const pickStart = (node: NavNode) => {
     session.setStart(node.id);
@@ -428,12 +439,41 @@ const QrScanner = () => {
     setMapFloor(node.floor);
   };
 
-  const accuracyTone = snapshot.accuracy < 2 ? 'good' : snapshot.accuracy < RECAL ? 'warn' : 'bad';
+  const changeAudio = (mode: AudioMode) => {
+    guide.unlock();
+    guide.setMode(mode);
+    setAudioMode(mode);
+  };
+
+  const changeStepFree = (on: boolean) => {
+    setStepFree(on);
+    session.setStepFree(on);
+  };
+
+  const beginScan = () => {
+    setPanel(null);
+    setPicking(false);
+    setScanning(true);
+    setView('ar');
+  };
+
+  const beginPick = () => {
+    setPanel(null);
+    setScanning(false);
+    setPicking(true);
+    setView('map');
+  };
 
   let bannerIcon: any = 'scan';
   let bannerTitle = 'Find your position';
   let bannerDetail = source === 'camera' ? 'Point the camera at the nearest QR marker' : 'Choose the marker you are standing at';
-  if (snapshot.status === 'unreachable') {
+  if (scanning && !locating) {
+    bannerTitle = 'Point at any marker';
+    bannerDetail = 'Your position will be corrected';
+  } else if (picking && !locating) {
+    bannerTitle = 'Where are you?';
+    bannerDetail = 'Tap the marker you are standing at';
+  } else if (snapshot.status === 'unreachable') {
     bannerIcon = 'uturn';
     bannerTitle = 'No route from here';
     bannerDetail = `${destName} cannot be reached from this marker`;
@@ -457,10 +497,18 @@ const QrScanner = () => {
     }
   }
 
+  const showAr = phase === 'running' && view === 'ar' && source !== 'manual';
+  const showMap = phase === 'running' && !showAr;
+  const canFix = phase === 'running' && !arrived && !locating && source !== 'demo' && !xrSession;
+  const remainingText = formatDistance(snapshot.remaining);
+
   return (
-    <div ref={root} className={`nav-screen nav-screen--${view}${phase === 'intro' ? ' nav-screen--intro' : ''}${xrSession ? ' nav-screen--xr' : ''}`}>
+    <div
+      ref={root}
+      className={`nav-screen nav-screen--${showAr ? 'ar' : 'map'}${phase === 'intro' ? ' nav-screen--intro' : ''}${xrSession ? ' nav-screen--xr' : ''}`}
+    >
       <div className="nav-stage">
-        {phase === 'running' && view === 'ar' && source !== 'manual' && (
+        {showAr && (
           <Suspense fallback={<div className="nav-loading">Starting the camera view…</div>}>
             <ArView
               building={building}
@@ -476,35 +524,45 @@ const QrScanner = () => {
             />
           </Suspense>
         )}
-        {phase === 'running' && (view === 'map' || source === 'manual') && (
+        {showMap && (
           <div className="nav-map">
-            <MapView
-              building={building}
-              snapshot={snapshot}
-              floor={shownFloor}
-              onFloorChange={setMapFloor}
-              onPickNode={picking ? pickStart : undefined}
-            />
+            <MapView building={building} snapshot={snapshot} floor={shownFloor} onFloorChange={setMapFloor} onPickNode={picking ? pickStart : undefined} />
           </div>
         )}
-        {phase === 'intro' && <div className="nav-intro-backdrop" />}
+        {phase === 'intro' && (
+          <div className="nav-intro-backdrop">
+            <MapView building={building} floor={destination.floor} destinationId={destination.id} compact />
+          </div>
+        )}
       </div>
 
       {/* ------------------------------------------------ instruction banner */}
       {phase === 'running' && (
-        <header className={`nav-banner${arrived ? ' nav-banner--arrived' : ''}${snapshot.wrongWay ? ' nav-banner--warn' : ''}`}>
+        <header className={`nav-banner${arrived ? ' nav-banner--arrived' : ''}${snapshot.wrongWay && !scanning ? ' nav-banner--warn' : ''}`}>
           <button type="button" className="nav-banner__back" aria-label="End navigation" onClick={() => navigate('/')}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
               <path d="M15 5l-7 7 7 7" />
             </svg>
           </button>
           <div className="nav-banner__icon">
-            <ManeuverIcon type={bannerIcon} size={34} />
+            <ManeuverIcon type={scanning || picking ? 'scan' : bannerIcon} size={34} />
           </div>
           <div className="nav-banner__text" aria-live="polite">
             <strong>{bannerTitle}</strong>
             {bannerDetail && <span>{bannerDetail}</span>}
           </div>
+          {(scanning || picking) && !locating && (
+            <button
+              type="button"
+              className="nav-banner__cancel"
+              onClick={() => {
+                setScanning(false);
+                setPicking(false);
+              }}
+            >
+              Cancel
+            </button>
+          )}
         </header>
       )}
 
@@ -520,7 +578,7 @@ const QrScanner = () => {
       {/* -------------------------------------------------- contextual hints */}
       {phase === 'running' && !arrived && (
         <div className="nav-hints">
-          {locating && source === 'camera' && view === 'ar' && (
+          {(locating || scanning) && source === 'camera' && showAr && (
             <div className="nav-reticle" aria-hidden="true">
               <i />
               <i />
@@ -529,28 +587,23 @@ const QrScanner = () => {
             </div>
           )}
           {locating && source !== 'demo' && !picking && (
-            <button type="button" className="nav-pill nav-pill--action" onClick={() => { setPicking(true); setView('map'); }}>
+            <button type="button" className="nav-pill nav-pill--action" onClick={beginPick}>
               No marker nearby? Choose where you are
             </button>
           )}
-          {picking && <div className="nav-pill">Tap the marker you are standing at</div>}
           {cameraProblem && <div className="nav-pill nav-pill--warn">{cameraProblem}</div>}
           {!locating && sensorsMissing && source === 'camera' && (
             <div className="nav-pill nav-pill--warn">Motion sensors unavailable: scan each marker you pass for directions</div>
           )}
-          {xrSupported && source === 'camera' && view === 'ar' && !locating && snapshot.headingCalibrated && !pendingFloor && (
-            <button
-              type="button"
-              className="nav-pill nav-pill--action"
-              onClick={() => (xrSession ? xrSession.end() : startXr())}
-            >
+          {xrSupported && source === 'camera' && showAr && !locating && !scanning && snapshot.headingCalibrated && !pendingFloor && (
+            <button type="button" className="nav-pill nav-pill--action" onClick={() => (xrSession ? xrSession.end() : startXr())}>
               {xrSession ? 'Exit precise AR' : 'Precise AR (beta)'}
             </button>
           )}
-          {snapshot.needsRecalibration && !sensorsMissing && (
-            <div className="nav-pill nav-pill--warn">
-              Position uncertain{snapshot.nextMarker ? `: point the camera at marker ${snapshot.nextMarker.name} when you pass it` : ': scan any marker'}
-            </div>
+          {snapshot.needsRecalibration && !sensorsMissing && !scanning && (
+            <button type="button" className="nav-pill nav-pill--warn" onClick={canFix && source === 'camera' ? beginScan : undefined}>
+              Position uncertain{snapshot.nextMarker ? `: glance at the marker by ${building.displayName(snapshot.nextMarker)} when you pass it` : ''}
+            </button>
           )}
         </div>
       )}
@@ -563,9 +616,9 @@ const QrScanner = () => {
           </div>
           <div className="nav-card__body">
             <strong>
-              Take the {pendingFloor.kind} to {pendingFloorName}
+              Take the {pendingFloor.kind === 'elevator' ? 'lift' : 'stairs'} to {pendingFloorName}
             </strong>
-            <span>Scan the marker when you get there, or confirm below.</span>
+            <span>It updates by itself if the camera sees a marker up there.</span>
             <div className="nav-card__actions">
               <button type="button" className="btn-nav btn-nav--primary" onClick={() => session.confirmFloorChange()}>
                 I'm on {pendingFloorName}
@@ -578,8 +631,13 @@ const QrScanner = () => {
         </div>
       )}
 
-      {/* ----------------------------------------------- mini map (AR view) */}
-      {phase === 'running' && view === 'ar' && source !== 'manual' && position && !arrived && (
+      {/* ------------------------------------------- side buttons, mini map */}
+      {canFix && !scanning && !picking && !pendingFloor && (
+        <button type="button" className={`nav-fab${showAr ? ' nav-fab--above-pip' : ''}${uncertain ? ' nav-fab--attention' : ''}`} onClick={() => setPanel('fix')} aria-label="Fix my position">
+          <ManeuverIcon type="scan" size={24} />
+        </button>
+      )}
+      {showAr && position && !arrived && (
         <button type="button" className="nav-pip" onClick={() => setView('map')} aria-label="Open the map">
           <MapView building={building} snapshot={snapshot} floor={position.floor} compact />
         </button>
@@ -589,44 +647,54 @@ const QrScanner = () => {
       {phase === 'running' && !arrived && (
         <footer className="nav-bar">
           <div className="nav-bar__summary">
-            <strong>{locating ? destName : formatDistance(snapshot.remaining) === 'now' ? 'Arriving' : formatDistance(snapshot.remaining)}</strong>
-            <span>
-              {locating
-                ? destFloor
-                  ? destFloor.name
-                  : ''
-                : `${Math.max(1, Math.round(snapshot.etaSeconds / 60))} min · ${destName}`}
-            </span>
+            {locating ? (
+              <>
+                <strong>{destName}</strong>
+                <span>{destFloor ? destFloor.name : ''}</span>
+              </>
+            ) : (
+              <>
+                <strong>
+                  {remainingText === 'now' ? 'Arriving' : remainingText}
+                  <small> · {Math.max(1, Math.round(snapshot.etaSeconds / 60))} min</small>
+                </strong>
+                <span>
+                  <i className={`nav-dot nav-dot--${snapshot.accuracy < 2 ? 'good' : snapshot.accuracy < RECAL ? 'warn' : 'bad'}`} title="Estimated accuracy of your position" />
+                  {destName} · ±{snapshot.accuracy < 10 ? snapshot.accuracy.toFixed(1) : Math.round(snapshot.accuracy)} m
+                </span>
+              </>
+            )}
           </div>
-          {!locating && (
-            <span className={`nav-chip nav-chip--${accuracyTone}`} title="Estimated accuracy of your position">
-              ±{snapshot.accuracy < 10 ? snapshot.accuracy.toFixed(1) : Math.round(snapshot.accuracy)} m
-            </span>
-          )}
           <div className="nav-bar__actions">
-            <button
-              type="button"
-              className={`nav-icon-btn${voice ? ' is-on' : ''}`}
-              aria-pressed={voice}
-              aria-label="Spoken directions"
-              onClick={() => {
-                setVoice(!voice);
-                if (!voice) speak('Spoken directions on');
-              }}
-            >
+            <button type="button" className={`nav-icon-btn${audioMode !== 'off' ? ' is-on' : ''}`} aria-label={`Sound: ${audioMode}`} onClick={() => setPanel('audio')}>
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M4 10v4h3l5 4V6L7 10H4z" />
-                {voice ? <path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11" /> : <path d="M17 9l4 6M21 9l-4 6" />}
+                {audioMode === 'voice' && <path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11" />}
+                {audioMode === 'sounds' && <path d="M16 9a4 4 0 0 1 0 6" />}
+                {audioMode === 'off' && <path d="M17 9l4 6M21 9l-4 6" />}
               </svg>
             </button>
+            {!locating && (
+              <button type="button" className="nav-icon-btn" aria-label="Directions list" onClick={() => setPanel('steps')}>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+                  <path d="M9 6h11M9 12h11M9 18h11" />
+                  <path d="M4.5 6h.01M4.5 12h.01M4.5 18h.01" strokeWidth="3" />
+                </svg>
+              </button>
+            )}
             {source !== 'manual' && !xrSession && (
-              <button type="button" className="nav-icon-btn nav-icon-btn--wide" onClick={() => setView(view === 'ar' ? 'map' : 'ar')}>
-                {view === 'ar' ? 'Map' : source === 'demo' ? '3D' : 'AR'}
+              <button type="button" className="nav-icon-btn nav-icon-btn--wide" onClick={() => setView(showAr ? 'map' : 'ar')}>
+                {showAr ? 'Map' : source === 'demo' ? '3D' : 'AR'}
               </button>
             )}
           </div>
         </footer>
       )}
+
+      {/* ------------------------------------------------------------ panels */}
+      {panel === 'steps' && <StepsPanel building={building} snapshot={snapshot} onStepFree={changeStepFree} onClose={() => setPanel(null)} />}
+      {panel === 'audio' && <AudioPanel guide={guide} mode={audioMode} onMode={changeAudio} onClose={() => setPanel(null)} />}
+      {panel === 'fix' && <FixPanel canScan={source === 'camera'} onScan={beginScan} onPick={beginPick} onClose={() => setPanel(null)} />}
 
       {/* ----------------------------------------------------------- arrival */}
       {arrived && (
@@ -638,7 +706,8 @@ const QrScanner = () => {
           <p>
             {destName}
             {destFloor ? ` · ${destFloor.name}` : ''}
-            {!snapshot.arrivalConfirmed && ' — look for marker ' + destination.name}
+            {snapshot.destinationSide === 'left' && ' · on your left'}
+            {snapshot.destinationSide === 'right' && ' · on your right'}
           </p>
           <Link className="btn-nav btn-nav--primary" to="/">
             Done
@@ -654,26 +723,43 @@ const QrScanner = () => {
               <path d="M15 5l-7 7 7 7" />
             </svg>
           </Link>
-          <p className="sheet__eyebrow">Navigate to</p>
-          <h2>{destName}</h2>
-          <p className="sheet__sub">
-            {destFloor ? destFloor.name : ''} · marker {destination.name}
-            {startId !== null && ` · from ${building.displayName(building.node(startId)!)}`}
-          </p>
+          <div className="sheet__title">
+            <span className="sheet__kind">
+              <KindIcon kind={destination.kind} size={26} />
+            </span>
+            <div>
+              <p className="sheet__eyebrow">Navigate to</p>
+              <h2>{destName}</h2>
+              <p className="sheet__sub">
+                {destFloor ? destFloor.name : ''} · {building.name}
+                {startId !== null && ` · from ${building.displayName(building.node(startId)!)}`}
+              </p>
+            </div>
+          </div>
           <ol className="steps">
             <li>
               <b>1</b>
-              <span>Scan the nearest QR marker once so the app knows where you are.</span>
+              <span>
+                <strong>Scan one QR marker.</strong> That tells the app where you are and which way you face.
+              </span>
             </li>
             <li>
               <b>2</b>
-              <span>Hold the phone up and follow the arrows on the camera image.</span>
-            </li>
-            <li>
-              <b>3</b>
-              <span>Markers you walk past keep the position accurate automatically.</span>
+              <span>
+                <strong>Just walk.</strong> Follow the arrows on the camera and the spoken directions. No more scanning.
+              </span>
             </li>
           </ol>
+          {building.floors.length > 1 && (
+            <label className="switch-row switch-row--dark">
+              <span>
+                <strong>Avoid stairs</strong>
+                <small>Use the lift between floors</small>
+              </span>
+              <input type="checkbox" checked={stepFree} onChange={(e) => changeStepFree(e.target.checked)} />
+              <i aria-hidden="true" />
+            </label>
+          )}
           <button type="button" className="btn-nav btn-nav--primary btn-nav--large" onClick={startCamera} disabled={starting}>
             {starting ? 'Starting…' : 'Start camera navigation'}
           </button>

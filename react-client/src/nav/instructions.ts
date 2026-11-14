@@ -1,7 +1,7 @@
 /**
  * Turns a route (a polyline through the graph) into turn-by-turn guidance.
  */
-import { Building } from './building';
+import { Building, NavNode } from './building';
 import { angleDiff, DEG, formatDistance } from './geometry';
 import { Route } from './routing';
 
@@ -34,6 +34,8 @@ export interface Maneuver {
   angle?: number;
   /** Target floor for stairs / elevator maneuvers. */
   toFloor?: number;
+  /** Graph node where the maneuver happens (null for one at a mid-corridor start). */
+  nodeId?: number | null;
 }
 
 const STRAIGHT_BELOW = 25 * DEG;
@@ -50,6 +52,14 @@ export function classifyTurn(angle: number): ManeuverType {
   if (a < SLIGHT_BELOW) return (`slight-${side}` as ManeuverType);
   if (a > SHARP_ABOVE) return (`sharp-${side}` as ManeuverType);
   return side;
+}
+
+/** "at Stairs A", "at the lobby", "at marker B": where a maneuver happens, in words. */
+export function landmark(building: Building, node: NavNode): string {
+  if (!node.label) return `at marker ${node.name}`;
+  if (node.type === 'node') return `at the ${node.label.toLowerCase()}`;
+  if (node.type === 'stairs' || node.type === 'elevator') return `at ${node.label}`;
+  return `by ${building.displayName(node)}`;
 }
 
 const TURN_TEXT: { [k: string]: string } = {
@@ -84,13 +94,15 @@ export function buildManeuvers(building: Building, route: Route, incomingDir?: n
     if (leg.kind !== 'walk') {
       const up = leg.to.floor > leg.from.floor;
       const floor = building.floor(leg.to.floor);
+      const via = node && node.label ? ` (${node.label})` : '';
       const type = (`${leg.kind === 'elevator' ? 'elevator' : 'stairs'}-${up ? 'up' : 'down'}`) as ManeuverType;
       out.push({
         type,
         at: leg.startsAt,
         pointIndex: i,
-        text: leg.kind === 'elevator' ? `Take the elevator ${up ? 'up' : 'down'}` : `Take the stairs ${up ? 'up' : 'down'}`,
-        detail: `to ${floor ? floor.name : `floor ${leg.to.floor}`}`,
+        text: leg.kind === 'elevator' ? `Take the lift ${up ? 'up' : 'down'}` : `Take the stairs ${up ? 'up' : 'down'}`,
+        detail: `to ${floor ? floor.name : `floor ${leg.to.floor}`}${via}`,
+        nodeId: node ? node.id : null,
         toFloor: leg.to.floor,
       });
       continue;
@@ -110,8 +122,9 @@ export function buildManeuvers(building: Building, route: Route, incomingDir?: n
       at: leg.startsAt,
       pointIndex: i,
       text: turnText(type),
-      detail: node && i > 0 ? `at marker ${node.name}` : undefined,
+      detail: node && i > 0 ? landmark(building, node) : undefined,
       angle,
+      nodeId: node ? node.id : null,
     });
   }
 
@@ -121,6 +134,7 @@ export function buildManeuvers(building: Building, route: Route, incomingDir?: n
     at: route.length,
     pointIndex: route.points.length - 1,
     text: dest ? `Arrive at ${building.displayName(dest)}` : 'Arrive at your destination',
+    nodeId: route.destId,
   });
   return out;
 }

@@ -124,7 +124,8 @@ export class WalkSimulator {
           for (const id of [pos.from, pos.to]) {
             if (id === null || id === this.lastMarker) continue;
             const n = this.session.building.node(id)!;
-            if (n.qr && distance(pos, n) * this.session.building.metersPerUnit < 0.6) {
+            // (A phone held up for the arrows only catches a floor marker now and then.)
+            if (n.qr && after.sinceFix > 14 && distance(pos, n) * this.session.building.metersPerUnit < 0.6) {
               this.sight(id);
               break;
             }

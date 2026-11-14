@@ -10,6 +10,9 @@
  *   node.floor           floor a node is on (default 0)
  *   node.label           human readable name ("Library")
  *   node.qr              how the node's QR marker is mounted, or `false` for no marker
+ *   node.room            id of the room (in the floor's plan) this node is the door of
+ *   meta.floors[].rooms / .corridors   the floor plan itself, as vector data: the map
+ *                        view and the 3D walk-through are both drawn from it
  *   path[].kind          "walk" | "stairs" | "elevator"
  *   path[].length        length in metres, for edges whose map distance means nothing (stairs)
  */
@@ -43,17 +46,54 @@ export interface RawNode {
   y: number;
   floor?: number;
   label?: string;
+  room?: string;
   qr?: boolean | RawQr;
   path: RawPath[];
+}
+
+/** A door (or opening) in a room's wall, given by its centre point on that wall. */
+export interface PlanDoor {
+  x: number;
+  y: number;
+  /** Width of the opening in map units (default: 1 m). */
+  width?: number;
+  /** True for a door to the outside. */
+  entrance?: boolean;
+}
+
+export interface PlanRect {
+  id?: string;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
+/** A room of the floor plan: an axis-aligned rectangle with doors. */
+export interface PlanRoom extends PlanRect {
+  id: string;
+  name: string;
+  /** Short label for small rooms on the map ("WC", "0.21"). */
+  short?: string;
+  /** classroom, lab, office, auditorium, library, cafe, restroom, stairs, elevator, lobby, reception, study */
+  kind: string;
+  doors?: PlanDoor[];
+  /** Node in front of the room's door. */
+  node?: number;
 }
 
 export interface RawFloor {
   id: number;
   name: string;
   short?: string;
+  /** How the floor is named in a spoken sentence ("the first floor"). */
+  spoken?: string;
+  /** Optional raster floor plan (see assets/maps.ts), drawn under the vector plan. */
   map?: string;
   width?: number;
   height?: number;
+  corridors?: PlanRect[];
+  rooms?: PlanRoom[];
 }
 
 export interface RawGraph {
@@ -82,6 +122,10 @@ export interface NavNode extends Vec2 {
   label?: string;
   type: NodeType;
   floor: number;
+  /** Id of the plan room this node is the door of, if any. */
+  roomId?: string;
+  /** What kind of place this is ("classroom", "restroom", "stairs", "junction"...). */
+  kind: string;
   /** `null` when no QR marker is installed at this node. */
   qr: QrMount | null;
 }
@@ -103,9 +147,12 @@ export interface Floor {
   id: number;
   name: string;
   short: string;
+  spoken: string;
   map?: string;
   width: number;
   height: number;
+  corridors: PlanRect[];
+  rooms: PlanRoom[];
 }
 
 const DEFAULT_FLOOR_CHANGE_LENGTH = 8;
@@ -119,6 +166,7 @@ export class Building {
   readonly warnings: string[] = [];
 
   private byId = new Map<number, NavNode>();
+  private roomsById = new Map<string, PlanRoom>();
   private adjacency = new Map<number, HalfEdge[]>();
 
   constructor(raw: RawGraph) {
@@ -152,6 +200,8 @@ export class Building {
         x: n.x,
         y: n.y,
         floor: n.floor || 0,
+        roomId: n.room,
+        kind: type === 'node' ? 'junction' : type,
         qr,
       };
       this.nodes.push(node);
@@ -185,15 +235,30 @@ export class Building {
     const declared = meta.floors || [];
     this.floors = floorIds.map((id) => {
       const f = declared.find((d) => d.id === id);
+      const name = (f && f.name) || `Floor ${id}`;
       return {
         id,
-        name: (f && f.name) || `Floor ${id}`,
+        name,
         short: (f && f.short) || String(id),
+        spoken: (f && f.spoken) || name.toLowerCase(),
         map: f && f.map,
         width: (f && f.width) || 300,
         height: (f && f.height) || 300,
+        corridors: (f && f.corridors) || [],
+        rooms: (f && f.rooms) || [],
       };
     });
+
+    // A node takes its kind from the room it is the door of.
+    for (const floor of this.floors) {
+      for (const room of floor.rooms) {
+        this.roomsById.set(`${floor.id}/${room.id}`, room);
+      }
+    }
+    for (const node of this.nodes) {
+      const room = this.roomOf(node);
+      if (room && node.type === 'room') node.kind = room.kind;
+    }
   }
 
   private addHalfEdge(from: number, p: RawPath) {
@@ -232,6 +297,16 @@ export class Building {
 
   floor(id: number): Floor | undefined {
     return this.floors.find((f) => f.id === id);
+  }
+
+  /** The plan room a node is the door of. */
+  roomOf(node: NavNode): PlanRoom | undefined {
+    return node.roomId !== undefined ? this.roomsById.get(`${node.floor}/${node.roomId}`) : undefined;
+  }
+
+  /** True if the building comes with a vector floor plan (rooms and corridors). */
+  get hasPlan(): boolean {
+    return this.floors.some((f) => f.rooms.length > 0);
   }
 
   /** Nodes a user can pick as a destination. */

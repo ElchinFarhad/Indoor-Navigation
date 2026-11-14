@@ -42,6 +42,11 @@ export interface Route {
   cost: number;
 }
 
+export interface RouteOptions {
+  /** Step-free route: never use stairs (lifts only between floors). */
+  avoidStairs?: boolean;
+}
+
 /** Where a route starts: at a node, or `t` metres along the corridor from -> to. */
 export type RouteStart = { nodeId: number } | { from: number; to: number; t: number };
 
@@ -94,8 +99,10 @@ class MinHeap {
 function dijkstra(
   building: Building,
   seeds: Array<{ id: number; cost: number }>,
-  destId: number
+  destId: number,
+  options?: RouteOptions
 ): { nodeIds: number[]; cost: number } | null {
+  const avoidStairs = !!(options && options.avoidStairs);
   if (!building.node(destId)) return null;
   const dist = new Map<number, number>();
   const parent = new Map<number, number>();
@@ -114,7 +121,7 @@ function dijkstra(
     done.add(id);
     if (id === destId) break;
     for (const e of building.edgesFrom(id)) {
-      if (done.has(e.to)) continue;
+      if (done.has(e.to) || (avoidStairs && e.kind === 'stairs')) continue;
       const next = key + e.cost;
       if (next < (dist.has(e.to) ? dist.get(e.to)! : Infinity)) {
         dist.set(e.to, next);
@@ -138,10 +145,11 @@ function dijkstra(
 export function shortestPath(
   building: Building,
   sourceId: number,
-  destId: number
+  destId: number,
+  options?: RouteOptions
 ): { nodeIds: number[]; cost: number } | null {
   if (!building.node(sourceId)) return null;
-  return dijkstra(building, [{ id: sourceId, cost: 0 }], destId);
+  return dijkstra(building, [{ id: sourceId, cost: 0 }], destId, options);
 }
 
 /** Walking distance in metres along the cheapest path between two nodes. */
@@ -192,17 +200,17 @@ function buildRoute(
 }
 
 /** Computes the route from a start position to a destination node. */
-export function findRoute(building: Building, start: RouteStart, destId: number): Route | null {
+export function findRoute(building: Building, start: RouteStart, destId: number, options?: RouteOptions): Route | null {
   if ('nodeId' in start) {
-    const path = shortestPath(building, start.nodeId, destId);
+    const path = shortestPath(building, start.nodeId, destId, options);
     return path ? buildRoute(building, destId, path.nodeIds, path.cost, null) : null;
   }
 
   const edge = building.edge(start.from, start.to);
-  if (!edge) return findRoute(building, { nodeId: start.from }, destId);
+  if (!edge) return findRoute(building, { nodeId: start.from }, destId, options);
   const EPS = 0.05;
-  if (start.t <= EPS) return findRoute(building, { nodeId: start.from }, destId);
-  if (start.t >= edge.length - EPS) return findRoute(building, { nodeId: start.to }, destId);
+  if (start.t <= EPS) return findRoute(building, { nodeId: start.from }, destId, options);
+  if (start.t >= edge.length - EPS) return findRoute(building, { nodeId: start.to }, destId, options);
 
   // Somewhere along a corridor: either end of it may be the better way out.
   const fraction = start.t / edge.length;
@@ -212,7 +220,8 @@ export function findRoute(building: Building, start: RouteStart, destId: number)
       { id: start.from, cost: edge.cost * fraction },
       { id: start.to, cost: edge.cost * (1 - fraction) },
     ],
-    destId
+    destId,
+    options
   );
   if (!path) return null;
   const a = building.node(start.from)!;

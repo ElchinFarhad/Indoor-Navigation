@@ -1,340 +1,1778 @@
 {
-  "meta": {
-    "name": "Demo building",
-    "metersPerUnit": 0.1,
-    "qrSize": 0.18,
-    "floors": [
-      {
-        "id": 0,
-        "name": "Ground floor",
-        "short": "G",
-        "map": "map.png",
-        "width": 300,
-        "height": 300
-      },
-      {
-        "id": 1,
-        "name": "First floor",
-        "short": "1",
-        "map": "map.png",
-        "width": 300,
-        "height": 300
-      }
+ "meta": {
+  "name": "Engineering Building",
+  "metersPerUnit": 0.1,
+  "qrSize": 0.18,
+  "floors": [
+   {
+    "id": 0,
+    "name": "Ground floor",
+    "short": "G",
+    "spoken": "the ground floor",
+    "width": 640,
+    "height": 400,
+    "corridors": [
+     {
+      "id": "c-n",
+      "x": 90,
+      "y": 90,
+      "w": 460,
+      "h": 30
+     },
+     {
+      "id": "c-s",
+      "x": 90,
+      "y": 280,
+      "w": 460,
+      "h": 30
+     },
+     {
+      "id": "c-w",
+      "x": 90,
+      "y": 120,
+      "w": 30,
+      "h": 160
+     },
+     {
+      "id": "c-e",
+      "x": 520,
+      "y": 120,
+      "w": 30,
+      "h": 160
+     },
+     {
+      "id": "c-x",
+      "x": 305,
+      "y": 120,
+      "w": 30,
+      "h": 160
+     }
+    ],
+    "rooms": [
+     {
+      "id": "0.20",
+      "name": "Office 0.20",
+      "short": "0.20",
+      "kind": "office",
+      "x": 0,
+      "y": 0,
+      "w": 130,
+      "h": 90,
+      "doors": [
+       {
+        "x": 105,
+        "y": 90
+       }
+      ],
+      "node": 4
+     },
+     {
+      "id": "0.21",
+      "name": "Seminar room 0.21",
+      "short": "0.21",
+      "kind": "classroom",
+      "x": 130,
+      "y": 0,
+      "w": 90,
+      "h": 90,
+      "doors": [
+       {
+        "x": 160,
+        "y": 90
+       }
+      ],
+      "node": 5
+     },
+     {
+      "id": "stairs-a-0",
+      "name": "Stairs A",
+      "short": "Stairs A",
+      "kind": "stairs",
+      "x": 220,
+      "y": 0,
+      "w": 80,
+      "h": 90,
+      "doors": [
+       {
+        "x": 260,
+        "y": 90
+       }
+      ],
+      "node": 6
+     },
+     {
+      "id": "lift-0",
+      "name": "Lift",
+      "short": "Lift",
+      "kind": "elevator",
+      "x": 300,
+      "y": 0,
+      "w": 40,
+      "h": 90,
+      "doors": [
+       {
+        "x": 320,
+        "y": 90
+       }
+      ],
+      "node": 7
+     },
+     {
+      "id": "0.22",
+      "name": "Classroom 0.22",
+      "short": "0.22",
+      "kind": "classroom",
+      "x": 340,
+      "y": 0,
+      "w": 90,
+      "h": 90,
+      "doors": [
+       {
+        "x": 370,
+        "y": 90
+       }
+      ],
+      "node": 8
+     },
+     {
+      "id": "wc-0",
+      "name": "Restrooms",
+      "short": "WC",
+      "kind": "restroom",
+      "x": 430,
+      "y": 0,
+      "w": 80,
+      "h": 90,
+      "doors": [
+       {
+        "x": 470,
+        "y": 90
+       }
+      ],
+      "node": 9
+     },
+     {
+      "id": "0.23",
+      "name": "Office 0.23",
+      "short": "0.23",
+      "kind": "office",
+      "x": 510,
+      "y": 0,
+      "w": 130,
+      "h": 90,
+      "doors": [
+       {
+        "x": 535,
+        "y": 90
+       }
+      ],
+      "node": 10
+     },
+     {
+      "id": "0.40",
+      "name": "Classroom 0.40",
+      "short": "0.40",
+      "kind": "classroom",
+      "x": 0,
+      "y": 90,
+      "w": 90,
+      "h": 110,
+      "doors": [
+       {
+        "x": 90,
+        "y": 150
+       }
+      ],
+      "node": 11
+     },
+     {
+      "id": "0.41",
+      "name": "Classroom 0.41",
+      "short": "0.41",
+      "kind": "classroom",
+      "x": 0,
+      "y": 200,
+      "w": 90,
+      "h": 110,
+      "doors": [
+       {
+        "x": 90,
+        "y": 250
+       }
+      ],
+      "node": 12
+     },
+     {
+      "id": "stairs-b-0",
+      "name": "Stairs B",
+      "short": "Stairs B",
+      "kind": "stairs",
+      "x": 550,
+      "y": 90,
+      "w": 90,
+      "h": 75,
+      "doors": [
+       {
+        "x": 550,
+        "y": 140
+       }
+      ],
+      "node": 13
+     },
+     {
+      "id": "0.30",
+      "name": "Lab 0.30",
+      "short": "0.30",
+      "kind": "lab",
+      "x": 550,
+      "y": 165,
+      "w": 90,
+      "h": 75,
+      "doors": [
+       {
+        "x": 550,
+        "y": 200
+       }
+      ],
+      "node": 14
+     },
+     {
+      "id": "0.31",
+      "name": "Study room 0.31",
+      "short": "0.31",
+      "kind": "study",
+      "x": 550,
+      "y": 240,
+      "w": 90,
+      "h": 70,
+      "doors": [
+       {
+        "x": 550,
+        "y": 260
+       }
+      ],
+      "node": 15
+     },
+     {
+      "id": "0.01",
+      "name": "Workshop 0.01",
+      "short": "0.01",
+      "kind": "lab",
+      "x": 0,
+      "y": 310,
+      "w": 180,
+      "h": 90,
+      "doors": [
+       {
+        "x": 150,
+        "y": 310
+       }
+      ],
+      "node": 16
+     },
+     {
+      "id": "reception",
+      "name": "Reception",
+      "short": "Reception",
+      "kind": "reception",
+      "x": 180,
+      "y": 310,
+      "w": 90,
+      "h": 90,
+      "doors": [
+       {
+        "x": 250,
+        "y": 310
+       }
+      ],
+      "node": 2
+     },
+     {
+      "id": "cafe",
+      "name": "Café",
+      "short": "Café",
+      "kind": "cafe",
+      "x": 370,
+      "y": 310,
+      "w": 90,
+      "h": 90,
+      "doors": [
+       {
+        "x": 395,
+        "y": 310
+       }
+      ],
+      "node": 3
+     },
+     {
+      "id": "library",
+      "name": "Library",
+      "short": "Library",
+      "kind": "library",
+      "x": 460,
+      "y": 310,
+      "w": 180,
+      "h": 90,
+      "doors": [
+       {
+        "x": 495,
+        "y": 310
+       }
+      ],
+      "node": 17
+     },
+     {
+      "id": "auditorium",
+      "name": "Auditorium",
+      "short": "Auditorium",
+      "kind": "auditorium",
+      "x": 120,
+      "y": 120,
+      "w": 185,
+      "h": 160,
+      "doors": [
+       {
+        "x": 215,
+        "y": 120
+       }
+      ],
+      "node": 18
+     },
+     {
+      "id": "0.11",
+      "name": "Lab 0.11",
+      "short": "0.11",
+      "kind": "lab",
+      "x": 335,
+      "y": 120,
+      "w": 185,
+      "h": 80,
+      "doors": [
+       {
+        "x": 420,
+        "y": 120
+       }
+      ],
+      "node": 19
+     },
+     {
+      "id": "0.12",
+      "name": "Lab 0.12",
+      "short": "0.12",
+      "kind": "lab",
+      "x": 335,
+      "y": 200,
+      "w": 185,
+      "h": 80,
+      "doors": [
+       {
+        "x": 445,
+        "y": 280
+       }
+      ],
+      "node": 20
+     },
+     {
+      "id": "lobby",
+      "name": "Lobby",
+      "short": "Lobby",
+      "kind": "lobby",
+      "x": 270,
+      "y": 310,
+      "w": 100,
+      "h": 90,
+      "doors": [
+       {
+        "x": 320,
+        "y": 310,
+        "width": 100
+       },
+       {
+        "x": 320,
+        "y": 400,
+        "width": 24,
+        "entrance": true
+       }
+      ],
+      "node": 0
+     }
     ]
-  },
-  "nodes": [
-    {
-      "name": "A",
-      "type": "room",
-      "id": 0,
-      "x": 155,
-      "y": 260,
-      "floor": 0,
-      "path": [
-        {
-          "nodeID": 1,
-          "weight": 9
-        },
-        {
-          "nodeID": 3,
-          "weight": 7.3
-        },
-        {
-          "nodeID": 8,
-          "weight": 4.7
-        }
-      ]
-    },
-    {
-      "name": "B",
-      "type": "node",
-      "id": 1,
-      "x": 65,
-      "y": 260,
-      "floor": 0,
-      "path": [
-        {
-          "nodeID": 0,
-          "weight": 9
-        },
-        {
-          "nodeID": 2,
-          "weight": 3.5
-        }
-      ]
-    },
-    {
-      "name": "C",
-      "type": "node",
-      "id": 2,
-      "x": 65,
-      "y": 225,
-      "floor": 0,
-      "path": [
-        {
-          "nodeID": 1,
-          "weight": 3.5
-        },
-        {
-          "nodeID": 5,
-          "weight": 8.6
-        }
-      ]
-    },
-    {
-      "name": "D",
-      "type": "room",
-      "id": 3,
-      "x": 228,
-      "y": 260,
-      "floor": 0,
-      "path": [
-        {
-          "nodeID": 0,
-          "weight": 7.3
-        },
-        {
-          "nodeID": 4,
-          "weight": 3.5
-        }
-      ]
-    },
-    {
-      "name": "E",
-      "type": "room",
-      "id": 4,
-      "x": 230,
-      "y": 225,
-      "floor": 0,
-      "path": [
-        {
-          "nodeID": 3,
-          "weight": 3.5
-        },
-        {
-          "nodeID": 11,
-          "weight": 12.1
-        }
-      ]
-    },
-    {
-      "name": "F",
-      "type": "room",
-      "id": 5,
-      "x": 68,
-      "y": 139,
-      "floor": 0,
-      "path": [
-        {
-          "nodeID": 2,
-          "weight": 8.6
-        },
-        {
-          "nodeID": 6,
-          "weight": 9.9
-        }
-      ]
-    },
-    {
-      "name": "G",
-      "type": "room",
-      "id": 6,
-      "x": 67,
-      "y": 40,
-      "floor": 0,
-      "path": [
-        {
-          "nodeID": 5,
-          "weight": 9.9
-        },
-        {
-          "nodeID": 7,
-          "weight": 8.3
-        }
-      ]
-    },
-    {
-      "name": "H",
-      "type": "room",
-      "id": 7,
-      "x": 150,
-      "y": 40,
-      "floor": 0,
-      "label": "Main hall (north door)",
-      "path": [
-        {
-          "nodeID": 6,
-          "weight": 8.3
-        },
-        {
-          "nodeID": 9,
-          "weight": 2.9
-        }
-      ]
-    },
-    {
-      "name": "I",
-      "type": "room",
-      "id": 8,
-      "x": 153,
-      "y": 213,
-      "floor": 0,
-      "label": "Main hall (south door)",
-      "path": [
-        {
-          "nodeID": 0,
-          "weight": 4.7
-        }
-      ]
-    },
-    {
-      "name": "J",
-      "type": "stairs",
-      "id": 9,
-      "x": 149,
-      "y": 11,
-      "floor": 0,
-      "path": [
-        {
-          "nodeID": 7,
-          "weight": 2.9
-        },
-        {
-          "nodeID": 10,
-          "weight": 8.3
-        },
-        {
-          "nodeID": 12,
-          "weight": 12,
-          "kind": "stairs",
-          "length": 8
-        }
-      ]
-    },
-    {
-      "name": "K",
-      "type": "room",
-      "id": 10,
-      "x": 232,
-      "y": 11,
-      "floor": 0,
-      "label": "Restroom",
-      "path": [
-        {
-          "nodeID": 9,
-          "weight": 8.3
-        },
-        {
-          "nodeID": 11,
-          "weight": 9.3
-        }
-      ]
-    },
-    {
-      "name": "L",
-      "type": "room",
-      "id": 11,
-      "x": 228,
-      "y": 104,
-      "floor": 0,
-      "path": [
-        {
-          "nodeID": 10,
-          "weight": 9.3
-        },
-        {
-          "nodeID": 4,
-          "weight": 12.1
-        }
-      ]
-    },
-    {
-      "name": "N",
-      "type": "stairs",
-      "id": 12,
-      "x": 149,
-      "y": 11,
-      "floor": 1,
-      "path": [
-        {
-          "nodeID": 13,
-          "weight": 2.9
-        },
-        {
-          "nodeID": 15,
-          "weight": 8.3
-        },
-        {
-          "nodeID": 9,
-          "weight": 12,
-          "kind": "stairs",
-          "length": 8
-        }
-      ]
-    },
-    {
-      "name": "O",
-      "type": "node",
-      "id": 13,
-      "x": 150,
-      "y": 40,
-      "floor": 1,
-      "path": [
-        {
-          "nodeID": 12,
-          "weight": 2.9
-        },
-        {
-          "nodeID": 14,
-          "weight": 8.3
-        }
-      ]
-    },
-    {
-      "name": "P",
-      "type": "room",
-      "id": 14,
-      "x": 67,
-      "y": 40,
-      "floor": 1,
-      "path": [
-        {
-          "nodeID": 13,
-          "weight": 8.3
-        }
-      ]
-    },
-    {
-      "name": "Q",
-      "type": "room",
-      "id": 15,
-      "x": 232,
-      "y": 11,
-      "floor": 1,
-      "path": [
-        {
-          "nodeID": 12,
-          "weight": 8.3
-        },
-        {
-          "nodeID": 16,
-          "weight": 9.3
-        }
-      ]
-    },
-    {
-      "name": "R",
-      "type": "room",
-      "id": 16,
-      "x": 228,
-      "y": 104,
-      "floor": 1,
-      "path": [
-        {
-          "nodeID": 15,
-          "weight": 9.3
-        }
-      ]
-    }
+   },
+   {
+    "id": 1,
+    "name": "First floor",
+    "short": "1",
+    "spoken": "the first floor",
+    "width": 640,
+    "height": 400,
+    "corridors": [
+     {
+      "id": "c-n",
+      "x": 90,
+      "y": 90,
+      "w": 460,
+      "h": 30
+     },
+     {
+      "id": "c-s",
+      "x": 90,
+      "y": 280,
+      "w": 460,
+      "h": 30
+     },
+     {
+      "id": "c-w",
+      "x": 90,
+      "y": 120,
+      "w": 30,
+      "h": 160
+     },
+     {
+      "id": "c-e",
+      "x": 520,
+      "y": 120,
+      "w": 30,
+      "h": 160
+     },
+     {
+      "id": "c-x",
+      "x": 305,
+      "y": 120,
+      "w": 30,
+      "h": 160
+     }
+    ],
+    "rooms": [
+     {
+      "id": "1.20",
+      "name": "Office 1.20",
+      "short": "1.20",
+      "kind": "office",
+      "x": 0,
+      "y": 0,
+      "w": 130,
+      "h": 90,
+      "doors": [
+       {
+        "x": 105,
+        "y": 90
+       }
+      ],
+      "node": 24
+     },
+     {
+      "id": "1.21",
+      "name": "Seminar room 1.21",
+      "short": "1.21",
+      "kind": "classroom",
+      "x": 130,
+      "y": 0,
+      "w": 90,
+      "h": 90,
+      "doors": [
+       {
+        "x": 160,
+        "y": 90
+       }
+      ],
+      "node": 25
+     },
+     {
+      "id": "stairs-a-1",
+      "name": "Stairs A",
+      "short": "Stairs A",
+      "kind": "stairs",
+      "x": 220,
+      "y": 0,
+      "w": 80,
+      "h": 90,
+      "doors": [
+       {
+        "x": 260,
+        "y": 90
+       }
+      ],
+      "node": 26
+     },
+     {
+      "id": "lift-1",
+      "name": "Lift",
+      "short": "Lift",
+      "kind": "elevator",
+      "x": 300,
+      "y": 0,
+      "w": 40,
+      "h": 90,
+      "doors": [
+       {
+        "x": 320,
+        "y": 90
+       }
+      ],
+      "node": 27
+     },
+     {
+      "id": "1.22",
+      "name": "Classroom 1.22",
+      "short": "1.22",
+      "kind": "classroom",
+      "x": 340,
+      "y": 0,
+      "w": 90,
+      "h": 90,
+      "doors": [
+       {
+        "x": 370,
+        "y": 90
+       }
+      ],
+      "node": 28
+     },
+     {
+      "id": "wc-1",
+      "name": "Restrooms",
+      "short": "WC",
+      "kind": "restroom",
+      "x": 430,
+      "y": 0,
+      "w": 80,
+      "h": 90,
+      "doors": [
+       {
+        "x": 470,
+        "y": 90
+       }
+      ],
+      "node": 29
+     },
+     {
+      "id": "1.23",
+      "name": "Office 1.23",
+      "short": "1.23",
+      "kind": "office",
+      "x": 510,
+      "y": 0,
+      "w": 130,
+      "h": 90,
+      "doors": [
+       {
+        "x": 535,
+        "y": 90
+       }
+      ],
+      "node": 30
+     },
+     {
+      "id": "1.40",
+      "name": "Office 1.40",
+      "short": "1.40",
+      "kind": "office",
+      "x": 0,
+      "y": 90,
+      "w": 90,
+      "h": 110,
+      "doors": [
+       {
+        "x": 90,
+        "y": 150
+       }
+      ],
+      "node": 31
+     },
+     {
+      "id": "1.41",
+      "name": "Office 1.41",
+      "short": "1.41",
+      "kind": "office",
+      "x": 0,
+      "y": 200,
+      "w": 90,
+      "h": 110,
+      "doors": [
+       {
+        "x": 90,
+        "y": 250
+       }
+      ],
+      "node": 32
+     },
+     {
+      "id": "stairs-b-1",
+      "name": "Stairs B",
+      "short": "Stairs B",
+      "kind": "stairs",
+      "x": 550,
+      "y": 90,
+      "w": 90,
+      "h": 75,
+      "doors": [
+       {
+        "x": 550,
+        "y": 140
+       }
+      ],
+      "node": 33
+     },
+     {
+      "id": "1.30",
+      "name": "Lab 1.30",
+      "short": "1.30",
+      "kind": "lab",
+      "x": 550,
+      "y": 165,
+      "w": 90,
+      "h": 75,
+      "doors": [
+       {
+        "x": 550,
+        "y": 200
+       }
+      ],
+      "node": 34
+     },
+     {
+      "id": "1.31",
+      "name": "Meeting room 1.31",
+      "short": "1.31",
+      "kind": "office",
+      "x": 550,
+      "y": 240,
+      "w": 90,
+      "h": 70,
+      "doors": [
+       {
+        "x": 550,
+        "y": 260
+       }
+      ],
+      "node": 35
+     },
+     {
+      "id": "1.01",
+      "name": "Computer lab 1.01",
+      "short": "1.01",
+      "kind": "lab",
+      "x": 0,
+      "y": 310,
+      "w": 180,
+      "h": 90,
+      "doors": [
+       {
+        "x": 150,
+        "y": 310
+       }
+      ],
+      "node": 36
+     },
+     {
+      "id": "1.02",
+      "name": "Office 1.02",
+      "short": "1.02",
+      "kind": "office",
+      "x": 180,
+      "y": 310,
+      "w": 90,
+      "h": 90,
+      "doors": [
+       {
+        "x": 250,
+        "y": 310
+       }
+      ],
+      "node": 37
+     },
+     {
+      "id": "1.03",
+      "name": "Office 1.03",
+      "short": "1.03",
+      "kind": "office",
+      "x": 370,
+      "y": 310,
+      "w": 90,
+      "h": 90,
+      "doors": [
+       {
+        "x": 395,
+        "y": 310
+       }
+      ],
+      "node": 38
+     },
+     {
+      "id": "1.04",
+      "name": "Reading room 1.04",
+      "short": "1.04",
+      "kind": "library",
+      "x": 460,
+      "y": 310,
+      "w": 180,
+      "h": 90,
+      "doors": [
+       {
+        "x": 495,
+        "y": 310
+       }
+      ],
+      "node": 39
+     },
+     {
+      "id": "1.10",
+      "name": "Lecture hall 1.10",
+      "short": "1.10",
+      "kind": "auditorium",
+      "x": 120,
+      "y": 120,
+      "w": 185,
+      "h": 160,
+      "doors": [
+       {
+        "x": 215,
+        "y": 120
+       }
+      ],
+      "node": 40
+     },
+     {
+      "id": "1.11",
+      "name": "Lab 1.11",
+      "short": "1.11",
+      "kind": "lab",
+      "x": 335,
+      "y": 120,
+      "w": 185,
+      "h": 80,
+      "doors": [
+       {
+        "x": 420,
+        "y": 120
+       }
+      ],
+      "node": 41
+     },
+     {
+      "id": "1.12",
+      "name": "Lab 1.12",
+      "short": "1.12",
+      "kind": "lab",
+      "x": 335,
+      "y": 200,
+      "w": 185,
+      "h": 80,
+      "doors": [
+       {
+        "x": 445,
+        "y": 280
+       }
+      ],
+      "node": 42
+     },
+     {
+      "id": "lounge",
+      "name": "Student lounge",
+      "short": "Lounge",
+      "kind": "study",
+      "x": 270,
+      "y": 310,
+      "w": 100,
+      "h": 90,
+      "doors": [
+       {
+        "x": 320,
+        "y": 310,
+        "width": 30
+       }
+      ],
+      "node": 43
+     }
+    ]
+   }
   ]
+ },
+ "nodes": [
+  {
+   "name": "G01",
+   "type": "room",
+   "id": 0,
+   "x": 320,
+   "y": 372,
+   "floor": 0,
+   "label": "Main entrance",
+   "room": "lobby",
+   "path": [
+    {
+     "nodeID": 1,
+     "weight": 7.7
+    }
+   ]
+  },
+  {
+   "name": "G02",
+   "type": "node",
+   "id": 1,
+   "x": 320,
+   "y": 295,
+   "floor": 0,
+   "label": "Lobby",
+   "path": [
+    {
+     "nodeID": 2,
+     "weight": 7
+    },
+    {
+     "nodeID": 3,
+     "weight": 7.5
+    },
+    {
+     "nodeID": 23,
+     "weight": 9.5
+    },
+    {
+     "nodeID": 0,
+     "weight": 7.7
+    }
+   ]
+  },
+  {
+   "name": "G03",
+   "type": "room",
+   "id": 2,
+   "x": 250,
+   "y": 295,
+   "floor": 0,
+   "label": "Reception",
+   "room": "reception",
+   "path": [
+    {
+     "nodeID": 16,
+     "weight": 10
+    },
+    {
+     "nodeID": 1,
+     "weight": 7
+    }
+   ]
+  },
+  {
+   "name": "G04",
+   "type": "room",
+   "id": 3,
+   "x": 395,
+   "y": 295,
+   "floor": 0,
+   "label": "Café",
+   "room": "cafe",
+   "path": [
+    {
+     "nodeID": 1,
+     "weight": 7.5
+    },
+    {
+     "nodeID": 20,
+     "weight": 5
+    }
+   ]
+  },
+  {
+   "name": "G05",
+   "type": "room",
+   "id": 4,
+   "x": 105,
+   "y": 105,
+   "floor": 0,
+   "label": "Office 0.20",
+   "room": "0.20",
+   "path": [
+    {
+     "nodeID": 5,
+     "weight": 5.5
+    },
+    {
+     "nodeID": 11,
+     "weight": 4.5
+    }
+   ]
+  },
+  {
+   "name": "G06",
+   "type": "room",
+   "id": 5,
+   "x": 160,
+   "y": 105,
+   "floor": 0,
+   "label": "Seminar room 0.21",
+   "room": "0.21",
+   "path": [
+    {
+     "nodeID": 4,
+     "weight": 5.5
+    },
+    {
+     "nodeID": 18,
+     "weight": 5.5
+    }
+   ]
+  },
+  {
+   "name": "G07",
+   "type": "stairs",
+   "id": 6,
+   "x": 260,
+   "y": 105,
+   "floor": 0,
+   "label": "Stairs A",
+   "room": "stairs-a-0",
+   "path": [
+    {
+     "nodeID": 18,
+     "weight": 4.5
+    },
+    {
+     "nodeID": 7,
+     "weight": 6
+    },
+    {
+     "nodeID": 26,
+     "weight": 14,
+     "kind": "stairs",
+     "length": 9
+    }
+   ]
+  },
+  {
+   "name": "G08",
+   "type": "elevator",
+   "id": 7,
+   "x": 320,
+   "y": 105,
+   "floor": 0,
+   "label": "Lift",
+   "room": "lift-0",
+   "path": [
+    {
+     "nodeID": 6,
+     "weight": 6
+    },
+    {
+     "nodeID": 8,
+     "weight": 5
+    },
+    {
+     "nodeID": 23,
+     "weight": 9.5
+    },
+    {
+     "nodeID": 27,
+     "weight": 24,
+     "kind": "elevator",
+     "length": 4
+    }
+   ]
+  },
+  {
+   "name": "G09",
+   "type": "room",
+   "id": 8,
+   "x": 370,
+   "y": 105,
+   "floor": 0,
+   "label": "Classroom 0.22",
+   "room": "0.22",
+   "path": [
+    {
+     "nodeID": 7,
+     "weight": 5
+    },
+    {
+     "nodeID": 19,
+     "weight": 5
+    }
+   ]
+  },
+  {
+   "name": "G10",
+   "type": "room",
+   "id": 9,
+   "x": 470,
+   "y": 105,
+   "floor": 0,
+   "label": "Restrooms",
+   "room": "wc-0",
+   "path": [
+    {
+     "nodeID": 19,
+     "weight": 5
+    },
+    {
+     "nodeID": 10,
+     "weight": 6.5
+    }
+   ]
+  },
+  {
+   "name": "G11",
+   "type": "room",
+   "id": 10,
+   "x": 535,
+   "y": 105,
+   "floor": 0,
+   "label": "Office 0.23",
+   "room": "0.23",
+   "path": [
+    {
+     "nodeID": 9,
+     "weight": 6.5
+    },
+    {
+     "nodeID": 13,
+     "weight": 3.5
+    }
+   ]
+  },
+  {
+   "name": "G12",
+   "type": "room",
+   "id": 11,
+   "x": 105,
+   "y": 150,
+   "floor": 0,
+   "label": "Classroom 0.40",
+   "room": "0.40",
+   "path": [
+    {
+     "nodeID": 4,
+     "weight": 4.5
+    },
+    {
+     "nodeID": 12,
+     "weight": 10
+    }
+   ]
+  },
+  {
+   "name": "G13",
+   "type": "room",
+   "id": 12,
+   "x": 105,
+   "y": 250,
+   "floor": 0,
+   "label": "Classroom 0.41",
+   "room": "0.41",
+   "path": [
+    {
+     "nodeID": 11,
+     "weight": 10
+    },
+    {
+     "nodeID": 21,
+     "weight": 4.5
+    }
+   ]
+  },
+  {
+   "name": "G14",
+   "type": "stairs",
+   "id": 13,
+   "x": 535,
+   "y": 140,
+   "floor": 0,
+   "label": "Stairs B",
+   "room": "stairs-b-0",
+   "path": [
+    {
+     "nodeID": 10,
+     "weight": 3.5
+    },
+    {
+     "nodeID": 14,
+     "weight": 6
+    },
+    {
+     "nodeID": 33,
+     "weight": 14,
+     "kind": "stairs",
+     "length": 9
+    }
+   ]
+  },
+  {
+   "name": "G15",
+   "type": "room",
+   "id": 14,
+   "x": 535,
+   "y": 200,
+   "floor": 0,
+   "label": "Lab 0.30",
+   "room": "0.30",
+   "path": [
+    {
+     "nodeID": 13,
+     "weight": 6
+    },
+    {
+     "nodeID": 15,
+     "weight": 6
+    }
+   ]
+  },
+  {
+   "name": "G16",
+   "type": "room",
+   "id": 15,
+   "x": 535,
+   "y": 260,
+   "floor": 0,
+   "label": "Study room 0.31",
+   "room": "0.31",
+   "path": [
+    {
+     "nodeID": 14,
+     "weight": 6
+    },
+    {
+     "nodeID": 22,
+     "weight": 3.5
+    }
+   ]
+  },
+  {
+   "name": "G17",
+   "type": "room",
+   "id": 16,
+   "x": 150,
+   "y": 295,
+   "floor": 0,
+   "label": "Workshop 0.01",
+   "room": "0.01",
+   "path": [
+    {
+     "nodeID": 21,
+     "weight": 4.5
+    },
+    {
+     "nodeID": 2,
+     "weight": 10
+    }
+   ]
+  },
+  {
+   "name": "G18",
+   "type": "room",
+   "id": 17,
+   "x": 495,
+   "y": 295,
+   "floor": 0,
+   "label": "Library",
+   "room": "library",
+   "path": [
+    {
+     "nodeID": 20,
+     "weight": 5
+    },
+    {
+     "nodeID": 22,
+     "weight": 4
+    }
+   ]
+  },
+  {
+   "name": "G19",
+   "type": "room",
+   "id": 18,
+   "x": 215,
+   "y": 105,
+   "floor": 0,
+   "label": "Auditorium",
+   "room": "auditorium",
+   "path": [
+    {
+     "nodeID": 5,
+     "weight": 5.5
+    },
+    {
+     "nodeID": 6,
+     "weight": 4.5
+    }
+   ]
+  },
+  {
+   "name": "G20",
+   "type": "room",
+   "id": 19,
+   "x": 420,
+   "y": 105,
+   "floor": 0,
+   "label": "Lab 0.11",
+   "room": "0.11",
+   "path": [
+    {
+     "nodeID": 8,
+     "weight": 5
+    },
+    {
+     "nodeID": 9,
+     "weight": 5
+    }
+   ]
+  },
+  {
+   "name": "G21",
+   "type": "room",
+   "id": 20,
+   "x": 445,
+   "y": 295,
+   "floor": 0,
+   "label": "Lab 0.12",
+   "room": "0.12",
+   "path": [
+    {
+     "nodeID": 3,
+     "weight": 5
+    },
+    {
+     "nodeID": 17,
+     "weight": 5
+    }
+   ]
+  },
+  {
+   "name": "G22",
+   "type": "node",
+   "id": 21,
+   "x": 105,
+   "y": 295,
+   "floor": 0,
+   "label": "South-west corner",
+   "path": [
+    {
+     "nodeID": 16,
+     "weight": 4.5
+    },
+    {
+     "nodeID": 12,
+     "weight": 4.5
+    }
+   ]
+  },
+  {
+   "name": "G23",
+   "type": "node",
+   "id": 22,
+   "x": 535,
+   "y": 295,
+   "floor": 0,
+   "label": "South-east corner",
+   "path": [
+    {
+     "nodeID": 17,
+     "weight": 4
+    },
+    {
+     "nodeID": 15,
+     "weight": 3.5
+    }
+   ]
+  },
+  {
+   "name": "G24",
+   "type": "node",
+   "id": 23,
+   "x": 320,
+   "y": 200,
+   "floor": 0,
+   "label": "Central corridor",
+   "path": [
+    {
+     "nodeID": 7,
+     "weight": 9.5
+    },
+    {
+     "nodeID": 1,
+     "weight": 9.5
+    }
+   ]
+  },
+  {
+   "name": "F01",
+   "type": "room",
+   "id": 24,
+   "x": 105,
+   "y": 105,
+   "floor": 1,
+   "label": "Office 1.20",
+   "room": "1.20",
+   "path": [
+    {
+     "nodeID": 25,
+     "weight": 5.5
+    },
+    {
+     "nodeID": 31,
+     "weight": 4.5
+    }
+   ]
+  },
+  {
+   "name": "F02",
+   "type": "room",
+   "id": 25,
+   "x": 160,
+   "y": 105,
+   "floor": 1,
+   "label": "Seminar room 1.21",
+   "room": "1.21",
+   "path": [
+    {
+     "nodeID": 24,
+     "weight": 5.5
+    },
+    {
+     "nodeID": 40,
+     "weight": 5.5
+    }
+   ]
+  },
+  {
+   "name": "F03",
+   "type": "stairs",
+   "id": 26,
+   "x": 260,
+   "y": 105,
+   "floor": 1,
+   "label": "Stairs A",
+   "room": "stairs-a-1",
+   "path": [
+    {
+     "nodeID": 40,
+     "weight": 4.5
+    },
+    {
+     "nodeID": 27,
+     "weight": 6
+    },
+    {
+     "nodeID": 6,
+     "weight": 14,
+     "kind": "stairs",
+     "length": 9
+    }
+   ]
+  },
+  {
+   "name": "F04",
+   "type": "elevator",
+   "id": 27,
+   "x": 320,
+   "y": 105,
+   "floor": 1,
+   "label": "Lift",
+   "room": "lift-1",
+   "path": [
+    {
+     "nodeID": 26,
+     "weight": 6
+    },
+    {
+     "nodeID": 28,
+     "weight": 5
+    },
+    {
+     "nodeID": 46,
+     "weight": 9.5
+    },
+    {
+     "nodeID": 7,
+     "weight": 24,
+     "kind": "elevator",
+     "length": 4
+    }
+   ]
+  },
+  {
+   "name": "F05",
+   "type": "room",
+   "id": 28,
+   "x": 370,
+   "y": 105,
+   "floor": 1,
+   "label": "Classroom 1.22",
+   "room": "1.22",
+   "path": [
+    {
+     "nodeID": 27,
+     "weight": 5
+    },
+    {
+     "nodeID": 41,
+     "weight": 5
+    }
+   ]
+  },
+  {
+   "name": "F06",
+   "type": "room",
+   "id": 29,
+   "x": 470,
+   "y": 105,
+   "floor": 1,
+   "label": "Restrooms",
+   "room": "wc-1",
+   "path": [
+    {
+     "nodeID": 41,
+     "weight": 5
+    },
+    {
+     "nodeID": 30,
+     "weight": 6.5
+    }
+   ]
+  },
+  {
+   "name": "F07",
+   "type": "room",
+   "id": 30,
+   "x": 535,
+   "y": 105,
+   "floor": 1,
+   "label": "Office 1.23",
+   "room": "1.23",
+   "path": [
+    {
+     "nodeID": 29,
+     "weight": 6.5
+    },
+    {
+     "nodeID": 33,
+     "weight": 3.5
+    }
+   ]
+  },
+  {
+   "name": "F08",
+   "type": "room",
+   "id": 31,
+   "x": 105,
+   "y": 150,
+   "floor": 1,
+   "label": "Office 1.40",
+   "room": "1.40",
+   "path": [
+    {
+     "nodeID": 24,
+     "weight": 4.5
+    },
+    {
+     "nodeID": 32,
+     "weight": 10
+    }
+   ]
+  },
+  {
+   "name": "F09",
+   "type": "room",
+   "id": 32,
+   "x": 105,
+   "y": 250,
+   "floor": 1,
+   "label": "Office 1.41",
+   "room": "1.41",
+   "path": [
+    {
+     "nodeID": 31,
+     "weight": 10
+    },
+    {
+     "nodeID": 44,
+     "weight": 4.5
+    }
+   ]
+  },
+  {
+   "name": "F10",
+   "type": "stairs",
+   "id": 33,
+   "x": 535,
+   "y": 140,
+   "floor": 1,
+   "label": "Stairs B",
+   "room": "stairs-b-1",
+   "path": [
+    {
+     "nodeID": 30,
+     "weight": 3.5
+    },
+    {
+     "nodeID": 34,
+     "weight": 6
+    },
+    {
+     "nodeID": 13,
+     "weight": 14,
+     "kind": "stairs",
+     "length": 9
+    }
+   ]
+  },
+  {
+   "name": "F11",
+   "type": "room",
+   "id": 34,
+   "x": 535,
+   "y": 200,
+   "floor": 1,
+   "label": "Lab 1.30",
+   "room": "1.30",
+   "path": [
+    {
+     "nodeID": 33,
+     "weight": 6
+    },
+    {
+     "nodeID": 35,
+     "weight": 6
+    }
+   ]
+  },
+  {
+   "name": "F12",
+   "type": "room",
+   "id": 35,
+   "x": 535,
+   "y": 260,
+   "floor": 1,
+   "label": "Meeting room 1.31",
+   "room": "1.31",
+   "path": [
+    {
+     "nodeID": 34,
+     "weight": 6
+    },
+    {
+     "nodeID": 45,
+     "weight": 3.5
+    }
+   ]
+  },
+  {
+   "name": "F13",
+   "type": "room",
+   "id": 36,
+   "x": 150,
+   "y": 295,
+   "floor": 1,
+   "label": "Computer lab 1.01",
+   "room": "1.01",
+   "path": [
+    {
+     "nodeID": 44,
+     "weight": 4.5
+    },
+    {
+     "nodeID": 37,
+     "weight": 10
+    }
+   ]
+  },
+  {
+   "name": "F14",
+   "type": "room",
+   "id": 37,
+   "x": 250,
+   "y": 295,
+   "floor": 1,
+   "label": "Office 1.02",
+   "room": "1.02",
+   "path": [
+    {
+     "nodeID": 36,
+     "weight": 10
+    },
+    {
+     "nodeID": 43,
+     "weight": 7
+    }
+   ]
+  },
+  {
+   "name": "F15",
+   "type": "room",
+   "id": 38,
+   "x": 395,
+   "y": 295,
+   "floor": 1,
+   "label": "Office 1.03",
+   "room": "1.03",
+   "path": [
+    {
+     "nodeID": 43,
+     "weight": 7.5
+    },
+    {
+     "nodeID": 42,
+     "weight": 5
+    }
+   ]
+  },
+  {
+   "name": "F16",
+   "type": "room",
+   "id": 39,
+   "x": 495,
+   "y": 295,
+   "floor": 1,
+   "label": "Reading room 1.04",
+   "room": "1.04",
+   "path": [
+    {
+     "nodeID": 42,
+     "weight": 5
+    },
+    {
+     "nodeID": 45,
+     "weight": 4
+    }
+   ]
+  },
+  {
+   "name": "F17",
+   "type": "room",
+   "id": 40,
+   "x": 215,
+   "y": 105,
+   "floor": 1,
+   "label": "Lecture hall 1.10",
+   "room": "1.10",
+   "path": [
+    {
+     "nodeID": 25,
+     "weight": 5.5
+    },
+    {
+     "nodeID": 26,
+     "weight": 4.5
+    }
+   ]
+  },
+  {
+   "name": "F18",
+   "type": "room",
+   "id": 41,
+   "x": 420,
+   "y": 105,
+   "floor": 1,
+   "label": "Lab 1.11",
+   "room": "1.11",
+   "path": [
+    {
+     "nodeID": 28,
+     "weight": 5
+    },
+    {
+     "nodeID": 29,
+     "weight": 5
+    }
+   ]
+  },
+  {
+   "name": "F19",
+   "type": "room",
+   "id": 42,
+   "x": 445,
+   "y": 295,
+   "floor": 1,
+   "label": "Lab 1.12",
+   "room": "1.12",
+   "path": [
+    {
+     "nodeID": 38,
+     "weight": 5
+    },
+    {
+     "nodeID": 39,
+     "weight": 5
+    }
+   ]
+  },
+  {
+   "name": "F20",
+   "type": "room",
+   "id": 43,
+   "x": 320,
+   "y": 295,
+   "floor": 1,
+   "label": "Student lounge",
+   "room": "lounge",
+   "path": [
+    {
+     "nodeID": 37,
+     "weight": 7
+    },
+    {
+     "nodeID": 38,
+     "weight": 7.5
+    },
+    {
+     "nodeID": 46,
+     "weight": 9.5
+    }
+   ]
+  },
+  {
+   "name": "F21",
+   "type": "node",
+   "id": 44,
+   "x": 105,
+   "y": 295,
+   "floor": 1,
+   "label": "South-west corner",
+   "path": [
+    {
+     "nodeID": 36,
+     "weight": 4.5
+    },
+    {
+     "nodeID": 32,
+     "weight": 4.5
+    }
+   ]
+  },
+  {
+   "name": "F22",
+   "type": "node",
+   "id": 45,
+   "x": 535,
+   "y": 295,
+   "floor": 1,
+   "label": "South-east corner",
+   "path": [
+    {
+     "nodeID": 39,
+     "weight": 4
+    },
+    {
+     "nodeID": 35,
+     "weight": 3.5
+    }
+   ]
+  },
+  {
+   "name": "F23",
+   "type": "node",
+   "id": 46,
+   "x": 320,
+   "y": 200,
+   "floor": 1,
+   "label": "Central corridor",
+   "path": [
+    {
+     "nodeID": 27,
+     "weight": 9.5
+    },
+    {
+     "nodeID": 43,
+     "weight": 9.5
+    }
+   ]
+  }
+ ]
 }

@@ -1,5 +1,10 @@
-import { building, shortestPathF } from '../../db/dijkstra';
-import { Building, parseMarkerId } from '../building';
+import { building as shipped, shortestPathF } from '../../db/dijkstra';
+import { Building, parseMarkerId, RawGraph } from '../building';
+import thesis from './fixtures/thesis-building.json';
+
+// The small building of the original thesis demo: a compact, well-understood
+// graph to test the algorithms on, independent of whatever building ships.
+const building = new Building(thesis as RawGraph);
 import { findRoute, shortestPath, walkingDistance, pointAlongRoute } from '../routing';
 import { buildManeuvers, classifyTurn, guidanceAt } from '../instructions';
 import { DEG } from '../geometry';
@@ -120,16 +125,95 @@ describe('routing', () => {
 });
 
 describe('legacy shortestPathF', () => {
+  const lobby = shipped.nodes.find((n) => n.label === 'Lobby')!;
+  const entrance = shipped.nodes.find((n) => n.label === 'Main entrance')!;
+  const cafe = shipped.nodes.find((n) => n.label === 'Café')!;
+
   it('keeps its result shape', () => {
-    const r = shortestPathF(2, 3);
-    expect(r.shortestPathArray).toEqual([2, 1, 0, 3]);
-    expect([r.nextNodeX, r.nextNodeY]).toEqual([65, 260]);
+    const r = shortestPathF(entrance.id, cafe.id);
+    expect(r.shortestPathArray).toEqual([entrance.id, lobby.id, cafe.id]);
+    expect([r.nextNodeX, r.nextNodeY]).toEqual([lobby.x, lobby.y]);
   });
 
   it('no longer throws for the same node, string ids or unknown nodes', () => {
     expect(shortestPathF(3, 3).shortestPathArray).toEqual([3]);
-    expect(shortestPathF('2' as any, 3).shortestPathArray).toEqual([2, 1, 0, 3]);
+    expect(shortestPathF(String(entrance.id) as any, cafe.id).shortestPathArray).toEqual([entrance.id, lobby.id, cafe.id]);
     expect(shortestPathF(0, 999).shortestPathArray).toEqual([]);
+  });
+});
+
+describe('the shipped building', () => {
+  const byLabel = (label: string, floor = 0) => shipped.nodes.find((n) => n.label === label && n.floor === floor)!;
+
+  it('loads without warnings and has a vector plan for every floor', () => {
+    expect(shipped.warnings).toEqual([]);
+    expect(shipped.hasPlan).toBe(true);
+    for (const f of shipped.floors) {
+      expect(f.rooms.length).toBeGreaterThan(10);
+      expect(f.corridors.length).toBeGreaterThan(0);
+    }
+  });
+
+  it('puts every node on a corridor, in front of the door of its room', () => {
+    for (const n of shipped.nodes) {
+      const floor = shipped.floor(n.floor)!;
+      const inCorridor = floor.corridors.some((c) => n.x >= c.x && n.x <= c.x + c.w && n.y >= c.y && n.y <= c.y + c.h);
+      const room = shipped.roomOf(n);
+      if (room && room.kind === 'lobby') continue; // the entrance marker is inside the lobby
+      expect(inCorridor).toBe(true);
+      if (room) {
+        const door = room.doors![0];
+        expect(Math.hypot(door.x - n.x, door.y - n.y) * shipped.metersPerUnit).toBeLessThanOrEqual(1.6);
+        expect(room.node).toBe(n.id);
+      }
+    }
+  });
+
+  it('has only straight, axis-aligned corridor links of plausible length', () => {
+    for (const n of shipped.nodes) {
+      for (const e of shipped.edgesFrom(n.id)) {
+        const o = shipped.node(e.to)!;
+        if (e.kind !== 'walk') continue;
+        expect(n.x === o.x || n.y === o.y).toBe(true);
+        expect(e.length).toBeGreaterThan(2);
+        expect(e.length).toBeLessThan(12);
+      }
+    }
+  });
+
+  it('can reach every room from the main entrance', () => {
+    const entranceId = byLabel('Main entrance').id;
+    for (const room of shipped.rooms()) {
+      expect(findRoute(shipped, { nodeId: entranceId }, room.id)).not.toBeNull();
+    }
+  });
+
+  it('goes straight through the cross corridor from the entrance to the lift', () => {
+    const route = findRoute(shipped, { nodeId: byLabel('Main entrance').id }, byLabel('Lift').id)!;
+    expect(route.nodeIds.map((n) => shipped.node(n)!.label)).toEqual(['Main entrance', 'Lobby', 'Central corridor', 'Lift']);
+    expect(buildManeuvers(shipped, route).map((m) => m.type)).toEqual(['arrive']);
+  });
+
+  it('prefers the stairs but offers a step-free route through the lift', () => {
+    const from = byLabel('Main entrance').id;
+    const to = byLabel('Lab 1.30', 1).id;
+    const normal = findRoute(shipped, { nodeId: from }, to)!;
+    expect(normal.legs.filter((l) => l.kind === 'stairs').length).toBe(1);
+    const stepFree = findRoute(shipped, { nodeId: from }, to, { avoidStairs: true })!;
+    expect(stepFree.legs.some((l) => l.kind === 'stairs')).toBe(false);
+    expect(stepFree.legs.filter((l) => l.kind === 'elevator').length).toBe(1);
+    const lift = buildManeuvers(shipped, stepFree).find((m) => m.type === 'elevator-up')!;
+    expect(lift.text).toBe('Take the lift up');
+    expect(lift.detail).toBe('to First floor (Lift)');
+  });
+
+  it('names landmarks in turn instructions', () => {
+    const route = findRoute(shipped, { nodeId: byLabel('Main entrance').id }, byLabel('Classroom 0.40').id)!;
+    const m = buildManeuvers(shipped, route);
+    expect(m.map((x) => x.type)).toEqual(['left', 'right', 'arrive']);
+    expect(m[0].detail).toBe('at the lobby');
+    expect(m[1].detail).toBe('at the south-west corner');
+    expect(m[2].text).toBe('Arrive at Classroom 0.40');
   });
 });
 

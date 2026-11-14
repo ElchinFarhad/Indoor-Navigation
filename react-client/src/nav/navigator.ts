@@ -16,13 +16,13 @@ import { Building, NavNode } from './building';
 import { angleDiff, DEG } from './geometry';
 import { buildManeuvers, Guidance, guidanceAt, Maneuver } from './instructions';
 import { MarkerSighting } from './qrPose';
-import { findRoute, Route } from './routing';
+import { findRoute, Route, RouteOptions } from './routing';
 import { PendingFloorChange, PositionTracker, TrackedPosition } from './tracker';
 
 export type NavStatus = 'locating' | 'navigating' | 'arrived' | 'unreachable';
 
 export type NavEvent =
-  | { type: 'fix'; node: NavNode; correction: number | null; first: boolean }
+  | { type: 'fix'; node: NavNode; correction: number | null; first: boolean; rerouted: boolean }
   | { type: 'reroute' }
   | { type: 'wrong-way' }
   | { type: 'floor'; floor: number }
@@ -54,6 +54,12 @@ export interface NavSnapshot {
   lastFix: { node: NavNode; at: number; correction: number | null } | null;
   rerouteCount: number;
   arrivalConfirmed: boolean;
+  /** Metres walked since the position was last fixed by a marker. */
+  sinceFix: number;
+  /** Where the destination's door will be when the user gets there. */
+  destinationSide: 'left' | 'right' | 'ahead' | null;
+  /** Step-free routing (no stairs) is on. */
+  stepFree: boolean;
   /** Increases with every change; handy as a React key / memo dependency. */
   version: number;
 }
@@ -94,13 +100,19 @@ export class NavigationSession {
   private lastHeadingNotify = -Infinity;
   private notifiedHeading: number | null = null;
   private now: () => number;
+  private routeOptions: RouteOptions = {};
 
   /** Camera orientation measured from the last marker, for devices without an orientation sensor. */
   lastSighting: { sighting: MarkerSighting; at: number } | null = null;
 
-  constructor(building: Building, destId: number, options: { now?: () => number; stepLength?: number } = {}) {
+  constructor(
+    building: Building,
+    destId: number,
+    options: { now?: () => number; stepLength?: number; avoidStairs?: boolean } = {}
+  ) {
     this.building = building;
     this.destId = destId;
+    this.routeOptions = { avoidStairs: !!options.avoidStairs };
     this.now = options.now || (() => Date.now());
     this.tracker = new PositionTracker(building, { stepLength: options.stepLength });
     this.current = this.buildSnapshot();
@@ -129,9 +141,14 @@ export class NavigationSession {
     const at = this.now();
     const first = !this.tracker.hasFix;
     const floorBefore = this.tracker.position ? this.tracker.position.floor : null;
+    // The first scan sets the heading however it can. Later sightings happen
+    // in passing, often from an awkward angle: they always correct the
+    // position, but only a solid 3D pose is allowed to overrule a heading
+    // calibration that is already in place.
+    const trustHeading = sighting.cameraToWorld !== null || !this.tracker.headingCalibrated;
     const result = this.tracker.applyFix({
       nodeId: sighting.node.id,
-      heading: sighting.heading,
+      heading: trustHeading ? sighting.heading : null,
       offset: sighting.offset,
       time: at,
     });
@@ -143,7 +160,7 @@ export class NavigationSession {
     const events: NavEvent[] = [];
     if (result.newMarker || at - this.lastFixEventAt > 4000) {
       this.lastFixEventAt = at;
-      events.push({ type: 'fix', node: result.node, correction: result.correction, first });
+      events.push({ type: 'fix', node: result.node, correction: result.correction, first, rerouted: false });
     }
     if (floorBefore !== null && floorBefore !== result.node.floor) {
       events.push({ type: 'floor', floor: result.node.floor });
@@ -161,7 +178,7 @@ export class NavigationSession {
     if (!this.tracker.setManualPosition(nodeId)) return false;
     const node = this.building.node(nodeId)!;
     this.lastFix = { node, at: this.now(), correction: null };
-    this.refresh([{ type: 'fix', node, correction: null, first }], true);
+    this.refresh([{ type: 'fix', node, correction: null, first, rerouted: false }], true);
     return true;
   }
 
@@ -208,6 +225,14 @@ export class NavigationSession {
     this.refresh([], false);
   }
 
+  /** Turns step-free routing (lifts instead of stairs) on or off. */
+  setStepFree(on: boolean) {
+    if (!!this.routeOptions.avoidStairs === on) return;
+    this.routeOptions = { avoidStairs: on };
+    this.tracker.cancelFloorChange();
+    this.refresh([], true);
+  }
+
   /** Switches to another destination without losing the current position. */
   setDestination(destId: number) {
     if (!this.building.node(destId)) return;
@@ -225,7 +250,7 @@ export class NavigationSession {
     const pos = this.tracker.position;
     if (pos && this.status !== 'arrived') {
       const start = pos.to === null ? { nodeId: pos.from } : { from: pos.from, to: pos.to, t: pos.t };
-      const route = findRoute(this.building, start, this.destId);
+      const route = findRoute(this.building, start, this.destId, this.routeOptions);
       if (!route) {
         this.status = 'unreachable';
         this.route = null;
@@ -237,12 +262,18 @@ export class NavigationSession {
         // (Walking backwards makes the same route longer at the front; that is not a new plan either.)
         const samePlan =
           !previous || isSuffix(route.nodeIds, previous.nodeIds) || isSuffix(previous.nodeIds, route.nodeIds);
-        if (this.status === 'navigating' && !quietReroute && !samePlan) {
-          const at = this.now();
+        if (this.status === 'navigating' && !samePlan) {
           this.rerouteCount++;
-          if (at - this.lastRerouteAt > 3000) {
-            this.lastRerouteAt = at;
-            events.push({ type: 'reroute' });
+          if (quietReroute) {
+            // A marker put the user somewhere the old plan did not pass through:
+            // the fix itself reports that the route changed.
+            for (const e of events) if (e.type === 'fix' && !e.first) e.rerouted = true;
+          } else {
+            const at = this.now();
+            if (at - this.lastRerouteAt > 3000) {
+              this.lastRerouteAt = at;
+              events.push({ type: 'reroute' });
+            }
           }
         }
         this.route = route;
@@ -306,6 +337,24 @@ export class NavigationSession {
     this.listeners.forEach((l) => l(this.current, event));
   }
 
+  /** On which side the destination's door is for somebody arriving along the route. */
+  private destinationSide(route: Route | null): 'left' | 'right' | 'ahead' | null {
+    const destination = this.destination;
+    const room = destination ? this.building.roomOf(destination) : undefined;
+    const door = room && room.doors && room.doors[0];
+    if (!route || !door) return null;
+    let dir: number | null = this.tracker.travelDirection;
+    for (const leg of route.legs) if (leg.kind === 'walk' && leg.length > 0.5) dir = leg.dir;
+    if (dir === null) return null;
+    const vx = door.x - destination.x;
+    const vy = door.y - destination.y;
+    const across = Math.cos(dir) * vy - Math.sin(dir) * vx; // > 0: to the right on a y-down map
+    const along = Math.cos(dir) * vx + Math.sin(dir) * vy;
+    if (Math.hypot(vx, vy) < 1e-6) return null;
+    if (Math.abs(along) > Math.abs(across)) return along > 0 ? 'ahead' : null;
+    return across > 0 ? 'right' : 'left';
+  }
+
   private buildSnapshot(): NavSnapshot {
     const tracker = this.tracker;
     const pos = tracker.position;
@@ -343,6 +392,9 @@ export class NavigationSession {
       lastFix: this.lastFix,
       rerouteCount: this.rerouteCount,
       arrivalConfirmed: this.arrivalConfirmed,
+      sinceFix: tracker.distanceSinceFix,
+      destinationSide: this.destinationSide(route),
+      stepFree: !!this.routeOptions.avoidStairs,
       version: ++this.version,
     };
   }

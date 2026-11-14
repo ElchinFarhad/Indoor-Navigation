@@ -1,10 +1,14 @@
-import { building } from '../../db/dijkstra';
+import { Building, RawGraph } from '../building';
+import thesis from './fixtures/thesis-building.json';
 import { angleDiff, DEG, direction, distance, mat3Multiply, wrapAngle } from '../geometry';
 import { NavEvent, NavigationSession } from '../navigator';
 import { cameraToSensorWorld, headingOf, pitchOf, yawMatrix } from '../orientation';
 import { estimateFocalPx, interpretCode, markerToWorld, ScannedCode } from '../qrPose';
 import { StepDetector } from '../stepDetector';
 import { PositionTracker } from '../tracker';
+
+// The compact building of the thesis demo (see routing.test.ts).
+const building = new Building(thesis as RawGraph);
 
 const id = (name: string, floor = 0) => building.nodes.find((n) => n.name === name && n.floor === floor)!.id;
 const node = (name: string, floor = 0) => building.node(id(name, floor))!;

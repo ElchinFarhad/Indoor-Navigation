@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { ArScene, XrPose } from '../ar/ArScene';
 import { Detection } from '../ar/types';
-import { floorPlanUrl } from '../assets/maps';
 import { Building } from '../nav/building';
 import { Mat3 } from '../nav/geometry';
 import { NavigationSession } from '../nav/navigator';
@@ -97,11 +96,7 @@ const ArView = ({ building, session, stream, demo, getCameraToWorld, onVideo, de
     const v = video.current;
     if (v) v.addEventListener('loadedmetadata', resize);
 
-    if (demo) {
-      const floor = building.floors[0];
-      const plan = floorPlanUrl(floor && floor.map);
-      if (plan) scene.showFloorPlan(plan, floor.width, floor.height);
-    }
+    if (demo) scene.showBuilding();
 
     let lastXrFeed = 0;
     // (setAnimationLoop instead of requestAnimationFrame: it keeps working when a WebXR session takes over.)

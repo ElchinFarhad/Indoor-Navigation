@@ -17,6 +17,7 @@
  * where the browser's own AR tracking moves the camera.
  */
 import * as THREE from 'three';
+import { drawPlan, wallSegments } from '../map/plan';
 import { Building } from '../nav/building';
 import { angleDiff, Mat3 } from '../nav/geometry';
 import { Maneuver } from '../nav/instructions';
@@ -46,6 +47,8 @@ const EYE_HEIGHT = 1.45; // metres: a phone held in front of the chest / face
 const TRAIL_SPACING = 1.1; // metres between chevrons
 const TRAIL_LENGTH = 20; // metres of route shown ahead
 const MAX_CHEVRONS = 24;
+const WALL_HEIGHT = 2.6; // metres, walls of the 3D walk-through
+const WALL_THICKNESS = 0.14;
 const TRAIL_START = 1.0; // metres ahead of the user where the trail begins
 
 const COLOR_ROUTE = 0x22b8f0;
@@ -122,7 +125,7 @@ export class ArScene {
   private destRing: THREE.Mesh;
   private hud: THREE.Group;
   private hudArrow: THREE.Mesh;
-  private floorPlan: THREE.Mesh | null = null;
+  private floorModels = new Map<number, THREE.Group>();
   private dummy = new THREE.Object3D();
   private tmpA = new THREE.Vector3();
   private tmpB = new THREE.Vector3();
@@ -227,25 +230,113 @@ export class ArScene {
     return resource;
   }
 
-  /** Draws the floor plan on the ground. Used when there is no camera image behind the overlay. */
-  showFloorPlan(imageUrl: string, widthUnits: number, heightUnits: number) {
-    if (this.floorPlan) return;
-    const texture = this.track(new THREE.TextureLoader().load(imageUrl));
-    const w = widthUnits * this.mpu;
-    const h = heightUnits * this.mpu;
-    const geometry = this.track(new THREE.PlaneGeometry(w, h));
-    geometry.rotateX(-Math.PI / 2);
-    const material = this.track(new THREE.MeshBasicMaterial({ map: texture }));
-    this.floorPlan = new THREE.Mesh(geometry, material);
-    this.floorPlan.position.set(w / 2, -0.02, h / 2);
-    this.floorPlan.renderOrder = 0;
+  /**
+   * Builds the 3D walk-through of the building from its vector floor plan:
+   * the plan as the ground, walls with door openings, and a name plate at
+   * every door. Used when there is no camera image behind the overlay (demo mode).
+   */
+  showBuilding() {
+    if (this.floorModels.size > 0) return;
+    const mpu = this.mpu;
+    const wallMaterial = this.track(new THREE.MeshStandardMaterial({ color: 0xf2f3f6, roughness: 0.95 }));
+    const wallGeometry = this.track(new THREE.BoxGeometry(1, 1, 1));
+    let widest = 0;
+    let deepest = 0;
+
+    for (const floor of this.building.floors) {
+      const group = new THREE.Group();
+      const w = floor.width * mpu;
+      const h = floor.height * mpu;
+      widest = Math.max(widest, w);
+      deepest = Math.max(deepest, h);
+
+      // Ground: the floor plan itself, drawn to a texture.
+      const canvas = document.createElement('canvas');
+      const scale = Math.min(4, 2048 / Math.max(floor.width, floor.height));
+      canvas.width = Math.round(floor.width * scale);
+      canvas.height = Math.round(floor.height * scale);
+      const ctx = canvas.getContext('2d');
+      if (ctx) drawPlan(ctx, floor, scale, mpu);
+      const texture = this.track(new THREE.CanvasTexture(canvas));
+      texture.anisotropy = Math.min(8, this.renderer.capabilities.getMaxAnisotropy());
+      const groundGeometry = this.track(new THREE.PlaneGeometry(w, h));
+      groundGeometry.rotateX(-Math.PI / 2);
+      const ground = new THREE.Mesh(groundGeometry, this.track(new THREE.MeshBasicMaterial({ map: texture })));
+      ground.position.set(w / 2, -0.02, h / 2);
+      group.add(ground);
+
+      // Walls.
+      const segments = wallSegments(floor, mpu);
+      const walls = new THREE.InstancedMesh(wallGeometry, wallMaterial, segments.length);
+      segments.forEach((s, i) => {
+        const horizontal = s.y1 === s.y2;
+        const length = (horizontal ? s.x2 - s.x1 : s.y2 - s.y1) * mpu;
+        this.dummy.position.set(((s.x1 + s.x2) / 2) * mpu, WALL_HEIGHT / 2, ((s.y1 + s.y2) / 2) * mpu);
+        this.dummy.rotation.set(0, 0, 0);
+        this.dummy.scale.set(horizontal ? length + WALL_THICKNESS : WALL_THICKNESS, WALL_HEIGHT, horizontal ? WALL_THICKNESS : length + WALL_THICKNESS);
+        this.dummy.updateMatrix();
+        walls.setMatrixAt(i, this.dummy.matrix);
+      });
+      walls.instanceMatrix.needsUpdate = true;
+      this.disposables.push(walls);
+      group.add(walls);
+
+      // Name plates above the doors.
+      for (const room of floor.rooms) {
+        const door = (room.doors || [])[0];
+        if (!door || room.kind === 'lobby') continue;
+        const plate = this.namePlate(room.short || room.name);
+        // Nudge it out of the wall, towards the corridor side of the door.
+        const cx = room.x + room.w / 2;
+        const cy = room.y + room.h / 2;
+        const nx = Math.abs(door.x - room.x) < 0.5 ? -1 : Math.abs(door.x - (room.x + room.w)) < 0.5 ? 1 : 0;
+        const ny = nx !== 0 ? 0 : door.y < cy ? -1 : 1;
+        plate.position.set((door.x + nx * 2.5) * mpu, 2.25, (door.y + ny * 2.5) * mpu);
+        if (cx === door.x && cy === door.y) plate.visible = false;
+        group.add(plate);
+      }
+
+      group.visible = false;
+      this.floorModels.set(floor.id, group);
+      this.world.add(group);
+    }
+
     // Plain ground around the building so the horizon sits where it should.
-    const groundGeometry = this.track(new THREE.PlaneGeometry(600, 600));
-    groundGeometry.rotateX(-Math.PI / 2);
-    const ground = new THREE.Mesh(groundGeometry, this.track(new THREE.MeshBasicMaterial({ color: 0xb9b3a6 })));
-    ground.position.set(w / 2, -0.06, h / 2);
-    ground.renderOrder = -1;
-    this.world.add(ground, this.floorPlan);
+    const outsideGeometry = this.track(new THREE.PlaneGeometry(800, 800));
+    outsideGeometry.rotateX(-Math.PI / 2);
+    const outside = new THREE.Mesh(outsideGeometry, this.track(new THREE.MeshBasicMaterial({ color: 0xc9ccd3 })));
+    outside.position.set(widest / 2, -0.06, deepest / 2);
+    outside.renderOrder = -1;
+    this.world.add(outside);
+  }
+
+  /** A small sign with a room's name, always turned towards the viewer. */
+  private namePlate(text: string): THREE.Sprite {
+    const canvas = document.createElement('canvas');
+    canvas.width = 320;
+    canvas.height = 96;
+    const ctx = canvas.getContext('2d');
+    if (ctx) {
+      ctx.fillStyle = '#1c2330';
+      const r = 22;
+      ctx.beginPath();
+      ctx.moveTo(r, 4);
+      ctx.arcTo(316, 4, 316, 92, r);
+      ctx.arcTo(316, 92, 4, 92, r);
+      ctx.arcTo(4, 92, 4, 4, r);
+      ctx.arcTo(4, 4, 316, 4, r);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '600 44px -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(text, 160, 50, 290);
+    }
+    const texture = this.track(new THREE.CanvasTexture(canvas));
+    const sprite = new THREE.Sprite(this.track(new THREE.SpriteMaterial({ map: texture, transparent: true })));
+    sprite.scale.set(1.1, 0.33, 1);
+    return sprite;
   }
 
   setSize(width: number, height: number, verticalFovDeg: number) {
@@ -498,6 +589,12 @@ export class ArScene {
       posed = this.hasPose;
     }
     this.world.visible = posed;
+    if (this.floorModels.size > 0 && frame.position) {
+      const floor = frame.position.floor;
+      this.floorModels.forEach((model, id) => {
+        model.visible = id === floor;
+      });
+    }
 
     this.updateTrail(frame, time);
     this.updateSigns(frame, time);
