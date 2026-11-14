@@ -1,21 +1,23 @@
 [package]
 name = "wasm"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 
 [lib]
-crate-type = ["cdylib"]
+# cdylib -> the WebAssembly module, rlib -> lets `cargo test` link the unit tests
+crate-type = ["cdylib", "rlib"]
 path = "src/lib.rs"
 
-
 [dependencies]
-serde = "*"
-serde_json = "*"
-serde_derive = "*"
-rqrr = "0.4.0"
-image = "0.23.14"
-wasm-bindgen = "0.2.47"
-cargo-debug = "0.3.0"
+serde = "1"
+serde_json = "1"
+serde_derive = "1"
+# QR detection only needs the greyscale entry point, so the `img` feature
+# (which drags in every codec of the `image` crate) is switched off.
+rqrr = { version = "0.4.0", default-features = false }
+# Only used by the legacy base64-PNG entry point (`decode_qr`).
+image = { version = "0.23.14", default-features = false, features = ["png"] }
+wasm-bindgen = "0.2.88"
 base64 = "0.13.0"
 lambda-twist = "0.7.0"
 cv-core = "0.15.0"
@@ -23,3 +25,12 @@ arrsac = "0.5.0"
 rand = { version = "0.7.3", features = ["small_rng"] }
 cv-pinhole = "0.6.0"
 
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+
+# wasm-pack would otherwise download binaryen at build time to run wasm-opt.
+# The build has to work offline / behind a proxy, so that step is switched off.
+[package.metadata.wasm-pack.profile.release]
+wasm-opt = false
