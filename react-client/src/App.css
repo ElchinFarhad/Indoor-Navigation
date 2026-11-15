@@ -1755,3 +1755,187 @@ button.nav-pill {
     animation: none;
   }
 }
+
+
+/* ==========================================================================
+   Stores: venue switcher, shopping list, pick list
+   ========================================================================== */
+
+.app-navbar__venue {
+  max-width: 9.5rem;
+  margin-right: 0.3rem;
+  padding: 0.35rem 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  font-size: 0.85rem;
+  text-overflow: ellipsis;
+}
+
+.app-navbar__venue option {
+  color: var(--ink);
+}
+
+.shopping {
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--card);
+  box-shadow: var(--shadow);
+}
+
+.shopping__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.shopping__head h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 720;
+}
+
+.shopping__clear {
+  border: 0;
+  background: transparent;
+  color: var(--accent-deep);
+  font-weight: 600;
+}
+
+.shopping__empty,
+.shopping__none {
+  margin: 0.5rem 0 0;
+  color: var(--ink-soft);
+  font-size: 0.93rem;
+  line-height: 1.45;
+}
+
+.shopping__items {
+  list-style: none;
+  margin: 0.6rem 0 0;
+  padding: 0;
+}
+
+.shopping__items li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.shopping__items span {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.shopping__items small {
+  color: var(--ink-soft);
+}
+
+.shopping__items button {
+  width: 2.2rem;
+  height: 2.2rem;
+  border: 0;
+  border-radius: 50%;
+  background: #eef0f4;
+  color: var(--ink-soft);
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.shopping__label {
+  margin: 0.9rem 0 0.45rem;
+  font-size: 0.78rem;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.shopping__products {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.product {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.3rem;
+  padding: 0 0.8rem 0 0.55rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #ffffff;
+  color: var(--ink);
+  font-size: 0.93rem;
+  font-weight: 550;
+}
+
+.product span {
+  width: 1.3rem;
+  height: 1.3rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #e8f2fc;
+  color: var(--accent-deep);
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.product.is-on {
+  border-color: var(--good);
+  background: #eaf8f0;
+}
+
+.product.is-on span {
+  background: var(--good);
+  color: #ffffff;
+}
+
+.shopping__go {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.pick-list {
+  list-style: none;
+  max-width: 22rem;
+  margin: 0 auto 1.1rem;
+  padding: 0.3rem 1rem;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.08);
+  text-align: left;
+}
+
+.pick-list li {
+  padding: 0.55rem 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.pick-list li:last-child {
+  border-bottom: 0;
+}
+
+.pick-list li::before {
+  content: '';
+  display: inline-block;
+  width: 1.1rem;
+  height: 1.1rem;
+  margin-right: 0.7rem;
+  vertical-align: -0.15rem;
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  border-radius: 5px;
+}
+
+.sheet--arrival button.btn-nav {
+  border: 0;
+}

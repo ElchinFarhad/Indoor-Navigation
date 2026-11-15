@@ -26,6 +26,19 @@ const STYLES: { [kind: string]: KindStyle } = {
   stairs: { fill: '#e3e7ef', category: 'Stairs & lifts' },
   elevator: { fill: '#e3e7ef', category: 'Stairs & lifts' },
   lobby: { fill: '#ffffff', category: 'Entrances' },
+  // supermarket departments
+  produce: { fill: '#dff3d8', category: 'Fresh' },
+  bakery: { fill: '#f8e6c8', category: 'Fresh' },
+  meat: { fill: '#f9dcd9', category: 'Fresh' },
+  fish: { fill: '#d9ecf8', category: 'Fresh' },
+  dairy: { fill: '#e8eefb', category: 'Fresh' },
+  frozen: { fill: '#dcf1f5', category: 'Frozen' },
+  pantry: { fill: '#f6efd9', category: 'Food cupboard' },
+  snacks: { fill: '#fbe6d2', category: 'Food cupboard' },
+  drinks: { fill: '#e6e3f7', category: 'Drinks' },
+  household: { fill: '#e7ebf0', category: 'Household' },
+  care: { fill: '#f6e1ee', category: 'Household' },
+  checkout: { fill: '#e3e7ef', category: 'Checkout' },
 };
 
 const DEFAULT_STYLE: KindStyle = { fill: '#eceff4', category: 'Other' };
@@ -39,7 +52,7 @@ export function kindStyle(kind: string): KindStyle {
 }
 
 /** Order in which categories are offered as filters. */
-export const CATEGORY_ORDER = ['Classrooms', 'Labs', 'Offices', 'Services', 'Entrances', 'Stairs & lifts', 'Other'];
+export const CATEGORY_ORDER = ['Classrooms', 'Labs', 'Offices', 'Services', 'Fresh', 'Food cupboard', 'Drinks', 'Frozen', 'Household', 'Checkout', 'Entrances', 'Stairs & lifts', 'Other'];
 
 /** Width of a door opening in map units. */
 export function doorWidth(door: PlanDoor, metersPerUnit: number): number {
@@ -76,7 +89,7 @@ export function wallSegments(floor: Floor, metersPerUnit: number): Segment[] {
       const horizontal = side.y1 === side.y2;
       // Openings along this side, as [from, to] intervals of the running coordinate.
       const gaps: number[][] = [];
-      for (const door of room.doors || []) {
+      for (const door of room.solid ? [] : room.doors || []) {
         const d = doorSegment(room, door, metersPerUnit);
         if (horizontal && d.y1 === d.y2 && Math.abs(d.y1 - side.y1) < 0.5) gaps.push([d.x1, d.x2]);
         if (!horizontal && d.x1 === d.x2 && Math.abs(d.x1 - side.x1) < 0.5) gaps.push([d.y1, d.y2]);

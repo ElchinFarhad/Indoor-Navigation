@@ -7,6 +7,7 @@ import { walkingDistance } from '../nav/routing';
 import KindIcon from './KindIcon';
 import MapView from './MapView';
 import NavbarComp from './NavbarComp';
+import ShoppingList from './ShoppingList';
 
 /**
  * Destination picker.
@@ -58,6 +59,8 @@ const HomePage = () => {
     setFloor(node.floor);
   };
 
+  const store = building.type === 'store';
+  const finished = new URLSearchParams(location.search).get('done') === '1';
   const selectedFloor = selected ? building.floor(selected.floor) : undefined;
   let lastFloor: number | null = null;
 
@@ -68,26 +71,31 @@ const HomePage = () => {
       <header className="hero">
         <div className="hero__inner">
           <p className="hero__eyebrow">{building.name}</p>
-          <h1>Where do you want to go?</h1>
+          <h1>{store ? 'What do you need today?' : 'Where do you want to go?'}</h1>
           {at ? (
             <p className="hero__lead hero__lead--here">
               <span className="dot" /> You are at <b>{building.displayName(at)}</b>
               {building.floor(at.floor) ? `, ${building.floor(at.floor)!.name}` : ''}
             </p>
           ) : (
-            <p className="hero__lead">Pick a place, scan one QR marker, then just follow the arrows and the voice.</p>
+            <p className="hero__lead">
+              {store
+                ? 'Make your list, scan one QR marker, and be guided from shelf to shelf by the shortest way.'
+                : 'Pick a place, scan one QR marker, then just follow the arrows and the voice.'}
+            </p>
           )}
           <label className="search">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true">
               <circle cx="11" cy="11" r="6.5" />
               <path d="M16 16l4.5 4.5" />
             </svg>
-            <input type="search" placeholder="Search rooms" aria-label="Search rooms" value={query} onChange={(e) => setQuery(e.target.value)} />
+            <input type="search" placeholder={store ? 'Search products and sections' : 'Search rooms'} aria-label={store ? 'Search products and sections' : 'Search rooms'} value={query} onChange={(e) => setQuery(e.target.value)} />
           </label>
         </div>
       </header>
 
       <main className="content">
+        {store && <ShoppingList query={query} startId={at ? at.id : null} finished={finished} />}
         <div className="chips" role="tablist" aria-label="Category">
           {categories.map((c) => (
             <button key={c} type="button" role="tab" aria-selected={category === c} className={`chip${category === c ? ' is-active' : ''}`} onClick={() => setCategory(c)}>
@@ -129,7 +137,7 @@ const HomePage = () => {
           </section>
         )}
 
-        <h2 className="section-title">Choose Your Destination</h2>
+        <h2 className="section-title">{store ? 'Or go to one section' : 'Choose Your Destination'}</h2>
 
         <ul className="rooms">
           {rooms.map(({ room, distance }) => {
@@ -165,7 +173,7 @@ const HomePage = () => {
         {rooms.length === 0 && <p className="empty">No room matches “{query}”.</p>}
 
         <p className="footnote">
-          Politecnico di Torino · <Link to="/about">How it works</Link>
+          {store ? building.name : 'Politecnico di Torino'} · <Link to="/about">How it works</Link>
         </p>
       </main>
     </div>

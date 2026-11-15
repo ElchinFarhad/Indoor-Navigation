@@ -239,7 +239,7 @@ const MapView = ({ building, floor, onFloorChange, snapshot, destinationId, comp
 
         {/* door openings: a stroke in the floor colour over the wall */}
         {f.rooms.map((room) =>
-          (room.doors || []).map((door, i) => {
+          (room.solid ? [] : room.doors || []).map((door, i) => {
             const d = doorSegment(room, door, mpu);
             return (
               <line
