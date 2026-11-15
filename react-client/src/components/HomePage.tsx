@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { building } from '../db/dijkstra';
+import { currentVenue, selectVenue, VENUES } from '../db/venues';
 import { CATEGORY_ORDER, kindStyle } from '../map/plan';
 import { NavNode } from '../nav/building';
 import { walkingDistance } from '../nav/routing';
@@ -65,12 +66,27 @@ const HomePage = () => {
   let lastFloor: number | null = null;
 
   return (
-    <div className="page">
+    <div className={`page${store ? ' page--store' : ''}`}>
       <NavbarComp />
 
       <header className="hero">
         <div className="hero__inner">
-          <p className="hero__eyebrow">{building.name}</p>
+          {VENUES.length > 1 ? (
+            <label className="venue-pill">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M12 21s-6-5.3-6-10a6 6 0 1 1 12 0c0 4.7-6 10-6 10z" />
+              </svg>
+              <select aria-label="Venue" value={currentVenue().id} onChange={(e) => selectVenue(e.target.value)}>
+                {VENUES.map((v) => (
+                  <option key={v.id} value={v.id}>
+                    {v.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : (
+            <p className="hero__eyebrow">{building.name}</p>
+          )}
           <h1>{store ? 'What do you need today?' : 'Where do you want to go?'}</h1>
           {at ? (
             <p className="hero__lead hero__lead--here">
@@ -89,7 +105,7 @@ const HomePage = () => {
               <circle cx="11" cy="11" r="6.5" />
               <path d="M16 16l4.5 4.5" />
             </svg>
-            <input type="search" placeholder={store ? 'Search products and sections' : 'Search rooms'} aria-label={store ? 'Search products and sections' : 'Search rooms'} value={query} onChange={(e) => setQuery(e.target.value)} />
+            <input type="search" placeholder={store ? 'Search products' : 'Search rooms'} aria-label={store ? 'Search products and sections' : 'Search rooms'} value={query} onChange={(e) => setQuery(e.target.value)} />
           </label>
         </div>
       </header>
@@ -155,7 +171,7 @@ const HomePage = () => {
                     <span className="room__text">
                       <strong>{building.displayName(room)}</strong>
                       <span>
-                        {f ? f.name : `Floor ${room.floor}`}
+                        {building.floors.length > 1 ? (f ? f.name : `Floor ${room.floor}`) : kindStyle(room.kind).category}
                         {distance !== null ? ` · ${Math.round(distance)} m` : ''}
                       </span>
                     </span>

@@ -7,7 +7,7 @@ import { Announcer } from '../nav/announcer';
 import { NavNode } from '../nav/building';
 import { formatDistance, Mat3, mat3Multiply } from '../nav/geometry';
 import { NavEvent, NavigationSession, NavSnapshot } from '../nav/navigator';
-import { entranceNode, planTrip, Trip } from '../nav/shopping';
+import { entranceNode, ShoppingTrip } from '../nav/shopping';
 import { yawMatrix } from '../nav/orientation';
 import { bestSighting } from '../nav/qrPose';
 import { WalkSimulator } from '../nav/simulator';
@@ -18,6 +18,7 @@ import KindIcon from './KindIcon';
 import ManeuverIcon from './ManeuverIcon';
 import MapView from './MapView';
 import { AudioPanel, FixPanel, StepsPanel } from './NavPanels';
+import TripPanel from './TripPanel';
 
 // Three.js is only needed once the camera view opens: keep it out of the first load.
 const ArView = React.lazy(() => import('./ArView'));
@@ -28,7 +29,7 @@ const RECAL = 5;
 type Phase = 'intro' | 'running';
 type Source = 'camera' | 'demo' | 'manual';
 type View = 'ar' | 'map';
-type PanelName = 'steps' | 'audio' | 'fix' | null;
+type PanelName = 'steps' | 'audio' | 'fix' | 'trip' | 'leave' | null;
 
 interface Toast {
   id: number;
@@ -85,13 +86,10 @@ const QrScanner = () => {
   // order, the checkout last. The session always navigates to the current stop.
   const items = query.get('items');
   const itemIds = useMemo(() => (items ? items.split(',').filter(Boolean) : []), [items]);
-  const [trip, setTrip] = useState<Trip | null>(() => (itemIds.length > 0 ? planTrip(building, itemIds, startId) : null));
-  const [stopIndex, setStopIndex] = useState(0);
-  const tripRef = useRef(trip);
-  tripRef.current = trip;
-  const shopping = !!trip && trip.stops.length > 0;
+  const [trip] = useState<ShoppingTrip | null>(() => (itemIds.length > 0 ? new ShoppingTrip(building, itemIds, startId) : null));
+  const [, setTripVersion] = useState(0); // the trip object is mutable: this redraws after a change
 
-  const destId = shopping ? trip!.stops[0].nodeId : parseInt(params.id || '', 10);
+  const [destId] = useState(() => (trip && trip.current ? trip.current.nodeId : parseInt(params.id || '', 10)));
   const firstDestination = building.node(destId);
 
   const session = useMemo(
@@ -118,6 +116,7 @@ const QrScanner = () => {
   const [picking, setPicking] = useState(false);
   const [scanning, setScanning] = useState(false);
   const [panel, setPanel] = useState<PanelName>(null);
+  const [ticked, setTicked] = useState<string[]>([]);
   const [stepFree, setStepFree] = useState(false);
   const [xrSupported, setXrSupported] = useState(false);
   const [xrSession, setXrSession] = useState<any>(null);
@@ -137,6 +136,23 @@ const QrScanner = () => {
     window.setTimeout(() => setToasts((list) => list.filter((t) => t.id !== id)), 3800);
   }, []);
 
+  /**
+   * After any change to the trip: redraw, point the navigation at the stop that
+   * is now first, and say what changed.
+   */
+  const cueId = useRef(0);
+  const syncTrip = useRef<(say?: string) => void>(() => undefined);
+  syncTrip.current = (say?: string) => {
+    setTripVersion((v) => v + 1);
+    if (!trip) return;
+    const current = trip.current;
+    if (current && session.destination.id !== current.nodeId) {
+      setMapFloor(null);
+      session.setDestination(current.nodeId);
+    }
+    if (say) guide.push({ key: `trip:${++cueId.current}`, priority: 2, text: say });
+  };
+
   const onUpdate = useCallback(
     (snap: NavSnapshot, event?: NavEvent) => {
       // Voice and sound: the announcer decides what is worth hearing, the guide when it is heard.
@@ -151,16 +167,12 @@ const QrScanner = () => {
             vibrate(60);
             // The trip was planned from the entrance: if the shopper starts
             // somewhere else, the best order of the stops may be another one.
-            const planned = tripRef.current;
-            if (planned && planned.stops.length > 1 && event.node.id !== (startId !== null ? startId : entranceNode(building))) {
-              const again = planTrip(building, itemIds, event.node.id);
-              if (again.stops[0].nodeId !== planned.stops[0].nodeId) {
-                window.setTimeout(() => {
-                  setTrip(again);
-                  setStopIndex(0);
-                  session.setDestination(again.stops[0].nodeId);
-                  guide.push({ key: 'replanned', priority: 2, text: `From here it is quicker to start with ${building.displayName(building.node(again.stops[0].nodeId)!)}.` });
-                }, 0);
+            if (trip && trip.stops.length > 1 && event.node.id !== (startId !== null ? startId : entranceNode(building))) {
+              const before = trip.current ? trip.current.nodeId : -1;
+              trip.replan(event.node.id);
+              if (trip.current && trip.current.nodeId !== before) {
+                const first = building.displayName(building.node(trip.current.nodeId)!);
+                window.setTimeout(() => syncTrip.current(`From here it is quicker to start with ${first}.`), 0);
               }
             }
           } else if (event.rerouted) {
@@ -196,7 +208,7 @@ const QrScanner = () => {
           break;
       }
     },
-    [toast, announcer, guide, session, itemIds, startId]
+    [toast, announcer, guide, trip, startId]
   );
 
   const snapshot = useSnapshot(session, onUpdate);
@@ -450,26 +462,55 @@ const QrScanner = () => {
     );
   }
 
+  const shopping = trip !== null && (trip.stops.length > 0 || trip.finished);
   const destName = building.displayName(destination);
-  const stop = shopping ? trip!.stops[Math.min(stopIndex, trip!.stops.length - 1)] : null;
-  const lastStop = shopping && stopIndex >= trip!.stops.length - 1;
+  const stop = trip ? trip.current : null;
+  const tripDone = !!trip && (trip.finished || (!!stop && stop.checkout && snapshot.status === 'arrived'));
   const stopItems = stop ? stop.products.map((p) => p.name).join(', ') : '';
+  const stopNumber = trip ? Math.min(trip.done + 1, trip.total) : 0;
 
-  const nextStop = () => {
-    if (!trip || lastStop) return;
-    const next = trip.stops[stopIndex + 1];
-    const node = building.node(next.nodeId)!;
-    setStopIndex(stopIndex + 1);
-    setMapFloor(null);
-    session.setDestination(next.nodeId);
-    guide.push({
-      key: `next-stop:${stopIndex + 1}`,
-      priority: 2,
-      text: next.checkout
-        ? "That's everything on your list. Let's go to the checkout."
-        : `Next: ${next.products.map((p) => p.name).join(', ')}, at ${building.displayName(node)}.`,
-    });
+  /** Where the shopper is now, as a graph node: the start for re-planning the rest of the trip. */
+  const hereNode = (): number | null => {
+    const p = session.snapshot.position;
+    if (!p) return startId !== null ? startId : entranceNode(building);
+    if (p.to === null) return p.from;
+    const edge = building.edge(p.from, p.to);
+    return edge && p.t > edge.length / 2 ? p.to : p.from;
   };
+
+  const describeNext = (lead: string): string => {
+    const next = trip ? trip.current : null;
+    if (!next) return lead;
+    if (next.checkout) return `${lead} That's everything on your list. Let's go to the checkout.`.trim();
+    return `${lead} Next: ${next.products.map((p) => p.name).join(', ')}, at ${building.displayName(building.node(next.nodeId)!)}.`.trim();
+  };
+
+  const completeStop = () => {
+    if (!trip) return;
+    trip.completeStop();
+    syncTrip.current(describeNext(''));
+  };
+
+  const skipProduct = (id: string) => {
+    if (!trip) return;
+    const product = building.product(id);
+    const before = trip.current ? trip.current.nodeId : -1;
+    trip.skip(id, hereNode());
+    toast(`Skipped ${product ? product.name : id}`, 'info');
+    const changed = !trip.current || trip.current.nodeId !== before;
+    syncTrip.current(changed ? describeNext(`Skipping ${product ? product.name : 'it'}.`) : undefined);
+  };
+
+  const addProduct = (id: string) => {
+    if (!trip) return;
+    const product = building.product(id);
+    const before = trip.current ? trip.current.nodeId : -1;
+    if (!trip.add(id, hereNode()) || !product) return;
+    toast(`Added ${product.name} · ${product.section.name}`, 'good');
+    const changed = !!trip.current && trip.current.nodeId !== before;
+    syncTrip.current(changed ? describeNext(`Added ${product.name}.`) : `Added ${product.name}.`);
+  };
+
   const destFloor = building.floor(destination.floor);
   const position = snapshot.position;
   const shownFloor = mapFloor !== null ? mapFloor : position ? position.floor : destination.floor;
@@ -586,7 +627,7 @@ const QrScanner = () => {
       {/* ------------------------------------------------ instruction banner */}
       {phase === 'running' && (
         <header className={`nav-banner${arrived ? ' nav-banner--arrived' : ''}${snapshot.wrongWay && !scanning ? ' nav-banner--warn' : ''}`}>
-          <button type="button" className="nav-banner__back" aria-label="End navigation" onClick={() => navigate('/')}>
+          <button type="button" className="nav-banner__back" aria-label="End navigation" onClick={() => (arrived || locating ? navigate('/') : setPanel('leave'))}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
               <path d="M15 5l-7 7 7 7" />
             </svg>
@@ -707,7 +748,7 @@ const QrScanner = () => {
                 </strong>
                 <span>
                   <i className={`nav-dot nav-dot--${snapshot.accuracy < 2 ? 'good' : snapshot.accuracy < RECAL ? 'warn' : 'bad'}`} title="Estimated accuracy of your position" />
-                  {shopping ? `Stop ${stopIndex + 1} of ${trip!.stops.length} · ${stop!.checkout ? 'Checkout' : stopItems}` : `${destName} · ±${snapshot.accuracy < 10 ? snapshot.accuracy.toFixed(1) : Math.round(snapshot.accuracy)} m`}
+                  {shopping && stop ? `Stop ${stopNumber} of ${trip!.total} · ${stop.checkout ? 'Checkout' : stopItems}` : `${destName} · ±${snapshot.accuracy < 10 ? snapshot.accuracy.toFixed(1) : Math.round(snapshot.accuracy)} m`}
                 </span>
               </>
             )}
@@ -721,7 +762,16 @@ const QrScanner = () => {
                 {audioMode === 'off' && <path d="M17 9l4 6M21 9l-4 6" />}
               </svg>
             </button>
-            {!locating && (
+            {shopping && (
+              <button type="button" className="nav-icon-btn nav-icon-btn--badge" aria-label="Shopping list" onClick={() => setPanel('trip')}>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 8h14l-1.500 11H6.500z" />
+                  <path d="M8.500 8l2-4M15.500 8l-2-4M3 8h18" />
+                </svg>
+                {trip!.pending.length > 0 && <b>{trip!.pending.length}</b>}
+              </button>
+            )}
+            {!locating && !shopping && (
               <button type="button" className="nav-icon-btn" aria-label="Directions list" onClick={() => setPanel('steps')}>
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
                   <path d="M9 6h11M9 12h11M9 18h11" />
@@ -741,6 +791,27 @@ const QrScanner = () => {
       {/* ------------------------------------------------------------ panels */}
       {panel === 'steps' && <StepsPanel building={building} snapshot={snapshot} onStepFree={changeStepFree} onClose={() => setPanel(null)} />}
       {panel === 'audio' && <AudioPanel guide={guide} mode={audioMode} onMode={changeAudio} onClose={() => setPanel(null)} />}
+      {panel === 'trip' && trip && (
+        <TripPanel building={building} trip={trip} onAdd={addProduct} onSkip={skipProduct} onDirections={locating ? undefined : () => setPanel('steps')} onClose={() => setPanel(null)} />
+      )}
+      {panel === 'leave' && (
+        <div className="panel-scrim" onClick={() => setPanel(null)}>
+          <div className="panel" role="dialog" aria-label="End navigation" onClick={(e) => e.stopPropagation()}>
+            <div className="panel__head">
+              <h3>{shopping ? 'End this shopping trip?' : 'End navigation?'}</h3>
+            </div>
+            <p className="panel__lead">{shopping ? 'Your list is kept, so you can start again later.' : 'You can start again from the destination list.'}</p>
+            <div className="panel__actions">
+              <button type="button" className="btn-nav btn-nav--soft" onClick={() => setPanel(null)}>
+                Keep going
+              </button>
+              <button type="button" className="btn-nav btn-nav--danger" onClick={() => navigate('/')}>
+                End
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {panel === 'fix' && <FixPanel canScan={source === 'camera'} onScan={beginScan} onPick={beginPick} onClose={() => setPanel(null)} />}
 
       {/* ----------------------------------------------------------- arrival */}
@@ -751,27 +822,51 @@ const QrScanner = () => {
           </div>
           {shopping ? (
             <>
-              <h2>{stop!.checkout ? 'Checkout' : destName}</h2>
+              <h2>{tripDone ? 'Checkout' : destName}</h2>
               <p>
-                {stop!.checkout ? 'You have everything on your list.' : `Stop ${stopIndex + 1} of ${trip!.stops.length}`}
-                {snapshot.destinationSide === 'left' && ' · on your left'}
-                {snapshot.destinationSide === 'right' && ' · on your right'}
+                {tripDone
+                  ? `${trip!.picked.length} item${trip!.picked.length === 1 ? '' : 's'} in your basket${trip!.skipped.length > 0 ? ` · ${trip!.skipped.length} skipped` : ''}`
+                  : `Stop ${stopNumber} of ${trip!.total}`}
+                {!tripDone && snapshot.destinationSide === 'left' && ' · on your left'}
+                {!tripDone && snapshot.destinationSide === 'right' && ' · on your right'}
               </p>
-              {stop!.products.length > 0 && (
+              {!tripDone && stop && stop.products.length > 0 && (
                 <ul className="pick-list">
-                  {stop!.products.map((p) => (
-                    <li key={p.id}>{p.name}</li>
+                  {stop.products.map((p) => (
+                    <li key={p.id} className={ticked.indexOf(p.id) >= 0 ? 'is-ticked' : ''}>
+                      <button
+                        type="button"
+                        className="pick-list__tick"
+                        aria-pressed={ticked.indexOf(p.id) >= 0}
+                        aria-label={`${p.name}: in the basket`}
+                        onClick={() => setTicked((t) => (t.indexOf(p.id) >= 0 ? t.filter((x) => x !== p.id) : t.concat(p.id)))}
+                      >
+                        <i aria-hidden="true" />
+                        <span>{p.name}</span>
+                      </button>
+                      <button type="button" className="pick-list__skip" aria-label={`${p.name} is not here: skip it`} onClick={() => skipProduct(p.id)}>
+                        Not here
+                      </button>
+                    </li>
                   ))}
                 </ul>
               )}
-              {lastStop ? (
+              {tripDone && trip!.skipped.length > 0 && (
+                <p className="sheet__skipped">Skipped: {trip!.skipped.map((id) => (building.product(id) || { name: id }).name).join(', ')}</p>
+              )}
+              {tripDone ? (
                 <Link className="btn-nav btn-nav--primary" to="/?done=1">
                   Finish
                 </Link>
               ) : (
-                <button type="button" className="btn-nav btn-nav--primary" onClick={nextStop}>
-                  Got it · next stop
-                </button>
+                <>
+                  <button type="button" className="btn-nav btn-nav--primary" onClick={completeStop}>
+                    Got it · next stop
+                  </button>
+                  <button type="button" className="btn-nav btn-nav--ghost" onClick={() => setPanel('trip')}>
+                    Add or change items
+                  </button>
+                </>
               )}
             </>
           ) : (
@@ -805,9 +900,9 @@ const QrScanner = () => {
             </span>
             <div>
               <p className="sheet__eyebrow">{shopping ? 'Shopping trip' : 'Navigate to'}</p>
-              <h2>{shopping ? `${itemIds.length - trip!.unknown.length} items · ${trip!.stops.length} stops` : destName}</h2>
+              <h2>{shopping ? `${trip!.pending.length} items · ${trip!.stops.length} stops` : destName}</h2>
               <p className="sheet__sub">
-                {shopping ? `About ${Math.round(trip!.length / 5) * 5} m in the best order, ending at the checkout` : destFloor ? destFloor.name : ''} · {building.name}
+                {shopping ? `About ${Math.round(trip!.length / 5) * 5} m by the shortest way, ending at the checkout` : `${destFloor ? destFloor.name : ''} · ${building.name}`}
                 {startId !== null && ` · from ${building.displayName(building.node(startId)!)}`}
               </p>
             </div>

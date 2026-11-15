@@ -26,7 +26,7 @@ would still need.
 | S9 | Starting somewhere else than the entrance re-plans the order from there | done |
 | S10 | Go to a single section without a list (as in any building) | done |
 | S11 | Spoken guidance between stops ("Next: bread, at Bakery") | done |
-| S12 | Skip a product that is out of stock, add one on the way | not yet |
+| S12 | Skip a product that is out of stock, add one on the way | done: "Not here" on arrival, skip or add from the basket button; the rest of the trip is re-planned from where you stand |
 | S13 | Exact shelf position (bay, height) and price of a product | not yet (needs store data) |
 
 ### Store operator
