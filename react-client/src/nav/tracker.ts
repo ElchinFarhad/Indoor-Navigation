@@ -272,6 +272,20 @@ export class PositionTracker {
     return { node, correction, newMarker };
   }
 
+  /**
+   * The user confirms which way they are facing on the map (radians), e.g. after
+   * choosing the start by hand: calibrates the orientation sensor without a marker.
+   */
+  setFacing(heading: number) {
+    this.fallbackHeading = heading;
+    if (this.sensorHeading !== null) {
+      this.headingOffset = wrapAngle(heading - this.sensorHeading);
+      this.headingAssumed = false;
+    } else {
+      this.headingOffset = null; // the first sensor sample calibrates
+    }
+  }
+
   /** Sets the position without a marker (start point chosen by hand). */
   setManualPosition(nodeId: number): boolean {
     const result = this.applyFix({ nodeId });

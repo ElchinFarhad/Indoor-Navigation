@@ -2457,3 +2457,41 @@ body {
   width: auto;
   margin: 0;
 }
+
+/* "Face this way" prompt after choosing the start on the map */
+.panel-scrim--clear {
+  background: transparent;
+  pointer-events: none;
+}
+
+.panel-scrim--clear .panel {
+  pointer-events: auto;
+  box-shadow: 0 -8px 30px rgba(10, 20, 40, 0.28);
+}
+
+.face-prompt__row {
+  display: flex;
+  gap: 0.8rem;
+  align-items: flex-start;
+}
+
+.face-prompt__row h3 {
+  margin: 0 0 0.25rem;
+  font-size: 1.1rem;
+}
+
+.face-prompt__icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.face-prompt .panel__hint {
+  margin: 0.7rem 0 0;
+  font-size: 0.82rem;
+}

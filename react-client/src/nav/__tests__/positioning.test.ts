@@ -469,6 +469,36 @@ describe('floors', () => {
   });
 });
 
+describe('start chosen on the map', () => {
+  it('has no trusted direction until the user confirms which way they face', () => {
+    const bias = 2.1;
+    const session = new NavigationSession(building, id('D'), { now: () => 0 });
+    // The phone points down the corridor towards B; the sensor reads something unrelated.
+    session.handleOrientation(wrapAngle(Math.PI / 2 - bias));
+    session.setStart(id('C'));
+    expect(session.snapshot.headingCalibrated).toBe(false);
+
+    const target = session.facingTarget()!;
+    expect(target.node!.id).toBe(id('B'));
+    expect(target.dir).toBeCloseTo(Math.PI / 2);
+
+    expect(session.confirmFacing()).toBe(true);
+    expect(session.snapshot.headingCalibrated).toBe(true);
+    expect(session.tracker.heading!).toBeCloseTo(Math.PI / 2);
+
+    // From here it tracks like a scanned start: walk the whole route with turns.
+    const { truth } = simulateWalk(session, [node('C'), node('B'), node('A'), node('D')], { bias });
+    expect(session.snapshot.status).toBe('arrived');
+    expect(distance(truth, node('D')) * MPU).toBeLessThan(1.5);
+  });
+
+  it('offers nothing to face before there is a position', () => {
+    const session = new NavigationSession(building, id('D'), { now: () => 0 });
+    expect(session.facingTarget()).toBeNull();
+    expect(session.confirmFacing()).toBe(false);
+  });
+});
+
 describe('arrival and edge cases', () => {
   it('arrives immediately when the scanned marker is the destination', () => {
     const session = new NavigationSession(building, id('D'), { now: () => 0 });

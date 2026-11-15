@@ -182,6 +182,27 @@ export class NavigationSession {
     return true;
   }
 
+  /**
+   * Where the user should face to set off along the route: the direction of the
+   * first corridor and the node at its end. `null` when the route does not start
+   * with a walk (stairs, lift) or there is no route.
+   */
+  facingTarget(): { dir: number; node: NavNode | null } | null {
+    const leg = this.route ? this.route.legs[0] : null;
+    if (!leg || leg.kind !== 'walk' || leg.length < 0.5) return null;
+    const node = leg.to.nodeId !== null ? this.building.node(leg.to.nodeId) || null : null;
+    return { dir: leg.dir, node };
+  }
+
+  /** The user says they are facing along the start of the route. */
+  confirmFacing(): boolean {
+    const target = this.facingTarget();
+    if (!target || !this.tracker.hasFix) return false;
+    this.tracker.setFacing(target.dir);
+    this.refresh([], false);
+    return true;
+  }
+
   /** Heading from the orientation sensor (uncalibrated, radians). */
   handleOrientation(sensorHeading: number) {
     this.tracker.onSensorHeading(sensorHeading);
