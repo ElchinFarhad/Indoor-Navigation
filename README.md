@@ -66,6 +66,9 @@ No. Scanning the first marker is enough for the whole trip.
   the position silently; nobody has to aim at it.
 - If the estimate has drifted anyway (the blue dot is not where you are), **Fix my position** offers two
   ways out: scan any marker on purpose, or tap your position on the map. The route adapts from there.
+  A position chosen on the map carries no direction, so the app asks you to face along the start of the
+  route and tap once; that calibrates the orientation sensor the way a scan would. If you skip it, the
+  direction is worked out from your first two steps.
 - The app only suggests a scan by itself when its accuracy estimate has become poor (about 5 m). The
   test that walks the longest kind of route in the demo building (about 70 m, five turns, one staircase)
   from a single scan never gets there.

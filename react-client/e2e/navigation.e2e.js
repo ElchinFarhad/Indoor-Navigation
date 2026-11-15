@@ -543,7 +543,20 @@ async function run() {
       await waitForBanner(page, /turn right/);
       s = await state(page);
       near(s.x, entrance.x, 1, 'manual start at the entrance');
+      step('a start chosen by hand asks which way the user faces');
+      await page.evaluate(() => {
+        window.__sensors.alpha = 200; // an arbitrary reading: the sensor is not calibrated
+        window.__sensors.start();
+      });
+      await page.waitForSelector('.face-prompt');
+      await page.waitForTimeout(500);
       await shot(page, 'manual-start');
+      assert.strictEqual(await page.$('.map-view__cone'), null, 'no direction is shown before confirming');
+      await page.click("text=I'm facing it");
+      await page.waitForFunction(() => !document.querySelector('.face-prompt'));
+      await page.waitForSelector('.map-view__cone');
+      s = await state(page);
+      near(s.heading, -90, 1, 'facing along the first corridor of the route');
       await page.context().close();
     }
 

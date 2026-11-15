@@ -114,6 +114,7 @@ const QrScanner = () => {
   const [audioMode, setAudioMode] = useState<AudioMode>(guide.mode);
   const [mapFloor, setMapFloor] = useState<number | null>(null);
   const [picking, setPicking] = useState(false);
+  const [facing, setFacing] = useState(false);
   const [scanning, setScanning] = useState(false);
   const [panel, setPanel] = useState<PanelName>(null);
   const [ticked, setTicked] = useState<string[]>([]);
@@ -339,6 +340,17 @@ const QrScanner = () => {
 
   /* ---------------------------------------------------------------- startup */
 
+  // A start chosen by hand gives a position but no direction: ask the user to
+  // face along the route once, instead of guessing it from the first steps.
+  const askFacing = () => {
+    if (!session.tracker.headingCalibrated && session.facingTarget()) setFacing(true);
+  };
+
+  const confirmFacing = () => {
+    session.confirmFacing();
+    setFacing(false);
+  };
+
   const startCamera = async () => {
     if (starting) return;
     setStarting(true);
@@ -353,7 +365,7 @@ const QrScanner = () => {
       if (sensors.current === motion && !motion.hasOrientation) setSensorsMissing(true);
     }, 2500);
 
-    if (startId !== null) session.setStart(startId);
+    if (startId !== null && session.setStart(startId)) askFacing();
     try {
       const media = await openCamera();
       streamRef.current = media;
@@ -520,9 +532,10 @@ const QrScanner = () => {
   const pendingFloor = snapshot.floorChange;
   const pendingFloorName = pendingFloor ? (building.floor(pendingFloor.toFloor) || { name: `floor ${pendingFloor.toFloor}` }).name : '';
   const uncertain = snapshot.accuracy >= RECAL;
+  const facingTarget = facing ? session.facingTarget() : null;
 
   const pickStart = (node: NavNode) => {
-    session.setStart(node.id);
+    if (session.setStart(node.id)) askFacing();
     setPicking(false);
     setMapFloor(node.floor);
   };
@@ -809,6 +822,32 @@ const QrScanner = () => {
                 End
               </button>
             </div>
+          </div>
+        </div>
+      )}
+      {facing && facingTarget && phase === 'running' && !sensorsMissing && !arrived && !snapshot.headingCalibrated && panel === null && (
+        <div className="panel-scrim panel-scrim--clear">
+          <div className="panel face-prompt" role="dialog" aria-label="Which way are you facing?">
+            <div className="face-prompt__row">
+              <span className="face-prompt__icon">
+                <ManeuverIcon type="straight" size={30} />
+              </span>
+              <div>
+                <h3>Face the way you will walk</h3>
+                <p className="panel__lead">
+                  Turn towards <strong>{facingTarget.node && facingTarget.node.label ? building.displayName(facingTarget.node) : 'the start of the blue route line'}</strong>, hold the phone pointing ahead of you, then tap.
+                </p>
+              </div>
+            </div>
+            <div className="panel__actions">
+              <button type="button" className="btn-nav btn-nav--soft" onClick={() => setFacing(false)}>
+                Skip
+              </button>
+              <button type="button" className="btn-nav btn-nav--primary" onClick={confirmFacing}>
+                I'm facing it
+              </button>
+            </div>
+            <p className="panel__hint">Scanning a QR marker sets this automatically. If you skip, the direction is worked out from your first steps.</p>
           </div>
         </div>
       )}
