@@ -98,14 +98,22 @@ const ShoppingList = ({ query, startId, finished }: Props) => {
         {matches.length === 0 && <span className="shopping__none">No product matches “{query}”.</span>}
       </div>
 
-      <button
-        type="button"
-        className="btn-nav btn-nav--primary btn-nav--large shopping__go"
-        disabled={trip.stops.length === 0}
-        onClick={() => navigate(`shop?items=${ids.join(',')}${startId !== null ? `&from=${startId}` : ''}`)}
-      >
-        {trip.stops.length === 0 ? 'Start shopping' : `Start shopping · ${ids.length} item${ids.length === 1 ? '' : 's'}, about ${Math.round(trip.length / 5) * 5} m`}
-      </button>
+      {/* Always within reach of the thumb, wherever the page is scrolled to. */}
+      {trip.stops.length > 0 && (
+        <div className="cta-bar">
+          <div className="cta-bar__info">
+            <strong>
+              {ids.length} item{ids.length === 1 ? '' : 's'}
+            </strong>
+            <span>
+              {trip.stops.length - 1} stop{trip.stops.length === 2 ? '' : 's'} · about {Math.round(trip.length / 5) * 5} m
+            </span>
+          </div>
+          <button type="button" className="btn-nav btn-nav--primary shopping__go" onClick={() => navigate(`shop?items=${ids.join(',')}${startId !== null ? `&from=${startId}` : ''}`)}>
+            Start shopping
+          </button>
+        </div>
+      )}
     </section>
   );
 };

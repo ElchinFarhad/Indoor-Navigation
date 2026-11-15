@@ -638,18 +638,18 @@ async function run() {
     }
 
     /* ------------------------------------------------------------------ */
-    console.log('7. Supermarket: a shopping list becomes a guided trip from shelf to shelf');
+    console.log('7. Supermarket: a shopping list becomes a guided trip; items are added and skipped on the way');
     {
       const page = await open('/?venue=supermarket');
       await page.waitForSelector('.shopping');
-      assert.strictEqual(await page.textContent('.hero__eyebrow'), 'FreshMart Supermarket');
+      assert.strictEqual(await page.inputValue('[aria-label="Venue"]'), 'supermarket');
       step('build the list (in a deliberately bad order)');
       for (const name of ['Milk', 'Apples', 'Bread']) await page.click(`[aria-label="Add ${name}"]`);
       await page.fill('[aria-label="Search products and sections"]', 'butter');
       await page.click('[aria-label="Add Butter"]');
       await page.fill('[aria-label="Search products and sections"]', '');
-      const go = await page.textContent('.shopping__go');
-      assert.ok(/Start shopping · 4 items, about \d+ m/.test(go), go);
+      const go = await page.textContent('.cta-bar');
+      assert.ok(/4 items3 stops · about \d+ mStart shopping/.test(go), go);
       await shot(page, 'store-home');
       await page.click('.shopping__go');
       await page.waitForSelector('.sheet--intro');
@@ -665,23 +665,49 @@ async function run() {
       await page.waitForTimeout(500);
       await shot(page, 'store-map');
       await page.click('text=3D');
+      step('on the way: add tomatoes, skip the butter');
+      await page.click('[aria-label="Shopping list"]');
+      await page.waitForSelector('.trip-stops');
+      await page.fill('[aria-label="Add a product"]', 'tom');
+      await page.click('[aria-label="Add Tomatoes to the trip"]');
+      await page.click('[aria-label="Skip Butter"]');
+      await page.waitForTimeout(300);
+      const planned = await page.$$eval('.trip-stops > li strong', (items) => items.map((x) => x.childNodes[0].textContent));
+      // (walking up aisle 1 the vegetables come before the fruit, so the new stop goes first)
+      assert.deepStrictEqual(planned, ['Vegetables', 'Fruit', 'Bakery', 'Milk & yoghurt', 'Checkout']);
+      await shot(page, 'store-trip-panel');
+      await page.click('[aria-label="Close"]');
+
       const visited = [];
-      for (let i = 0; i < 4; i++) {
+      const arrive = async () => {
         await page.waitForSelector('.sheet--arrival', { timeout: 90000 });
         const title = await page.textContent('.sheet--arrival h2');
-        const picks = await page.$$eval('.pick-list li', (items) => items.map((x) => x.textContent));
+        const picks = await page.$$eval('.pick-list__tick span', (items) => items.map((x) => x.textContent));
         visited.push(`${title}: ${picks.join('+')}`);
-        if (i === 1) await shot(page, 'store-stop');
-        if (i < 3) {
-          await page.click('text=Got it · next stop');
-          await page.waitForFunction(() => !document.querySelector('.sheet--arrival'));
+      };
+      for (let i = 0; i < 3; i++) {
+        await arrive();
+        if (i === 0) {
+          await page.click('[aria-label="Tomatoes: in the basket"]');
+          await page.waitForSelector('.pick-list li.is-ticked');
+          await shot(page, 'store-stop');
         }
+        await page.click('text=Got it · next stop');
+        await page.waitForFunction(() => !document.querySelector('.sheet--arrival'));
       }
-      assert.deepStrictEqual(visited, ['Fruit: Apples', 'Bakery: Bread', 'Milk & yoghurt: Milk+Butter', 'Checkout: ']);
+      step('at the dairy shelf the milk is sold out: "Not here" moves straight on to the checkout');
+      await arrive();
+      await page.click('[aria-label="Milk is not here: skip it"]');
+      await page.waitForFunction(() => !document.querySelector('.sheet--arrival'));
+      await arrive();
+      assert.deepStrictEqual(visited, ['Vegetables: Tomatoes', 'Fruit: Apples', 'Bakery: Bread', 'Milk & yoghurt: Milk', 'Checkout: ']);
+      const summary = await page.textContent('.sheet--arrival');
+      assert.ok(/3 items in your basket · 2 skipped/.test(summary) && /Skipped: Butter, Milk/.test(summary), summary);
       await quiet(page);
       const s = await state(page);
+      assert.ok(s.spoken.some((t) => /^Added Tomatoes\./.test(t)), JSON.stringify(s.spoken));
       assert.ok(s.spoken.some((t) => /^Next: Bread, at Bakery\./.test(t)), JSON.stringify(s.spoken));
-      assert.ok(s.spoken.some((t) => /Let's go to the checkout\./.test(t)), JSON.stringify(s.spoken));
+      assert.ok(s.spoken.some((t) => /^Skipping Milk\. That's everything on your list\. Let's go to the checkout\./.test(t)), JSON.stringify(s.spoken));
       assert.strictEqual((await page.evaluate(() => window.__speech)).overlaps, 0);
       await shot(page, 'store-checkout');
       step('finishing clears the list');

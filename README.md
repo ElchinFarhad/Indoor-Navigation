@@ -219,7 +219,13 @@ valid markers (ids 0â€“3 are the entrance, the lobby, the reception and the cafÃ
 
 The same system guides shoppers: aisles are corridors, shelf sections are destinations, and a shopping
 list becomes a trip through all of them in the shortest walking order, ending at the checkout. Choose
-*FreshMart Supermarket* in the top bar (or open `/?venue=supermarket`). Requirements, data model, the
+*FreshMart Supermarket* in the venue selector on the home screen (or open `/?venue=supermarket`).
+
+The list can change while you walk: the basket button opens the trip, where you can add a product or
+skip one, and at a shelf "Not here" skips an item that is sold out. Each change re-plans the remaining
+stops from where you are standing; skipped items can be put back, and the checkout summary lists them.
+
+Requirements, data model, the
 trip-planning logic and what a real store would still need are in
 [docs/SUPERMARKET.md](docs/SUPERMARKET.md).
 

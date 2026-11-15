@@ -1,7 +1,6 @@
 import React from 'react';
 import { Navbar, Container, Nav } from 'react-bootstrap';
 import { NavLink, Link } from 'react-router-dom';
-import { currentVenue, selectVenue, VENUES } from '../db/venues';
 
 /** Top bar shared by the destination list and the about page. */
 const NavbarComp = () => (
@@ -15,13 +14,7 @@ const NavbarComp = () => (
                 Indoor Navigation
             </Navbar.Brand>
             <Nav className="ms-auto">
-                {VENUES.length > 1 && (
-                    <select className="app-navbar__venue" aria-label="Venue" value={currentVenue().id} onChange={(e) => selectVenue(e.target.value)}>
-                        {VENUES.map((v) => (
-                            <option key={v.id} value={v.id}>{v.name}</option>
-                        ))}
-                    </select>
-                )}
+
                 <NavLink to="/" end className={({ isActive }) => `app-navbar__link${isActive ? ' is-active' : ''}`}>Home</NavLink>
                 <NavLink to="/about" className={({ isActive }) => `app-navbar__link${isActive ? ' is-active' : ''}`}>About</NavLink>
             </Nav>
