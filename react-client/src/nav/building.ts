@@ -80,6 +80,28 @@ export interface PlanRoom extends PlanRect {
   doors?: PlanDoor[];
   /** Node in front of the room's door. */
   node?: number;
+  /**
+   * A solid block (a shelf, a counter) rather than a room one walks into. Its
+   * "door" is then the point of its face that the node stands in front of: it
+   * is not drawn as an opening.
+   */
+  solid?: boolean;
+}
+
+/** Something that can be put on a shopping list: it is found at one shelf section. */
+export interface RawProduct {
+  id: string;
+  name: string;
+  /** Id of the plan room (shelf section) where it is. */
+  section: string;
+}
+
+export interface Product {
+  id: string;
+  name: string;
+  section: PlanRoom;
+  /** Node in the aisle in front of that section. */
+  nodeId: number;
 }
 
 export interface RawFloor {
@@ -99,11 +121,14 @@ export interface RawFloor {
 export interface RawGraph {
   meta?: {
     name?: string;
+    /** "building" (default) or "store": a store has products and shopping trips. */
+    type?: string;
     metersPerUnit?: number;
     qrSize?: number;
     floors?: RawFloor[];
   };
   nodes: RawNode[];
+  products?: RawProduct[];
 }
 
 export interface QrMount {
@@ -164,6 +189,10 @@ export class Building {
   readonly nodes: NavNode[] = [];
   /** Problems found while loading (dangling links, asymmetric weights...). */
   readonly warnings: string[] = [];
+  /** "building" or "store". */
+  readonly type: string;
+  /** Products of a store, by name. Empty for ordinary buildings. */
+  readonly products: Product[] = [];
 
   private byId = new Map<number, NavNode>();
   private roomsById = new Map<string, PlanRoom>();
@@ -172,6 +201,7 @@ export class Building {
   constructor(raw: RawGraph) {
     const meta = raw.meta || {};
     this.name = meta.name || 'Building';
+    this.type = meta.type === 'store' ? 'store' : 'building';
     this.metersPerUnit = meta.metersPerUnit && meta.metersPerUnit > 0 ? meta.metersPerUnit : 0.1;
     const defaultQrSize = meta.qrSize && meta.qrSize > 0 ? meta.qrSize : 0.18;
 
@@ -259,6 +289,18 @@ export class Building {
       const room = this.roomOf(node);
       if (room && node.type === 'room') node.kind = room.kind;
     }
+
+    // Products: each one is found at a shelf section, i.e. at that section's node.
+    for (const p of raw.products || []) {
+      let section: PlanRoom | undefined;
+      for (const floor of this.floors) section = section || floor.rooms.find((r) => r.id === p.section);
+      if (!section || section.node === undefined || !this.byId.has(section.node)) {
+        this.warnings.push(`product ${p.id} is in unknown section ${p.section}`);
+        continue;
+      }
+      this.products.push({ id: p.id, name: p.name, section, nodeId: section.node });
+    }
+    this.products.sort((a, b) => a.name.localeCompare(b.name));
   }
 
   private addHalfEdge(from: number, p: RawPath) {
@@ -302,6 +344,10 @@ export class Building {
   /** The plan room a node is the door of. */
   roomOf(node: NavNode): PlanRoom | undefined {
     return node.roomId !== undefined ? this.roomsById.get(`${node.floor}/${node.roomId}`) : undefined;
+  }
+
+  product(id: string): Product | undefined {
+    return this.products.find((p) => p.id === id);
   }
 
   /** True if the building comes with a vector floor plan (rooms and corridors). */

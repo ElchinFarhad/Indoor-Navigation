@@ -13,6 +13,7 @@ class App extends Component {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/qrScanner/:id" element={<QrScanner />} />
+          <Route path="/shop" element={<QrScanner />} />
           <Route path="/about" element={<About />} />
           <Route path="*" element={<HomePage />} />
         </Routes>

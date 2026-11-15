@@ -1,0 +1,1833 @@
+{
+ "meta": {
+  "name": "FreshMart Supermarket",
+  "type": "store",
+  "metersPerUnit": 0.1,
+  "qrSize": 0.25,
+  "floors": [
+   {
+    "id": 0,
+    "name": "Sales floor",
+    "short": "S",
+    "spoken": "the sales floor",
+    "width": 420,
+    "height": 300,
+    "corridors": [
+     {
+      "id": "floor",
+      "x": 20,
+      "y": 20,
+      "w": 380,
+      "h": 235
+     }
+    ],
+    "rooms": [
+     {
+      "id": "entrance",
+      "name": "Entrance",
+      "short": "Entrance",
+      "kind": "lobby",
+      "x": 20,
+      "y": 250,
+      "w": 60,
+      "h": 50,
+      "doors": [
+       {
+        "x": 40,
+        "y": 250,
+        "width": 40
+       },
+       {
+        "x": 40,
+        "y": 300,
+        "width": 24,
+        "entrance": true
+       }
+      ],
+      "node": 0
+     },
+     {
+      "id": "fruit",
+      "name": "Fruit",
+      "short": "Fruit",
+      "kind": "produce",
+      "solid": true,
+      "x": 0,
+      "y": 60,
+      "w": 20,
+      "h": 75,
+      "doors": [
+       {
+        "x": 20,
+        "y": 90
+       }
+      ],
+      "node": 13
+     },
+     {
+      "id": "cereals",
+      "name": "Breakfast & cereals",
+      "short": "Breakfast & cereals",
+      "kind": "pantry",
+      "solid": true,
+      "x": 60,
+      "y": 60,
+      "w": 12,
+      "h": 75,
+      "doors": [
+       {
+        "x": 60,
+        "y": 105
+       }
+      ],
+      "node": 14
+     },
+     {
+      "id": "vegetables",
+      "name": "Vegetables",
+      "short": "Vegetables",
+      "kind": "produce",
+      "solid": true,
+      "x": 0,
+      "y": 135,
+      "w": 20,
+      "h": 75,
+      "doors": [
+       {
+        "x": 20,
+        "y": 165
+       }
+      ],
+      "node": 15
+     },
+     {
+      "id": "coffee",
+      "name": "Coffee & tea",
+      "short": "Coffee & tea",
+      "kind": "pantry",
+      "solid": true,
+      "x": 60,
+      "y": 135,
+      "w": 12,
+      "h": 75,
+      "doors": [
+       {
+        "x": 60,
+        "y": 180
+       }
+      ],
+      "node": 16
+     },
+     {
+      "id": "pasta",
+      "name": "Pasta & rice",
+      "short": "Pasta & rice",
+      "kind": "pantry",
+      "solid": true,
+      "x": 72,
+      "y": 60,
+      "w": 12,
+      "h": 75,
+      "doors": [
+       {
+        "x": 84,
+        "y": 90
+       }
+      ],
+      "node": 17
+     },
+     {
+      "id": "sauces",
+      "name": "Sauces & oils",
+      "short": "Sauces & oils",
+      "kind": "pantry",
+      "solid": true,
+      "x": 124,
+      "y": 60,
+      "w": 12,
+      "h": 75,
+      "doors": [
+       {
+        "x": 124,
+        "y": 105
+       }
+      ],
+      "node": 18
+     },
+     {
+      "id": "canned",
+      "name": "Canned food",
+      "short": "Canned food",
+      "kind": "pantry",
+      "solid": true,
+      "x": 72,
+      "y": 135,
+      "w": 12,
+      "h": 75,
+      "doors": [
+       {
+        "x": 84,
+        "y": 165
+       }
+      ],
+      "node": 19
+     },
+     {
+      "id": "baking",
+      "name": "Baking & spices",
+      "short": "Baking & spices",
+      "kind": "pantry",
+      "solid": true,
+      "x": 124,
+      "y": 135,
+      "w": 12,
+      "h": 75,
+      "doors": [
+       {
+        "x": 124,
+        "y": 180
+       }
+      ],
+      "node": 20
+     },
+     {
+      "id": "snacks",
+      "name": "Snacks & crisps",
+      "short": "Snacks & crisps",
+      "kind": "snacks",
+      "solid": true,
+      "x": 136,
+      "y": 60,
+      "w": 12,
+      "h": 75,
+      "doors": [
+       {
+        "x": 148,
+        "y": 90
+       }
+      ],
+      "node": 21
+     },
+     {
+      "id": "softdrinks",
+      "name": "Soft drinks",
+      "short": "Soft drinks",
+      "kind": "drinks",
+      "solid": true,
+      "x": 188,
+      "y": 60,
+      "w": 12,
+      "h": 75,
+      "doors": [
+       {
+        "x": 188,
+        "y": 105
+       }
+      ],
+      "node": 22
+     },
+     {
+      "id": "sweets",
+      "name": "Sweets & chocolate",
+      "short": "Sweets & chocolate",
+      "kind": "snacks",
+      "solid": true,
+      "x": 136,
+      "y": 135,
+      "w": 12,
+      "h": 75,
+      "doors": [
+       {
+        "x": 148,
+        "y": 165
+       }
+      ],
+      "node": 23
+     },
+     {
+      "id": "water",
+      "name": "Water & juice",
+      "short": "Water & juice",
+      "kind": "drinks",
+      "solid": true,
+      "x": 188,
+      "y": 135,
+      "w": 12,
+      "h": 75,
+      "doors": [
+       {
+        "x": 188,
+        "y": 180
+       }
+      ],
+      "node": 24
+     },
+     {
+      "id": "wine",
+      "name": "Beer & wine",
+      "short": "Beer & wine",
+      "kind": "drinks",
+      "solid": true,
+      "x": 200,
+      "y": 60,
+      "w": 12,
+      "h": 75,
+      "doors": [
+       {
+        "x": 212,
+        "y": 90
+       }
+      ],
+      "node": 25
+     },
+     {
+      "id": "frozen",
+      "name": "Frozen food",
+      "short": "Frozen food",
+      "kind": "frozen",
+      "solid": true,
+      "x": 252,
+      "y": 60,
+      "w": 12,
+      "h": 75,
+      "doors": [
+       {
+        "x": 252,
+        "y": 105
+       }
+      ],
+      "node": 26
+     },
+     {
+      "id": "world",
+      "name": "World food",
+      "short": "World food",
+      "kind": "pantry",
+      "solid": true,
+      "x": 200,
+      "y": 135,
+      "w": 12,
+      "h": 75,
+      "doors": [
+       {
+        "x": 212,
+        "y": 165
+       }
+      ],
+      "node": 27
+     },
+     {
+      "id": "icecream",
+      "name": "Ice cream",
+      "short": "Ice cream",
+      "kind": "frozen",
+      "solid": true,
+      "x": 252,
+      "y": 135,
+      "w": 12,
+      "h": 75,
+      "doors": [
+       {
+        "x": 252,
+        "y": 180
+       }
+      ],
+      "node": 28
+     },
+     {
+      "id": "baby",
+      "name": "Baby",
+      "short": "Baby",
+      "kind": "care",
+      "solid": true,
+      "x": 264,
+      "y": 60,
+      "w": 12,
+      "h": 75,
+      "doors": [
+       {
+        "x": 276,
+        "y": 90
+       }
+      ],
+      "node": 29
+     },
+     {
+      "id": "cleaning",
+      "name": "Cleaning",
+      "short": "Cleaning",
+      "kind": "household",
+      "solid": true,
+      "x": 316,
+      "y": 60,
+      "w": 12,
+      "h": 75,
+      "doors": [
+       {
+        "x": 316,
+        "y": 105
+       }
+      ],
+      "node": 30
+     },
+     {
+      "id": "pets",
+      "name": "Pet food",
+      "short": "Pet food",
+      "kind": "household",
+      "solid": true,
+      "x": 264,
+      "y": 135,
+      "w": 12,
+      "h": 75,
+      "doors": [
+       {
+        "x": 276,
+        "y": 165
+       }
+      ],
+      "node": 31
+     },
+     {
+      "id": "paper",
+      "name": "Paper & tissues",
+      "short": "Paper & tissues",
+      "kind": "household",
+      "solid": true,
+      "x": 316,
+      "y": 135,
+      "w": 12,
+      "h": 75,
+      "doors": [
+       {
+        "x": 316,
+        "y": 180
+       }
+      ],
+      "node": 32
+     },
+     {
+      "id": "beauty",
+      "name": "Health & beauty",
+      "short": "Health & beauty",
+      "kind": "care",
+      "solid": true,
+      "x": 328,
+      "y": 60,
+      "w": 12,
+      "h": 75,
+      "doors": [
+       {
+        "x": 340,
+        "y": 90
+       }
+      ],
+      "node": 33
+     },
+     {
+      "id": "milk",
+      "name": "Milk & yoghurt",
+      "short": "Milk & yoghurt",
+      "kind": "dairy",
+      "solid": true,
+      "x": 400,
+      "y": 60,
+      "w": 20,
+      "h": 75,
+      "doors": [
+       {
+        "x": 400,
+        "y": 105
+       }
+      ],
+      "node": 34
+     },
+     {
+      "id": "hygiene",
+      "name": "Personal care",
+      "short": "Personal care",
+      "kind": "care",
+      "solid": true,
+      "x": 328,
+      "y": 135,
+      "w": 12,
+      "h": 75,
+      "doors": [
+       {
+        "x": 340,
+        "y": 165
+       }
+      ],
+      "node": 35
+     },
+     {
+      "id": "cheese",
+      "name": "Cheese & eggs",
+      "short": "Cheese & eggs",
+      "kind": "dairy",
+      "solid": true,
+      "x": 400,
+      "y": 135,
+      "w": 20,
+      "h": 75,
+      "doors": [
+       {
+        "x": 400,
+        "y": 180
+       }
+      ],
+      "node": 36
+     },
+     {
+      "id": "bakery",
+      "name": "Bakery",
+      "short": "Bakery",
+      "kind": "bakery",
+      "solid": true,
+      "x": 20,
+      "y": 0,
+      "w": 116,
+      "h": 20,
+      "doors": [
+       {
+        "x": 104,
+        "y": 20
+       }
+      ],
+      "node": 3
+     },
+     {
+      "id": "butcher",
+      "name": "Butcher",
+      "short": "Butcher",
+      "kind": "meat",
+      "solid": true,
+      "x": 136,
+      "y": 0,
+      "w": 128,
+      "h": 20,
+      "doors": [
+       {
+        "x": 232,
+        "y": 20
+       }
+      ],
+      "node": 7
+     },
+     {
+      "id": "fish",
+      "name": "Fish counter",
+      "short": "Fish counter",
+      "kind": "fish",
+      "solid": true,
+      "x": 264,
+      "y": 0,
+      "w": 136,
+      "h": 20,
+      "doors": [
+       {
+        "x": 296,
+        "y": 20
+       }
+      ],
+      "node": 9
+     },
+     {
+      "id": "checkout",
+      "name": "Checkouts",
+      "short": "Checkouts",
+      "kind": "checkout",
+      "x": 150,
+      "y": 255,
+      "w": 240,
+      "h": 45,
+      "doors": [
+       {
+        "x": 264,
+        "y": 255,
+        "width": 60
+       }
+      ],
+      "node": 37
+     }
+    ]
+   }
+  ]
+ },
+ "nodes": [
+  {
+   "name": "S01",
+   "type": "room",
+   "id": 0,
+   "x": 40,
+   "y": 280,
+   "floor": 0,
+   "label": "Entrance",
+   "room": "entrance",
+   "path": [
+    {
+     "nodeID": 2,
+     "weight": 4.5
+    }
+   ]
+  },
+  {
+   "name": "S02",
+   "type": "node",
+   "id": 1,
+   "x": 40,
+   "y": 35,
+   "floor": 0,
+   "label": "back of aisle 1",
+   "path": [
+    {
+     "nodeID": 13,
+     "weight": 5.5
+    },
+    {
+     "nodeID": 3,
+     "weight": 6.4
+    }
+   ]
+  },
+  {
+   "name": "S03",
+   "type": "node",
+   "id": 2,
+   "x": 40,
+   "y": 235,
+   "floor": 0,
+   "label": "front of aisle 1",
+   "path": [
+    {
+     "nodeID": 16,
+     "weight": 5.5
+    },
+    {
+     "nodeID": 4,
+     "weight": 6.4
+    },
+    {
+     "nodeID": 0,
+     "weight": 4.5
+    }
+   ]
+  },
+  {
+   "name": "S04",
+   "type": "room",
+   "id": 3,
+   "x": 104,
+   "y": 35,
+   "floor": 0,
+   "label": "Bakery",
+   "room": "bakery",
+   "path": [
+    {
+     "nodeID": 17,
+     "weight": 5.5
+    },
+    {
+     "nodeID": 1,
+     "weight": 6.4
+    },
+    {
+     "nodeID": 5,
+     "weight": 6.4
+    }
+   ]
+  },
+  {
+   "name": "S05",
+   "type": "node",
+   "id": 4,
+   "x": 104,
+   "y": 235,
+   "floor": 0,
+   "label": "front of aisle 2",
+   "path": [
+    {
+     "nodeID": 20,
+     "weight": 5.5
+    },
+    {
+     "nodeID": 2,
+     "weight": 6.4
+    },
+    {
+     "nodeID": 6,
+     "weight": 6.4
+    }
+   ]
+  },
+  {
+   "name": "S06",
+   "type": "node",
+   "id": 5,
+   "x": 168,
+   "y": 35,
+   "floor": 0,
+   "label": "back of aisle 3",
+   "path": [
+    {
+     "nodeID": 21,
+     "weight": 5.5
+    },
+    {
+     "nodeID": 3,
+     "weight": 6.4
+    },
+    {
+     "nodeID": 7,
+     "weight": 6.4
+    }
+   ]
+  },
+  {
+   "name": "S07",
+   "type": "node",
+   "id": 6,
+   "x": 168,
+   "y": 235,
+   "floor": 0,
+   "label": "front of aisle 3",
+   "path": [
+    {
+     "nodeID": 24,
+     "weight": 5.5
+    },
+    {
+     "nodeID": 4,
+     "weight": 6.4
+    },
+    {
+     "nodeID": 8,
+     "weight": 6.4
+    }
+   ]
+  },
+  {
+   "name": "S08",
+   "type": "room",
+   "id": 7,
+   "x": 232,
+   "y": 35,
+   "floor": 0,
+   "label": "Butcher",
+   "room": "butcher",
+   "path": [
+    {
+     "nodeID": 25,
+     "weight": 5.5
+    },
+    {
+     "nodeID": 5,
+     "weight": 6.4
+    },
+    {
+     "nodeID": 9,
+     "weight": 6.4
+    }
+   ]
+  },
+  {
+   "name": "S09",
+   "type": "node",
+   "id": 8,
+   "x": 232,
+   "y": 235,
+   "floor": 0,
+   "label": "front of aisle 4",
+   "path": [
+    {
+     "nodeID": 28,
+     "weight": 5.5
+    },
+    {
+     "nodeID": 6,
+     "weight": 6.4
+    },
+    {
+     "nodeID": 37,
+     "weight": 3.2
+    }
+   ]
+  },
+  {
+   "name": "S10",
+   "type": "room",
+   "id": 9,
+   "x": 296,
+   "y": 35,
+   "floor": 0,
+   "label": "Fish counter",
+   "room": "fish",
+   "path": [
+    {
+     "nodeID": 29,
+     "weight": 5.5
+    },
+    {
+     "nodeID": 7,
+     "weight": 6.4
+    },
+    {
+     "nodeID": 11,
+     "weight": 7.4
+    }
+   ]
+  },
+  {
+   "name": "S11",
+   "type": "node",
+   "id": 10,
+   "x": 296,
+   "y": 235,
+   "floor": 0,
+   "label": "front of aisle 5",
+   "path": [
+    {
+     "nodeID": 32,
+     "weight": 5.5
+    },
+    {
+     "nodeID": 37,
+     "weight": 3.2
+    },
+    {
+     "nodeID": 12,
+     "weight": 7.4
+    }
+   ]
+  },
+  {
+   "name": "S12",
+   "type": "node",
+   "id": 11,
+   "x": 370,
+   "y": 35,
+   "floor": 0,
+   "label": "back of aisle 6",
+   "path": [
+    {
+     "nodeID": 33,
+     "weight": 5.5
+    },
+    {
+     "nodeID": 9,
+     "weight": 7.4
+    }
+   ]
+  },
+  {
+   "name": "S13",
+   "type": "node",
+   "id": 12,
+   "x": 370,
+   "y": 235,
+   "floor": 0,
+   "label": "front of aisle 6",
+   "path": [
+    {
+     "nodeID": 36,
+     "weight": 5.5
+    },
+    {
+     "nodeID": 10,
+     "weight": 7.4
+    }
+   ]
+  },
+  {
+   "name": "S14",
+   "type": "room",
+   "id": 13,
+   "x": 40,
+   "y": 90,
+   "floor": 0,
+   "label": "Fruit",
+   "room": "fruit",
+   "qr": false,
+   "path": [
+    {
+     "nodeID": 1,
+     "weight": 5.5
+    },
+    {
+     "nodeID": 14,
+     "weight": 1.5
+    }
+   ]
+  },
+  {
+   "name": "S15",
+   "type": "room",
+   "id": 14,
+   "x": 40,
+   "y": 105,
+   "floor": 0,
+   "label": "Breakfast & cereals",
+   "room": "cereals",
+   "qr": false,
+   "path": [
+    {
+     "nodeID": 13,
+     "weight": 1.5
+    },
+    {
+     "nodeID": 15,
+     "weight": 6
+    }
+   ]
+  },
+  {
+   "name": "S16",
+   "type": "room",
+   "id": 15,
+   "x": 40,
+   "y": 165,
+   "floor": 0,
+   "label": "Vegetables",
+   "room": "vegetables",
+   "qr": false,
+   "path": [
+    {
+     "nodeID": 14,
+     "weight": 6
+    },
+    {
+     "nodeID": 16,
+     "weight": 1.5
+    }
+   ]
+  },
+  {
+   "name": "S17",
+   "type": "room",
+   "id": 16,
+   "x": 40,
+   "y": 180,
+   "floor": 0,
+   "label": "Coffee & tea",
+   "room": "coffee",
+   "qr": false,
+   "path": [
+    {
+     "nodeID": 15,
+     "weight": 1.5
+    },
+    {
+     "nodeID": 2,
+     "weight": 5.5
+    }
+   ]
+  },
+  {
+   "name": "S18",
+   "type": "room",
+   "id": 17,
+   "x": 104,
+   "y": 90,
+   "floor": 0,
+   "label": "Pasta & rice",
+   "room": "pasta",
+   "qr": false,
+   "path": [
+    {
+     "nodeID": 3,
+     "weight": 5.5
+    },
+    {
+     "nodeID": 18,
+     "weight": 1.5
+    }
+   ]
+  },
+  {
+   "name": "S19",
+   "type": "room",
+   "id": 18,
+   "x": 104,
+   "y": 105,
+   "floor": 0,
+   "label": "Sauces & oils",
+   "room": "sauces",
+   "qr": false,
+   "path": [
+    {
+     "nodeID": 17,
+     "weight": 1.5
+    },
+    {
+     "nodeID": 19,
+     "weight": 6
+    }
+   ]
+  },
+  {
+   "name": "S20",
+   "type": "room",
+   "id": 19,
+   "x": 104,
+   "y": 165,
+   "floor": 0,
+   "label": "Canned food",
+   "room": "canned",
+   "qr": false,
+   "path": [
+    {
+     "nodeID": 18,
+     "weight": 6
+    },
+    {
+     "nodeID": 20,
+     "weight": 1.5
+    }
+   ]
+  },
+  {
+   "name": "S21",
+   "type": "room",
+   "id": 20,
+   "x": 104,
+   "y": 180,
+   "floor": 0,
+   "label": "Baking & spices",
+   "room": "baking",
+   "qr": false,
+   "path": [
+    {
+     "nodeID": 19,
+     "weight": 1.5
+    },
+    {
+     "nodeID": 4,
+     "weight": 5.5
+    }
+   ]
+  },
+  {
+   "name": "S22",
+   "type": "room",
+   "id": 21,
+   "x": 168,
+   "y": 90,
+   "floor": 0,
+   "label": "Snacks & crisps",
+   "room": "snacks",
+   "qr": false,
+   "path": [
+    {
+     "nodeID": 5,
+     "weight": 5.5
+    },
+    {
+     "nodeID": 22,
+     "weight": 1.5
+    }
+   ]
+  },
+  {
+   "name": "S23",
+   "type": "room",
+   "id": 22,
+   "x": 168,
+   "y": 105,
+   "floor": 0,
+   "label": "Soft drinks",
+   "room": "softdrinks",
+   "qr": false,
+   "path": [
+    {
+     "nodeID": 21,
+     "weight": 1.5
+    },
+    {
+     "nodeID": 23,
+     "weight": 6
+    }
+   ]
+  },
+  {
+   "name": "S24",
+   "type": "room",
+   "id": 23,
+   "x": 168,
+   "y": 165,
+   "floor": 0,
+   "label": "Sweets & chocolate",
+   "room": "sweets",
+   "qr": false,
+   "path": [
+    {
+     "nodeID": 22,
+     "weight": 6
+    },
+    {
+     "nodeID": 24,
+     "weight": 1.5
+    }
+   ]
+  },
+  {
+   "name": "S25",
+   "type": "room",
+   "id": 24,
+   "x": 168,
+   "y": 180,
+   "floor": 0,
+   "label": "Water & juice",
+   "room": "water",
+   "qr": false,
+   "path": [
+    {
+     "nodeID": 23,
+     "weight": 1.5
+    },
+    {
+     "nodeID": 6,
+     "weight": 5.5
+    }
+   ]
+  },
+  {
+   "name": "S26",
+   "type": "room",
+   "id": 25,
+   "x": 232,
+   "y": 90,
+   "floor": 0,
+   "label": "Beer & wine",
+   "room": "wine",
+   "qr": false,
+   "path": [
+    {
+     "nodeID": 7,
+     "weight": 5.5
+    },
+    {
+     "nodeID": 26,
+     "weight": 1.5
+    }
+   ]
+  },
+  {
+   "name": "S27",
+   "type": "room",
+   "id": 26,
+   "x": 232,
+   "y": 105,
+   "floor": 0,
+   "label": "Frozen food",
+   "room": "frozen",
+   "qr": false,
+   "path": [
+    {
+     "nodeID": 25,
+     "weight": 1.5
+    },
+    {
+     "nodeID": 27,
+     "weight": 6
+    }
+   ]
+  },
+  {
+   "name": "S28",
+   "type": "room",
+   "id": 27,
+   "x": 232,
+   "y": 165,
+   "floor": 0,
+   "label": "World food",
+   "room": "world",
+   "qr": false,
+   "path": [
+    {
+     "nodeID": 26,
+     "weight": 6
+    },
+    {
+     "nodeID": 28,
+     "weight": 1.5
+    }
+   ]
+  },
+  {
+   "name": "S29",
+   "type": "room",
+   "id": 28,
+   "x": 232,
+   "y": 180,
+   "floor": 0,
+   "label": "Ice cream",
+   "room": "icecream",
+   "qr": false,
+   "path": [
+    {
+     "nodeID": 27,
+     "weight": 1.5
+    },
+    {
+     "nodeID": 8,
+     "weight": 5.5
+    }
+   ]
+  },
+  {
+   "name": "S30",
+   "type": "room",
+   "id": 29,
+   "x": 296,
+   "y": 90,
+   "floor": 0,
+   "label": "Baby",
+   "room": "baby",
+   "qr": false,
+   "path": [
+    {
+     "nodeID": 9,
+     "weight": 5.5
+    },
+    {
+     "nodeID": 30,
+     "weight": 1.5
+    }
+   ]
+  },
+  {
+   "name": "S31",
+   "type": "room",
+   "id": 30,
+   "x": 296,
+   "y": 105,
+   "floor": 0,
+   "label": "Cleaning",
+   "room": "cleaning",
+   "qr": false,
+   "path": [
+    {
+     "nodeID": 29,
+     "weight": 1.5
+    },
+    {
+     "nodeID": 31,
+     "weight": 6
+    }
+   ]
+  },
+  {
+   "name": "S32",
+   "type": "room",
+   "id": 31,
+   "x": 296,
+   "y": 165,
+   "floor": 0,
+   "label": "Pet food",
+   "room": "pets",
+   "qr": false,
+   "path": [
+    {
+     "nodeID": 30,
+     "weight": 6
+    },
+    {
+     "nodeID": 32,
+     "weight": 1.5
+    }
+   ]
+  },
+  {
+   "name": "S33",
+   "type": "room",
+   "id": 32,
+   "x": 296,
+   "y": 180,
+   "floor": 0,
+   "label": "Paper & tissues",
+   "room": "paper",
+   "qr": false,
+   "path": [
+    {
+     "nodeID": 31,
+     "weight": 1.5
+    },
+    {
+     "nodeID": 10,
+     "weight": 5.5
+    }
+   ]
+  },
+  {
+   "name": "S34",
+   "type": "room",
+   "id": 33,
+   "x": 370,
+   "y": 90,
+   "floor": 0,
+   "label": "Health & beauty",
+   "room": "beauty",
+   "qr": false,
+   "path": [
+    {
+     "nodeID": 11,
+     "weight": 5.5
+    },
+    {
+     "nodeID": 34,
+     "weight": 1.5
+    }
+   ]
+  },
+  {
+   "name": "S35",
+   "type": "room",
+   "id": 34,
+   "x": 370,
+   "y": 105,
+   "floor": 0,
+   "label": "Milk & yoghurt",
+   "room": "milk",
+   "qr": false,
+   "path": [
+    {
+     "nodeID": 33,
+     "weight": 1.5
+    },
+    {
+     "nodeID": 35,
+     "weight": 6
+    }
+   ]
+  },
+  {
+   "name": "S36",
+   "type": "room",
+   "id": 35,
+   "x": 370,
+   "y": 165,
+   "floor": 0,
+   "label": "Personal care",
+   "room": "hygiene",
+   "qr": false,
+   "path": [
+    {
+     "nodeID": 34,
+     "weight": 6
+    },
+    {
+     "nodeID": 36,
+     "weight": 1.5
+    }
+   ]
+  },
+  {
+   "name": "S37",
+   "type": "room",
+   "id": 36,
+   "x": 370,
+   "y": 180,
+   "floor": 0,
+   "label": "Cheese & eggs",
+   "room": "cheese",
+   "qr": false,
+   "path": [
+    {
+     "nodeID": 35,
+     "weight": 1.5
+    },
+    {
+     "nodeID": 12,
+     "weight": 5.5
+    }
+   ]
+  },
+  {
+   "name": "S38",
+   "type": "room",
+   "id": 37,
+   "x": 264,
+   "y": 235,
+   "floor": 0,
+   "label": "Checkout",
+   "room": "checkout",
+   "path": [
+    {
+     "nodeID": 8,
+     "weight": 3.2
+    },
+    {
+     "nodeID": 10,
+     "weight": 3.2
+    }
+   ]
+  }
+ ],
+ "products": [
+  {
+   "id": "apple-juice",
+   "name": "Apple juice",
+   "section": "water"
+  },
+  {
+   "id": "apples",
+   "name": "Apples",
+   "section": "fruit"
+  },
+  {
+   "id": "baby-food",
+   "name": "Baby food",
+   "section": "baby"
+  },
+  {
+   "id": "baking-powder",
+   "name": "Baking powder",
+   "section": "baking"
+  },
+  {
+   "id": "bananas",
+   "name": "Bananas",
+   "section": "fruit"
+  },
+  {
+   "id": "beans",
+   "name": "Beans",
+   "section": "canned"
+  },
+  {
+   "id": "beer",
+   "name": "Beer",
+   "section": "wine"
+  },
+  {
+   "id": "bin-bags",
+   "name": "Bin bags",
+   "section": "cleaning"
+  },
+  {
+   "id": "biscuits",
+   "name": "Biscuits",
+   "section": "sweets"
+  },
+  {
+   "id": "black-pepper",
+   "name": "Black pepper",
+   "section": "baking"
+  },
+  {
+   "id": "bread",
+   "name": "Bread",
+   "section": "bakery"
+  },
+  {
+   "id": "bread-rolls",
+   "name": "Bread rolls",
+   "section": "bakery"
+  },
+  {
+   "id": "butter",
+   "name": "Butter",
+   "section": "milk"
+  },
+  {
+   "id": "canned-tomatoes",
+   "name": "Canned tomatoes",
+   "section": "canned"
+  },
+  {
+   "id": "carrots",
+   "name": "Carrots",
+   "section": "vegetables"
+  },
+  {
+   "id": "cat-food",
+   "name": "Cat food",
+   "section": "pets"
+  },
+  {
+   "id": "chewing-gum",
+   "name": "Chewing gum",
+   "section": "sweets"
+  },
+  {
+   "id": "chicken-breast",
+   "name": "Chicken breast",
+   "section": "butcher"
+  },
+  {
+   "id": "chocolate",
+   "name": "Chocolate",
+   "section": "sweets"
+  },
+  {
+   "id": "coffee",
+   "name": "Coffee",
+   "section": "coffee"
+  },
+  {
+   "id": "cola",
+   "name": "Cola",
+   "section": "softdrinks"
+  },
+  {
+   "id": "corn-flakes",
+   "name": "Corn flakes",
+   "section": "cereals"
+  },
+  {
+   "id": "couscous",
+   "name": "Couscous",
+   "section": "pasta"
+  },
+  {
+   "id": "crackers",
+   "name": "Crackers",
+   "section": "snacks"
+  },
+  {
+   "id": "cream",
+   "name": "Cream",
+   "section": "milk"
+  },
+  {
+   "id": "crisps",
+   "name": "Crisps",
+   "section": "snacks"
+  },
+  {
+   "id": "croissants",
+   "name": "Croissants",
+   "section": "bakery"
+  },
+  {
+   "id": "cucumber",
+   "name": "Cucumber",
+   "section": "vegetables"
+  },
+  {
+   "id": "deodorant",
+   "name": "Deodorant",
+   "section": "hygiene"
+  },
+  {
+   "id": "dog-food",
+   "name": "Dog food",
+   "section": "pets"
+  },
+  {
+   "id": "eggs",
+   "name": "Eggs",
+   "section": "cheese"
+  },
+  {
+   "id": "fish-fingers",
+   "name": "Fish fingers",
+   "section": "frozen"
+  },
+  {
+   "id": "flour",
+   "name": "Flour",
+   "section": "baking"
+  },
+  {
+   "id": "frozen-peas",
+   "name": "Frozen peas",
+   "section": "frozen"
+  },
+  {
+   "id": "frozen-pizza",
+   "name": "Frozen pizza",
+   "section": "frozen"
+  },
+  {
+   "id": "grapes",
+   "name": "Grapes",
+   "section": "fruit"
+  },
+  {
+   "id": "ham",
+   "name": "Ham",
+   "section": "butcher"
+  },
+  {
+   "id": "honey",
+   "name": "Honey",
+   "section": "cereals"
+  },
+  {
+   "id": "ice-lollies",
+   "name": "Ice lollies",
+   "section": "icecream"
+  },
+  {
+   "id": "iced-tea",
+   "name": "Iced tea",
+   "section": "softdrinks"
+  },
+  {
+   "id": "jam",
+   "name": "Jam",
+   "section": "cereals"
+  },
+  {
+   "id": "ketchup",
+   "name": "Ketchup",
+   "section": "sauces"
+  },
+  {
+   "id": "kitchen-roll",
+   "name": "Kitchen roll",
+   "section": "paper"
+  },
+  {
+   "id": "laundry-detergent",
+   "name": "Laundry detergent",
+   "section": "cleaning"
+  },
+  {
+   "id": "lemonade",
+   "name": "Lemonade",
+   "section": "softdrinks"
+  },
+  {
+   "id": "lemons",
+   "name": "Lemons",
+   "section": "fruit"
+  },
+  {
+   "id": "mayonnaise",
+   "name": "Mayonnaise",
+   "section": "sauces"
+  },
+  {
+   "id": "milk",
+   "name": "Milk",
+   "section": "milk"
+  },
+  {
+   "id": "minced-beef",
+   "name": "Minced beef",
+   "section": "butcher"
+  },
+  {
+   "id": "mozzarella",
+   "name": "Mozzarella",
+   "section": "cheese"
+  },
+  {
+   "id": "muesli",
+   "name": "Muesli",
+   "section": "cereals"
+  },
+  {
+   "id": "nappies",
+   "name": "Nappies",
+   "section": "baby"
+  },
+  {
+   "id": "noodles",
+   "name": "Noodles",
+   "section": "world"
+  },
+  {
+   "id": "oats",
+   "name": "Oats",
+   "section": "cereals"
+  },
+  {
+   "id": "olive-oil",
+   "name": "Olive oil",
+   "section": "sauces"
+  },
+  {
+   "id": "onions",
+   "name": "Onions",
+   "section": "vegetables"
+  },
+  {
+   "id": "orange-juice",
+   "name": "Orange juice",
+   "section": "water"
+  },
+  {
+   "id": "oranges",
+   "name": "Oranges",
+   "section": "fruit"
+  },
+  {
+   "id": "parmesan",
+   "name": "Parmesan",
+   "section": "cheese"
+  },
+  {
+   "id": "peanuts",
+   "name": "Peanuts",
+   "section": "snacks"
+  },
+  {
+   "id": "penne",
+   "name": "Penne",
+   "section": "pasta"
+  },
+  {
+   "id": "plasters",
+   "name": "Plasters",
+   "section": "beauty"
+  },
+  {
+   "id": "potatoes",
+   "name": "Potatoes",
+   "section": "vegetables"
+  },
+  {
+   "id": "prawns",
+   "name": "Prawns",
+   "section": "fish"
+  },
+  {
+   "id": "red-wine",
+   "name": "Red wine",
+   "section": "wine"
+  },
+  {
+   "id": "rice",
+   "name": "Rice",
+   "section": "pasta"
+  },
+  {
+   "id": "salad",
+   "name": "Salad",
+   "section": "vegetables"
+  },
+  {
+   "id": "salmon",
+   "name": "Salmon",
+   "section": "fish"
+  },
+  {
+   "id": "salt",
+   "name": "Salt",
+   "section": "baking"
+  },
+  {
+   "id": "sausages",
+   "name": "Sausages",
+   "section": "butcher"
+  },
+  {
+   "id": "shampoo",
+   "name": "Shampoo",
+   "section": "beauty"
+  },
+  {
+   "id": "soap",
+   "name": "Soap",
+   "section": "hygiene"
+  },
+  {
+   "id": "soy-sauce",
+   "name": "Soy sauce",
+   "section": "world"
+  },
+  {
+   "id": "spaghetti",
+   "name": "Spaghetti",
+   "section": "pasta"
+  },
+  {
+   "id": "sparkling-water",
+   "name": "Sparkling water",
+   "section": "water"
+  },
+  {
+   "id": "sponges",
+   "name": "Sponges",
+   "section": "cleaning"
+  },
+  {
+   "id": "still-water",
+   "name": "Still water",
+   "section": "water"
+  },
+  {
+   "id": "sugar",
+   "name": "Sugar",
+   "section": "coffee"
+  },
+  {
+   "id": "sun-cream",
+   "name": "Sun cream",
+   "section": "beauty"
+  },
+  {
+   "id": "sweetcorn",
+   "name": "Sweetcorn",
+   "section": "canned"
+  },
+  {
+   "id": "tea",
+   "name": "Tea",
+   "section": "coffee"
+  },
+  {
+   "id": "tissues",
+   "name": "Tissues",
+   "section": "paper"
+  },
+  {
+   "id": "toilet-paper",
+   "name": "Toilet paper",
+   "section": "paper"
+  },
+  {
+   "id": "tomato-sauce",
+   "name": "Tomato sauce",
+   "section": "sauces"
+  },
+  {
+   "id": "tomatoes",
+   "name": "Tomatoes",
+   "section": "vegetables"
+  },
+  {
+   "id": "toothpaste",
+   "name": "Toothpaste",
+   "section": "hygiene"
+  },
+  {
+   "id": "tortillas",
+   "name": "Tortillas",
+   "section": "world"
+  },
+  {
+   "id": "tuna",
+   "name": "Tuna",
+   "section": "canned"
+  },
+  {
+   "id": "vanilla-ice-cream",
+   "name": "Vanilla ice cream",
+   "section": "icecream"
+  },
+  {
+   "id": "vinegar",
+   "name": "Vinegar",
+   "section": "sauces"
+  },
+  {
+   "id": "washing-up-liquid",
+   "name": "Washing-up liquid",
+   "section": "cleaning"
+  },
+  {
+   "id": "white-wine",
+   "name": "White wine",
+   "section": "wine"
+  },
+  {
+   "id": "yoghurt",
+   "name": "Yoghurt",
+   "section": "milk"
+  }
+ ]
+}

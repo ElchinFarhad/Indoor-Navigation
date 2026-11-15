@@ -203,7 +203,7 @@ export class Announcer {
         }
         case 'arrived':
           cues.push({
-            key: 'arrived',
+            key: `arrived:${snapshot.destination.id}`,
             sound: 'arrive',
             priority: 3,
             text: `You've arrived at ${this.destinationName(snapshot)}${this.sidePhrase(snapshot)}.`,

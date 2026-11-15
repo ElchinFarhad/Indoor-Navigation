@@ -7,6 +7,7 @@ import { Announcer } from '../nav/announcer';
 import { NavNode } from '../nav/building';
 import { formatDistance, Mat3, mat3Multiply } from '../nav/geometry';
 import { NavEvent, NavigationSession, NavSnapshot } from '../nav/navigator';
+import { entranceNode, planTrip, Trip } from '../nav/shopping';
 import { yawMatrix } from '../nav/orientation';
 import { bestSighting } from '../nav/qrPose';
 import { WalkSimulator } from '../nav/simulator';
@@ -76,17 +77,30 @@ const QrScanner = () => {
   const params = useParams();
   const location = useLocation();
   const navigate = useNavigate();
-  const destId = parseInt(params.id || '', 10);
-  const destination = building.node(destId);
   const query = useMemo(() => new URLSearchParams(location.search), [location.search]);
   const fromParam = query.get('from');
   const startId = fromParam !== null && building.node(parseInt(fromParam, 10)) ? parseInt(fromParam, 10) : null;
 
+  // A shopping trip (`/shop?items=milk,bread`): several stops in the best
+  // order, the checkout last. The session always navigates to the current stop.
+  const items = query.get('items');
+  const itemIds = useMemo(() => (items ? items.split(',').filter(Boolean) : []), [items]);
+  const [trip, setTrip] = useState<Trip | null>(() => (itemIds.length > 0 ? planTrip(building, itemIds, startId) : null));
+  const [stopIndex, setStopIndex] = useState(0);
+  const tripRef = useRef(trip);
+  tripRef.current = trip;
+  const shopping = !!trip && trip.stops.length > 0;
+
+  const destId = shopping ? trip!.stops[0].nodeId : parseInt(params.id || '', 10);
+  const firstDestination = building.node(destId);
+
   const session = useMemo(
-    () => new NavigationSession(building, destination ? destination.id : -1),
+    () => new NavigationSession(building, firstDestination ? firstDestination.id : -1),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [destId]
+    [params.id, items]
   );
+  // (the destination changes from stop to stop on a shopping trip)
+  const destination = firstDestination ? session.destination : undefined;
   const announcer = useMemo(() => new Announcer(building), [session]); // eslint-disable-line react-hooks/exhaustive-deps
   const guide = useMemo(() => new AudioGuide(), []);
 
@@ -135,6 +149,20 @@ const QrScanner = () => {
           if (event.first) {
             toast(`You're at ${building.displayName(event.node)}`, 'good');
             vibrate(60);
+            // The trip was planned from the entrance: if the shopper starts
+            // somewhere else, the best order of the stops may be another one.
+            const planned = tripRef.current;
+            if (planned && planned.stops.length > 1 && event.node.id !== (startId !== null ? startId : entranceNode(building))) {
+              const again = planTrip(building, itemIds, event.node.id);
+              if (again.stops[0].nodeId !== planned.stops[0].nodeId) {
+                window.setTimeout(() => {
+                  setTrip(again);
+                  setStopIndex(0);
+                  session.setDestination(again.stops[0].nodeId);
+                  guide.push({ key: 'replanned', priority: 2, text: `From here it is quicker to start with ${building.displayName(building.node(again.stops[0].nodeId)!)}.` });
+                }, 0);
+              }
+            }
           } else if (event.rerouted) {
             toast('Position corrected · route updated', 'good');
             vibrate([40, 60, 40]);
@@ -168,7 +196,7 @@ const QrScanner = () => {
           break;
       }
     },
-    [toast, announcer, guide]
+    [toast, announcer, guide, session, itemIds, startId]
   );
 
   const snapshot = useSnapshot(session, onUpdate);
@@ -366,7 +394,7 @@ const QrScanner = () => {
   useEffect(() => {
     if (destination && query.get('demo') === '1' && phase === 'intro') startDemo();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [destId]);
+  }, [params.id, items]);
 
   // Release the camera, sensors, audio and timers when leaving the screen.
   useEffect(
@@ -423,6 +451,25 @@ const QrScanner = () => {
   }
 
   const destName = building.displayName(destination);
+  const stop = shopping ? trip!.stops[Math.min(stopIndex, trip!.stops.length - 1)] : null;
+  const lastStop = shopping && stopIndex >= trip!.stops.length - 1;
+  const stopItems = stop ? stop.products.map((p) => p.name).join(', ') : '';
+
+  const nextStop = () => {
+    if (!trip || lastStop) return;
+    const next = trip.stops[stopIndex + 1];
+    const node = building.node(next.nodeId)!;
+    setStopIndex(stopIndex + 1);
+    setMapFloor(null);
+    session.setDestination(next.nodeId);
+    guide.push({
+      key: `next-stop:${stopIndex + 1}`,
+      priority: 2,
+      text: next.checkout
+        ? "That's everything on your list. Let's go to the checkout."
+        : `Next: ${next.products.map((p) => p.name).join(', ')}, at ${building.displayName(node)}.`,
+    });
+  };
   const destFloor = building.floor(destination.floor);
   const position = snapshot.position;
   const shownFloor = mapFloor !== null ? mapFloor : position ? position.floor : destination.floor;
@@ -660,7 +707,7 @@ const QrScanner = () => {
                 </strong>
                 <span>
                   <i className={`nav-dot nav-dot--${snapshot.accuracy < 2 ? 'good' : snapshot.accuracy < RECAL ? 'warn' : 'bad'}`} title="Estimated accuracy of your position" />
-                  {destName} · ±{snapshot.accuracy < 10 ? snapshot.accuracy.toFixed(1) : Math.round(snapshot.accuracy)} m
+                  {shopping ? `Stop ${stopIndex + 1} of ${trip!.stops.length} · ${stop!.checkout ? 'Checkout' : stopItems}` : `${destName} · ±${snapshot.accuracy < 10 ? snapshot.accuracy.toFixed(1) : Math.round(snapshot.accuracy)} m`}
                 </span>
               </>
             )}
@@ -702,16 +749,45 @@ const QrScanner = () => {
           <div className="sheet__badge">
             <ManeuverIcon type="arrive" size={38} />
           </div>
-          <h2>You have arrived</h2>
-          <p>
-            {destName}
-            {destFloor ? ` · ${destFloor.name}` : ''}
-            {snapshot.destinationSide === 'left' && ' · on your left'}
-            {snapshot.destinationSide === 'right' && ' · on your right'}
-          </p>
-          <Link className="btn-nav btn-nav--primary" to="/">
-            Done
-          </Link>
+          {shopping ? (
+            <>
+              <h2>{stop!.checkout ? 'Checkout' : destName}</h2>
+              <p>
+                {stop!.checkout ? 'You have everything on your list.' : `Stop ${stopIndex + 1} of ${trip!.stops.length}`}
+                {snapshot.destinationSide === 'left' && ' · on your left'}
+                {snapshot.destinationSide === 'right' && ' · on your right'}
+              </p>
+              {stop!.products.length > 0 && (
+                <ul className="pick-list">
+                  {stop!.products.map((p) => (
+                    <li key={p.id}>{p.name}</li>
+                  ))}
+                </ul>
+              )}
+              {lastStop ? (
+                <Link className="btn-nav btn-nav--primary" to="/?done=1">
+                  Finish
+                </Link>
+              ) : (
+                <button type="button" className="btn-nav btn-nav--primary" onClick={nextStop}>
+                  Got it · next stop
+                </button>
+              )}
+            </>
+          ) : (
+            <>
+              <h2>You have arrived</h2>
+              <p>
+                {destName}
+                {destFloor ? ` · ${destFloor.name}` : ''}
+                {snapshot.destinationSide === 'left' && ' · on your left'}
+                {snapshot.destinationSide === 'right' && ' · on your right'}
+              </p>
+              <Link className="btn-nav btn-nav--primary" to="/">
+                Done
+              </Link>
+            </>
+          )}
         </div>
       )}
 
@@ -728,10 +804,10 @@ const QrScanner = () => {
               <KindIcon kind={destination.kind} size={26} />
             </span>
             <div>
-              <p className="sheet__eyebrow">Navigate to</p>
-              <h2>{destName}</h2>
+              <p className="sheet__eyebrow">{shopping ? 'Shopping trip' : 'Navigate to'}</p>
+              <h2>{shopping ? `${itemIds.length - trip!.unknown.length} items · ${trip!.stops.length} stops` : destName}</h2>
               <p className="sheet__sub">
-                {destFloor ? destFloor.name : ''} · {building.name}
+                {shopping ? `About ${Math.round(trip!.length / 5) * 5} m in the best order, ending at the checkout` : destFloor ? destFloor.name : ''} · {building.name}
                 {startId !== null && ` · from ${building.displayName(building.node(startId)!)}`}
               </p>
             </div>

@@ -14,6 +14,7 @@ TypeScript, Three.js for the AR overlay, Dijkstra for routing. No backend, no GP
 - [Try it on a phone](#try-it-on-a-phone)
 - [Deploy](#deploy)
 - [The building](#the-building)
+- [Supermarkets](#supermarkets)
 - [Voice and sounds](#voice-and-sounds)
 - [Tests](#tests)
 - [Project layout](#project-layout)
@@ -213,6 +214,14 @@ Pass `-- --base https://your.host` to put your address in the codes and `-- --fo
 scanned with the phone's own camera app, open the destination list with the start position known. The
 payload format `…/qrScanner/<id>` is the original one, so `local0.pdf … local3.pdf` still decode to
 valid markers (ids 0–3 are the entrance, the lobby, the reception and the café of the demo building).
+
+## Supermarkets
+
+The same system guides shoppers: aisles are corridors, shelf sections are destinations, and a shopping
+list becomes a trip through all of them in the shortest walking order, ending at the checkout. Choose
+*FreshMart Supermarket* in the top bar (or open `/?venue=supermarket`). Requirements, data model, the
+trip-planning logic and what a real store would still need are in
+[docs/SUPERMARKET.md](docs/SUPERMARKET.md).
 
 ## Voice and sounds
 

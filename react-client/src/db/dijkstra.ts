@@ -6,12 +6,15 @@
  * `src/nav/routing.ts` (heap based Dijkstra, multi-floor, can start anywhere
  * along a corridor); this file is the thin compatibility layer on top of it.
  */
-import graphDb from './graph.json';
+import { currentVenue } from './venues';
 import { Building, RawGraph } from '../nav/building';
 import { shortestPath } from '../nav/routing';
 
-/** The building described by `graph.json`, shared by the whole app. */
-export const building = new Building(graphDb as RawGraph);
+/**
+ * The building the app is showing: the one described by `graph.json`, or
+ * another venue of `venues.ts` if the user chose one. Shared by the whole app.
+ */
+export const building = new Building(currentVenue().graph as RawGraph);
 
 export interface NextNodeCoordinates {
     /** Map x of the next node on the path (the destination itself when already there). */
