@@ -2096,6 +2096,171 @@
      "scans": 1
     }
    ]
+  },
+  "chocolates": {
+   "category": "chocolates",
+   "products": [
+    {
+     "code": "3045140105502",
+     "name": "Chocolat au lait du pays alpin Milka",
+     "brand": "Milka",
+     "quantity": "100 g",
+     "image": "https://images.openfoodfacts.org/images/products/304/514/010/5502/front_fr.635.200.jpg",
+     "scans": 234
+    },
+    {
+     "code": "7622210995063",
+     "name": "180G LT NOISETTE COTE D OR",
+     "brand": "Côte d'Or",
+     "quantity": "180g",
+     "image": "https://images.openfoodfacts.org/images/products/762/221/099/5063/front_fr.196.200.jpg",
+     "scans": 188
+    },
+    {
+     "code": "3760091726667",
+     "name": "Chocolat noir 80% Équateur intense et floral",
+     "brand": "Ethiquable",
+     "quantity": "100 g",
+     "image": "https://images.openfoodfacts.org/images/products/376/009/172/6667/front_fr.100.200.jpg",
+     "scans": 197
+    },
+    {
+     "code": "3270190127765",
+     "name": "Noir 74% cacao",
+     "brand": "CARREFOUR FRANCE",
+     "quantity": "100 g",
+     "image": "https://images.openfoodfacts.org/images/products/327/019/012/7765/front_en.168.200.jpg",
+     "scans": 181
+    },
+    {
+     "code": "7613035859098",
+     "name": "NESTLÉ DESSERT 70% Absolu 170g",
+     "brand": "Nestlé",
+     "quantity": "170 g",
+     "image": "https://images.openfoodfacts.org/images/products/761/303/585/9098/front_en.79.200.jpg",
+     "scans": 193
+    },
+    {
+     "code": "3560071276539",
+     "name": "Chocolat noir 85% cacao - Perou",
+     "brand": "CARREFOUR FRANCE",
+     "quantity": "100 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/127/6539/front_es.33.200.jpg",
+     "scans": 153
+    },
+    {
+     "code": "3760226260431",
+     "name": "Tablette de chocolat 75% de cacao",
+     "brand": "Grain de Sail",
+     "quantity": "100 g",
+     "image": "https://images.openfoodfacts.org/images/products/376/022/626/0431/front_fr.56.200.jpg",
+     "scans": 79
+    },
+    {
+     "code": "3270190128151",
+     "name": "Chocolat au lait",
+     "brand": "Carrefour BIO",
+     "quantity": "100 g",
+     "image": "https://images.openfoodfacts.org/images/products/327/019/012/8151/front_en.98.200.jpg",
+     "scans": 19
+    },
+    {
+     "code": "3560071564735",
+     "name": "Dessert noir",
+     "brand": "Carrefour",
+     "quantity": "200 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/156/4735/front_fr.13.200.jpg",
+     "scans": 59
+    },
+    {
+     "code": "7622210995124",
+     "name": "Noir Pistaches Caramélisées",
+     "brand": "Côte d'Or",
+     "quantity": "180 g",
+     "image": "https://images.openfoodfacts.org/images/products/762/221/099/5124/front_fr.71.200.jpg",
+     "scans": 40
+    },
+    {
+     "code": "3560070472949",
+     "name": "NOIR saveur Orange",
+     "brand": "Carrefour BIO",
+     "quantity": "100 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/047/2949/front_es.86.200.jpg",
+     "scans": 24
+    },
+    {
+     "code": "3560071207168",
+     "name": "Chocolat noir",
+     "brand": "Carrefour",
+     "quantity": "100 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/120/7168/front_fr.64.200.jpg",
+     "scans": 15
+    },
+    {
+     "code": "3560070472970",
+     "name": "LAIT éclats de Noisettes caramélisés",
+     "brand": "Carrefour BIO",
+     "quantity": "100 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/047/2970/front_es.85.200.jpg",
+     "scans": 16
+    },
+    {
+     "code": "3560070821280",
+     "name": "Dessert lait",
+     "brand": "Carrefour",
+     "quantity": "200 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/082/1280/front_fr.38.200.jpg",
+     "scans": 8
+    },
+    {
+     "code": "3560071529963",
+     "name": "Fairy choc Chocolat noir bretzel",
+     "brand": "Carrefour",
+     "quantity": "180 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/152/9963/front_fr.9.200.jpg",
+     "scans": 23
+    },
+    {
+     "code": "3560070770489",
+     "name": "Menthe noir",
+     "brand": "Carrefour",
+     "quantity": "100 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/077/0489/front_fr.119.200.jpg",
+     "scans": 24
+    },
+    {
+     "code": "3760226261292",
+     "name": "Tablette de chocolat 62% de cacao, framboise et pralin",
+     "brand": "Grain de Sail",
+     "quantity": "100 g",
+     "image": "https://images.openfoodfacts.org/images/products/376/022/626/1292/front_fr.38.200.jpg",
+     "scans": 23
+    },
+    {
+     "code": "3270190174936",
+     "name": "Carrefour Selection Lait Extra Fin",
+     "brand": "Carrefour Sélection",
+     "quantity": "100g",
+     "image": "https://images.openfoodfacts.org/images/products/327/019/017/4936/front_en.148.200.jpg",
+     "scans": 17
+    },
+    {
+     "code": "3560070776238",
+     "name": "Lait noisettes & raisins",
+     "brand": "Carrefour",
+     "quantity": "200 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/077/6238/front_en.51.200.jpg",
+     "scans": 13
+    },
+    {
+     "code": "3560071276621",
+     "name": "Saveur framboise & crêpe dentelle noir",
+     "brand": "Carrefour",
+     "quantity": "100 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/127/6621/front_fr.50.200.jpg",
+     "scans": 14
+    }
+   ]
   }
  }
 }
