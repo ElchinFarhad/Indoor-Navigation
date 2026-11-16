@@ -2651,3 +2651,10 @@ body {
   color: #ffffff;
   font-weight: 600;
 }
+
+/* On a phone the brand already leads home: the menu keeps About and the language. */
+@media (max-width: 430px) {
+  .app-navbar__link--home {
+    display: none;
+  }
+}

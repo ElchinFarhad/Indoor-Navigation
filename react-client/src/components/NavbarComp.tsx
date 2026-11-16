@@ -16,7 +16,7 @@ const NavbarComp = () => {
           <span className="app-navbar__title">Indoor Navigation</span>
         </Navbar.Brand>
         <Nav className="ms-auto">
-          <NavLink to="/" end className={({ isActive }) => `app-navbar__link${isActive ? ' is-active' : ''}`}>
+          <NavLink to="/" end className={({ isActive }) => `app-navbar__link app-navbar__link--home${isActive ? ' is-active' : ''}`}>
             {t('Home')}
           </NavLink>
           <NavLink to="/about" className={({ isActive }) => `app-navbar__link${isActive ? ' is-active' : ''}`}>

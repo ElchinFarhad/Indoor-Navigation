@@ -10,7 +10,7 @@
 const it: { [text: string]: string } = {
   /* ------------------------------------------------------------ general */
   Home: 'Home',
-  About: 'Informazioni',
+  About: 'Info',
   Privacy: 'Privacy',
   Close: 'Chiudi',
   Cancel: 'Annulla',

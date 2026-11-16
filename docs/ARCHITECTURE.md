@@ -185,7 +185,7 @@ Three.js is loaded lazily with the AR view, so the destination list does not pay
 
 ## 8. The floor plan as data
 
-`graph.json` carries, per floor, the rooms (axis-aligned rectangles with a kind, a name and door
+A venue's `map.json` carries, per floor, the rooms (axis-aligned rectangles with a kind, a name and door
 positions) and the corridor areas, next to the navigation graph. `nav/building.ts` validates it and links
 each node to the room it is the door of; `map/plan.ts` holds what is common to every rendering of it
 (colours per kind, wall segments with the door openings cut out, a canvas renderer).

@@ -53,7 +53,7 @@ store does not reach.
 scripts/fetch-carrefour-data.js   downloads the two snapshots (needs network)
 scripts/data/carrefour-montesson/ osm.json, off-products.json: the snapshots, committed
 scripts/carrefour-sections.js     the 56 shelf sections and their Open Food Facts categories
-scripts/build-carrefour.js        snapshots -> src/db/carrefour-montesson.json
+scripts/build-carrefour.js        snapshots -> venues-src/carrefour/montesson/ (map.json, locations.csv, products.csv)
 ```
 
 ```bash

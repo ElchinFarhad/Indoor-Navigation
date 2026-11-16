@@ -1,0 +1,6 @@
+node_modules
+react-client/node_modules
+react-client/build
+react-client/public/venues
+.git
+wasm/target
