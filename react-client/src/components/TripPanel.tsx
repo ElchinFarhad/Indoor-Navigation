@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { plural, t } from '../i18n';
 import { Building } from '../nav/building';
 import { ShoppingTrip } from '../nav/shopping';
 import KindIcon from './KindIcon';
@@ -32,18 +33,18 @@ const TripPanel = ({ building, trip, onAdd, onSkip, onDirections, onClose }: Pro
   const name = (id: string) => (building.product(id) || { name: id }).name;
 
   return (
-    <Panel title="Shopping list" onClose={onClose}>
+    <Panel title={t('Shopping list')} onClose={onClose}>
       <p className="panel__lead">
         {trip.pending.length === 0
-          ? 'Everything is in the basket.'
-          : `${trip.pending.length} item${trip.pending.length === 1 ? '' : 's'} to go · about ${Math.max(5, Math.round(trip.length / 5) * 5)} m`}
+          ? t('Everything is in the basket.')
+          : plural(trip.pending.length, '{n} item to go · about {d} m', '{n} items to go · about {d} m', { d: Math.max(5, Math.round(trip.length / 5) * 5) })}
       </p>
 
       <label className="trip-search">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true">
           <path d="M12 5v14M5 12h14" />
         </svg>
-        <input type="search" placeholder="Add a product" aria-label="Add a product" value={query} onChange={(e) => setQuery(e.target.value)} />
+        <input type="search" placeholder={t('Add a product')} aria-label={t('Add a product')} value={query} onChange={(e) => setQuery(e.target.value)} />
       </label>
       {q && (
         <ul className="trip-results">
@@ -51,7 +52,7 @@ const TripPanel = ({ building, trip, onAdd, onSkip, onDirections, onClose }: Pro
             <li key={p.id}>
               <button
                 type="button"
-                aria-label={`Add ${p.name} to the trip`}
+                aria-label={t('Add {name} to the trip', { name: p.name })}
                 onClick={() => {
                   onAdd(p.id);
                   setQuery('');
@@ -61,11 +62,11 @@ const TripPanel = ({ building, trip, onAdd, onSkip, onDirections, onClose }: Pro
                   <strong>{p.name}</strong>
                   <small>{p.section.name}</small>
                 </span>
-                <b>Add</b>
+                <b>{t('Add')}</b>
               </button>
             </li>
           ))}
-          {matches.length === 0 && <li className="trip-results__none">Nothing found for “{query}”.</li>}
+          {matches.length === 0 && <li className="trip-results__none">{t('Nothing matches “{query}”.', { query })}</li>}
         </ul>
       )}
 
@@ -80,14 +81,14 @@ const TripPanel = ({ building, trip, onAdd, onSkip, onDirections, onClose }: Pro
               <div>
                 <strong>
                   {building.displayName(node)}
-                  {i === 0 && <em>Next</em>}
+                  {i === 0 && <em>{t('Next')}</em>}
                 </strong>
-                {stop.checkout && <small>The trip ends here</small>}
+                {stop.checkout && <small>{t('The trip ends here')}</small>}
                 {stop.products.map((p) => (
                   <div key={p.id} className="trip-item">
                     <span>{p.name}</span>
-                    <button type="button" aria-label={`Skip ${p.name}`} onClick={() => onSkip(p.id)}>
-                      Skip
+                    <button type="button" aria-label={t('Skip {name}', { name: p.name })} onClick={() => onSkip(p.id)}>
+                      {t('Skip')}
                     </button>
                   </div>
                 ))}
@@ -99,10 +100,10 @@ const TripPanel = ({ building, trip, onAdd, onSkip, onDirections, onClose }: Pro
 
       {trip.skipped.length > 0 && (
         <>
-          <p className="trip-label">Skipped</p>
+          <p className="trip-label">{t('Skipped')}</p>
           <div className="trip-chips">
             {trip.skipped.map((id) => (
-              <button key={id} type="button" className="product" aria-label={`Put ${name(id)} back on the list`} onClick={() => onAdd(id)}>
+              <button key={id} type="button" className="product" aria-label={t('Put {name} back on the list', { name: name(id) })} onClick={() => onAdd(id)}>
                 <span>+</span>
                 {name(id)}
               </button>
@@ -112,13 +113,13 @@ const TripPanel = ({ building, trip, onAdd, onSkip, onDirections, onClose }: Pro
       )}
       {trip.picked.length > 0 && (
         <>
-          <p className="trip-label">In the basket</p>
+          <p className="trip-label">{t('In the basket')}</p>
           <p className="trip-picked">{trip.picked.map(name).join(', ')}</p>
         </>
       )}
       {onDirections && (
         <button type="button" className="btn-nav btn-nav--soft trip-directions" onClick={onDirections}>
-          Directions to the next stop
+          {t('Directions to the next stop')}
         </button>
       )}
     </Panel>

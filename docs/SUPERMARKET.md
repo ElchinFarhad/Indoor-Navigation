@@ -34,17 +34,18 @@ would still need.
 | # | Requirement | Status |
 |---|---|---|
 | O1 | Few markers: floor stickers at the aisle ends and the entrance, not at every shelf | done (14 for 38 graph points) |
-| O2 | Layout and assortment as data, no code: sections, aisles, products per section | done (`supermarket.json`) |
+| O2 | Layout and assortment as data, no code: sections, aisles, products per section | done (`venues-src/freshmart/demo/`: map, `locations.csv`, `products.csv`) |
 | O3 | No app install, no beacons, no Wi-Fi fingerprinting, no account | done |
 | O4 | Nothing about the shopper leaves the phone (no tracking) | done |
-| O5 | Several venues in one installation | done (`venues.ts`, `?venue=` link) |
-| O6 | Assortment kept current from the store's product system (planogram / ERP feed) | not yet: the catalogue is a static file |
+| O5 | Several venues in one installation | done: retailer / store / version, loaded at start-up (`?venue=` link) |
+| O6 | Assortment kept current from the store's product system (planogram / ERP feed) | partly: the catalogue is a CSV file per store, validated and published without rebuilding the app; the import from a retailer's system is still to be written per client |
 | O7 | Promotions, stock, prices | out of scope here |
 
 ## 2. Data model
 
-A venue is one JSON file (`react-client/src/db/supermarket.json`) in the format of the building graph,
-with `meta.type: "store"` and a `products` list:
+A venue is a folder of sources (map, locations, products: see [VENUE-DATA.md](VENUE-DATA.md)) that the
+app joins at start-up into one graph in the format of the building graph, with `meta.type: "store"` and
+a `products` list. Joined, it looks like this:
 
 ```jsonc
 {

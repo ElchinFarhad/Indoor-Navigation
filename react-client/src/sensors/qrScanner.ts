@@ -11,6 +11,8 @@
  *  - the frame keeps the camera's aspect ratio (it used to be squashed to
  *    300x300, which distorted the code and broke the geometry).
  */
+import { BASE_PATH } from '../base';
+import { t } from '../i18n';
 import { estimateFocalPx, ScannedCode } from '../nav/qrPose';
 
 export interface ScanFrame {
@@ -65,15 +67,15 @@ export class QrScanner {
   start() {
     if (this.worker) return;
     try {
-      this.worker = new Worker(`${process.env.PUBLIC_URL || ''}/qr-worker.js`);
+      this.worker = new Worker(`${BASE_PATH}/qr-worker.js`);
     } catch (e) {
-      if (this.options.onError) this.options.onError('The marker scanner could not be started.');
+      if (this.options.onError) this.options.onError(t('The marker scanner could not be started.'));
       return;
     }
     this.worker.onmessage = this.onMessage;
     this.worker.onerror = () => {
       this.busy = false;
-      if (this.options.onError) this.options.onError('The marker scanner stopped unexpectedly.');
+      if (this.options.onError) this.options.onError(t('The marker scanner stopped unexpectedly.'));
     };
     this.timer = window.setInterval(this.tick, this.interval);
   }
@@ -89,7 +91,7 @@ export class QrScanner {
   private onMessage = (event: MessageEvent) => {
     const data = event.data;
     if (data.ready === false) {
-      if (this.options.onError) this.options.onError('The marker scanner failed to load.');
+      if (this.options.onError) this.options.onError(t('The marker scanner failed to load.'));
       return;
     }
     if (data.ready === true || data.id === undefined) return;

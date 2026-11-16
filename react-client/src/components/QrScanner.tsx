@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { Detection } from '../ar/types';
 import { AudioGuide, AudioMode } from '../audio/guide';
 import { building } from '../db/dijkstra';
+import { plural, t } from '../i18n';
 import { Announcer } from '../nav/announcer';
 import { NavNode } from '../nav/building';
 import { formatDistance, Mat3, mat3Multiply } from '../nav/geometry';
@@ -134,7 +135,7 @@ const QrScanner = () => {
   const toast = useCallback((text: string, tone: Toast['tone'] = 'info') => {
     const id = toastId.current++;
     setToasts((list) => list.slice(-2).concat({ id, text, tone }));
-    window.setTimeout(() => setToasts((list) => list.filter((t) => t.id !== id)), 3800);
+    window.setTimeout(() => setToasts((list) => list.filter((x) => x.id !== id)), 3800);
   }, []);
 
   /**
@@ -164,7 +165,7 @@ const QrScanner = () => {
           setScanning(false);
           setPicking(false);
           if (event.first) {
-            toast(`You're at ${building.displayName(event.node)}`, 'good');
+            toast(t("You're at {place}", { place: building.displayName(event.node) }), 'good');
             vibrate(60);
             // The trip was planned from the entrance: if the shopper starts
             // somewhere else, the best order of the stops may be another one.
@@ -173,28 +174,28 @@ const QrScanner = () => {
               trip.replan(event.node.id);
               if (trip.current && trip.current.nodeId !== before) {
                 const first = building.displayName(building.node(trip.current.nodeId)!);
-                window.setTimeout(() => syncTrip.current(`From here it is quicker to start with ${first}.`), 0);
+                window.setTimeout(() => syncTrip.current(t('From here it is quicker to start with {place}.', { place: first })), 0);
               }
             }
           } else if (event.rerouted) {
-            toast('Position corrected · route updated', 'good');
+            toast(t('Position corrected · route updated'), 'good');
             vibrate([40, 60, 40]);
           } else if (event.correction !== null && event.correction > 1.5) {
-            toast(`Position corrected at ${building.displayName(event.node)}`, 'good');
+            toast(t('Position corrected at {place}', { place: building.displayName(event.node) }), 'good');
             vibrate(40);
           }
           break;
         case 'reroute':
-          toast('Route updated', 'info');
+          toast(t('Route updated'), 'info');
           vibrate([40, 60, 40]);
           break;
         case 'wrong-way':
-          toast('Wrong way: turn around', 'warn');
+          toast(t('Wrong way: turn around'), 'warn');
           vibrate([120, 80, 120]);
           break;
         case 'floor': {
           const f = building.floor(event.floor);
-          toast(`Now on ${f ? f.name : `floor ${event.floor}`}`, 'good');
+          toast(t('Now on {floor}', { floor: f ? f.name : t('floor {n}', { n: event.floor }) }), 'good');
           setMapFloor(event.floor);
           break;
         }
@@ -301,7 +302,7 @@ const QrScanner = () => {
       streamRef.current = media;
       setStream(media);
     } catch (err) {
-      setCameraProblem(err instanceof CameraError ? err.message : 'The camera could not be started.');
+      setCameraProblem(err instanceof CameraError ? err.message : t('The camera could not be started.'));
     }
   }, []);
 
@@ -321,7 +322,7 @@ const QrScanner = () => {
       if (root.current) options.domOverlay = { root: root.current };
       setXrSession(await xr.requestSession('immersive-ar', options));
     } catch (e) {
-      toast('Precise AR could not be started on this device', 'warn');
+      toast(t('Precise AR could not be started on this device'), 'warn');
       restartCamera();
     }
   };
@@ -330,7 +331,7 @@ const QrScanner = () => {
     (error?: any) => {
       setXrSession(null);
       session.endExternalTracking();
-      if (error) toast('Precise AR stopped: back to the standard camera view', 'warn');
+      if (error) toast(t('Precise AR stopped: back to the standard camera view'), 'warn');
       restartCamera();
     },
     [session, toast, restartCamera]
@@ -373,7 +374,7 @@ const QrScanner = () => {
       setSource('camera');
       setView('ar');
     } catch (err) {
-      setCameraProblem(err instanceof CameraError ? err.message : 'The camera could not be started.');
+      setCameraProblem(err instanceof CameraError ? err.message : t('The camera could not be started.'));
       setSource('manual');
       setView('map');
       if (!session.tracker.hasFix) setPicking(true);
@@ -464,10 +465,10 @@ const QrScanner = () => {
     return (
       <div className="nav-screen nav-screen--message">
         <div className="sheet sheet--center">
-          <h2>Destination not found</h2>
-          <p>This link does not point to a place in {building.name}.</p>
+          <h2>{t('Destination not found')}</h2>
+          <p>{t('This link does not point to a place in {venue}.', { venue: building.name })}</p>
           <Link className="btn-nav btn-nav--primary" to="/">
-            Choose a destination
+            {t('Choose a destination')}
           </Link>
         </div>
       </div>
@@ -493,8 +494,8 @@ const QrScanner = () => {
   const describeNext = (lead: string): string => {
     const next = trip ? trip.current : null;
     if (!next) return lead;
-    if (next.checkout) return `${lead} That's everything on your list. Let's go to the checkout.`.trim();
-    return `${lead} Next: ${next.products.map((p) => p.name).join(', ')}, at ${building.displayName(building.node(next.nodeId)!)}.`.trim();
+    if (next.checkout) return `${lead} ${t("That's everything on your list. Let's go to the checkout.")}`.trim();
+    return `${lead} ${t('Next: {items}, at {place}.', { items: next.products.map((p) => p.name).join(', '), place: building.displayName(building.node(next.nodeId)!) })}`.trim();
   };
 
   const completeStop = () => {
@@ -508,9 +509,9 @@ const QrScanner = () => {
     const product = building.product(id);
     const before = trip.current ? trip.current.nodeId : -1;
     trip.skip(id, hereNode());
-    toast(`Skipped ${product ? product.name : id}`, 'info');
+    toast(t('Skipped {name}', { name: product ? product.name : id }), 'info');
     const changed = !trip.current || trip.current.nodeId !== before;
-    syncTrip.current(changed ? describeNext(`Skipping ${product ? product.name : 'it'}.`) : undefined);
+    syncTrip.current(changed ? describeNext(product ? t('Skipping {name}.', { name: product.name }) : '') : undefined);
   };
 
   const addProduct = (id: string) => {
@@ -518,9 +519,9 @@ const QrScanner = () => {
     const product = building.product(id);
     const before = trip.current ? trip.current.nodeId : -1;
     if (!trip.add(id, hereNode()) || !product) return;
-    toast(`Added ${product.name} · ${product.section.name}`, 'good');
+    toast(t('Added {name} · {section}', { name: product.name, section: product.section.name }), 'good');
     const changed = !!trip.current && trip.current.nodeId !== before;
-    syncTrip.current(changed ? describeNext(`Added ${product.name}.`) : `Added ${product.name}.`);
+    syncTrip.current(changed ? describeNext(t('Added {name}.', { name: product.name })) : t('Added {name}.', { name: product.name }));
   };
 
   const destFloor = building.floor(destination.floor);
@@ -530,7 +531,7 @@ const QrScanner = () => {
   const arrived = snapshot.status === 'arrived';
   const locating = snapshot.status === 'locating';
   const pendingFloor = snapshot.floorChange;
-  const pendingFloorName = pendingFloor ? (building.floor(pendingFloor.toFloor) || { name: `floor ${pendingFloor.toFloor}` }).name : '';
+  const pendingFloorName = pendingFloor ? (building.floor(pendingFloor.toFloor) || { name: t('floor {n}', { n: pendingFloor.toFloor }) }).name : '';
   const uncertain = snapshot.accuracy >= RECAL;
   const facingTarget = facing ? session.facingTarget() : null;
 
@@ -566,21 +567,21 @@ const QrScanner = () => {
   };
 
   let bannerIcon: any = 'scan';
-  let bannerTitle = 'Find your position';
-  let bannerDetail = source === 'camera' ? 'Point the camera at the nearest QR marker' : 'Choose the marker you are standing at';
+  let bannerTitle = t('Find your position');
+  let bannerDetail = source === 'camera' ? t('Point the camera at the nearest QR marker') : t('Choose the marker you are standing at');
   if (scanning && !locating) {
-    bannerTitle = 'Point at any marker';
-    bannerDetail = 'Your position will be corrected';
+    bannerTitle = t('Point at any marker');
+    bannerDetail = t('Your position will be corrected');
   } else if (picking && !locating) {
-    bannerTitle = 'Tap where you are';
-    bannerDetail = 'Choose the nearest marker';
+    bannerTitle = t('Tap where you are');
+    bannerDetail = t('Choose the nearest marker');
   } else if (snapshot.status === 'unreachable') {
     bannerIcon = 'uturn';
-    bannerTitle = 'No route from here';
-    bannerDetail = `${destName} cannot be reached from this marker`;
+    bannerTitle = t('No route from here');
+    bannerDetail = t('{place} cannot be reached from this marker', { place: destName });
   } else if (arrived) {
     bannerIcon = 'arrive';
-    bannerTitle = 'You have arrived';
+    bannerTitle = t('You have arrived');
     bannerDetail = destName;
   } else if (guidance) {
     bannerIcon = guidance.maneuver.type === 'arrive' && guidance.distance > 1.5 ? 'straight' : guidance.maneuver.type;
@@ -588,13 +589,13 @@ const QrScanner = () => {
     bannerDetail =
       guidance.maneuver.type === 'arrive'
         ? guidance.distance > 1.5
-          ? `then ${destName}`
+          ? t('then {next}', { next: destName })
           : ''
-        : guidance.maneuver.detail || (guidance.then ? `then ${guidance.then.text.toLowerCase()}` : '');
+        : guidance.maneuver.detail || (guidance.then ? t('then {next}', { next: guidance.then.text.toLowerCase() }) : '');
     if (snapshot.wrongWay) {
       bannerIcon = 'uturn';
-      bannerTitle = 'Turn around';
-      bannerDetail = 'You are walking away from the route';
+      bannerTitle = t('Turn around');
+      bannerDetail = t('You are walking away from the route');
     }
   }
 
@@ -610,7 +611,7 @@ const QrScanner = () => {
     >
       <div className="nav-stage">
         {showAr && (
-          <Suspense fallback={<div className="nav-loading">Starting the camera view…</div>}>
+          <Suspense fallback={<div className="nav-loading">{t('Starting the camera view…')}</div>}>
             <ArView
               building={building}
               session={session}
@@ -640,7 +641,7 @@ const QrScanner = () => {
       {/* ------------------------------------------------ instruction banner */}
       {phase === 'running' && (
         <header className={`nav-banner${arrived ? ' nav-banner--arrived' : ''}${snapshot.wrongWay && !scanning ? ' nav-banner--warn' : ''}`}>
-          <button type="button" className="nav-banner__back" aria-label="End navigation" onClick={() => (arrived || locating ? navigate('/') : setPanel('leave'))}>
+          <button type="button" className="nav-banner__back" aria-label={t('End navigation')} onClick={() => (arrived || locating ? navigate('/') : setPanel('leave'))}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
               <path d="M15 5l-7 7 7 7" />
             </svg>
@@ -661,7 +662,7 @@ const QrScanner = () => {
                 setPicking(false);
               }}
             >
-              Cancel
+              {t('Cancel')}
             </button>
           )}
         </header>
@@ -669,9 +670,9 @@ const QrScanner = () => {
 
       {/* ------------------------------------------------------------ toasts */}
       <div className="nav-toasts" aria-live="polite">
-        {toasts.map((t) => (
-          <div key={t.id} className={`nav-toast nav-toast--${t.tone}`}>
-            {t.text}
+        {toasts.map((item) => (
+          <div key={item.id} className={`nav-toast nav-toast--${item.tone}`}>
+            {item.text}
           </div>
         ))}
       </div>
@@ -689,21 +690,21 @@ const QrScanner = () => {
           )}
           {locating && source !== 'demo' && !picking && (
             <button type="button" className="nav-pill nav-pill--action" onClick={beginPick}>
-              No marker nearby? Choose where you are
+              {t('No marker nearby? Choose where you are')}
             </button>
           )}
           {cameraProblem && <div className="nav-pill nav-pill--warn">{cameraProblem}</div>}
           {!locating && sensorsMissing && source === 'camera' && (
-            <div className="nav-pill nav-pill--warn">Motion sensors unavailable: scan each marker you pass for directions</div>
+            <div className="nav-pill nav-pill--warn">{t('Motion sensors unavailable: scan each marker you pass for directions')}</div>
           )}
           {xrSupported && source === 'camera' && showAr && !locating && !scanning && snapshot.headingCalibrated && !pendingFloor && (
             <button type="button" className="nav-pill nav-pill--action" onClick={() => (xrSession ? xrSession.end() : startXr())}>
-              {xrSession ? 'Exit precise AR' : 'Precise AR (beta)'}
+              {xrSession ? t('Exit precise AR') : t('Precise AR (beta)')}
             </button>
           )}
           {snapshot.needsRecalibration && !sensorsMissing && !scanning && (
             <button type="button" className="nav-pill nav-pill--warn" onClick={canFix && source === 'camera' ? beginScan : undefined}>
-              Position uncertain{snapshot.nextMarker ? `: glance at the marker by ${building.displayName(snapshot.nextMarker)} when you pass it` : ''}
+              {snapshot.nextMarker ? t('Position uncertain: glance at the marker by {place} when you pass it', { place: building.displayName(snapshot.nextMarker) }) : t('Position uncertain')}
             </button>
           )}
         </div>
@@ -717,15 +718,15 @@ const QrScanner = () => {
           </div>
           <div className="nav-card__body">
             <strong>
-              Take the {pendingFloor.kind === 'elevator' ? 'lift' : 'stairs'} to {pendingFloorName}
+              {pendingFloor.kind === 'elevator' ? t('Take the lift to {floor}', { floor: pendingFloorName }) : t('Take the stairs to {floor}', { floor: pendingFloorName })}
             </strong>
-            <span>It updates by itself if the camera sees a marker up there.</span>
+            <span>{t('It updates by itself if the camera sees a marker there.')}</span>
             <div className="nav-card__actions">
               <button type="button" className="btn-nav btn-nav--primary" onClick={() => session.confirmFloorChange()}>
-                I'm on {pendingFloorName}
+                {t("I'm on {floor}", { floor: pendingFloorName })}
               </button>
               <button type="button" className="btn-nav btn-nav--ghost" onClick={() => session.cancelFloorChange()}>
-                Stay on this floor
+                {t('Stay on this floor')}
               </button>
             </div>
           </div>
@@ -734,12 +735,12 @@ const QrScanner = () => {
 
       {/* ------------------------------------------- side buttons, mini map */}
       {canFix && !scanning && !picking && !pendingFloor && (
-        <button type="button" className={`nav-fab${showAr ? ' nav-fab--above-pip' : ''}${uncertain ? ' nav-fab--attention' : ''}`} onClick={() => setPanel('fix')} aria-label="Fix my position">
+        <button type="button" className={`nav-fab${showAr ? ' nav-fab--above-pip' : ''}${uncertain ? ' nav-fab--attention' : ''}`} onClick={() => setPanel('fix')} aria-label={t('Fix my position')}>
           <ManeuverIcon type="scan" size={24} />
         </button>
       )}
       {showAr && position && !arrived && (
-        <button type="button" className="nav-pip" onClick={() => setView('map')} aria-label="Open the map">
+        <button type="button" className="nav-pip" onClick={() => setView('map')} aria-label={t('Open the map')}>
           <MapView building={building} snapshot={snapshot} floor={position.floor} compact />
         </button>
       )}
@@ -756,18 +757,18 @@ const QrScanner = () => {
             ) : (
               <>
                 <strong>
-                  {remainingText === 'now' ? 'Arriving' : remainingText}
+                  {remainingText === t('now') ? t('Arriving') : remainingText}
                   <small> · {Math.max(1, Math.round(snapshot.etaSeconds / 60))} min</small>
                 </strong>
                 <span>
-                  <i className={`nav-dot nav-dot--${snapshot.accuracy < 2 ? 'good' : snapshot.accuracy < RECAL ? 'warn' : 'bad'}`} title="Estimated accuracy of your position" />
-                  {shopping && stop ? `Stop ${stopNumber} of ${trip!.total} · ${stop.checkout ? 'Checkout' : stopItems}` : `${destName} · ±${snapshot.accuracy < 10 ? snapshot.accuracy.toFixed(1) : Math.round(snapshot.accuracy)} m`}
+                  <i className={`nav-dot nav-dot--${snapshot.accuracy < 2 ? 'good' : snapshot.accuracy < RECAL ? 'warn' : 'bad'}`} title={t('Estimated accuracy of your position')} />
+                  {shopping && stop ? `${t('Stop {n} of {total}', { n: stopNumber, total: trip!.total })} · ${stop.checkout ? t('Checkout') : stopItems}` : `${destName} · ±${snapshot.accuracy < 10 ? snapshot.accuracy.toFixed(1) : Math.round(snapshot.accuracy)} m`}
                 </span>
               </>
             )}
           </div>
           <div className="nav-bar__actions">
-            <button type="button" className={`nav-icon-btn${audioMode !== 'off' ? ' is-on' : ''}`} aria-label={`Sound: ${audioMode}`} onClick={() => setPanel('audio')}>
+            <button type="button" className={`nav-icon-btn${audioMode !== 'off' ? ' is-on' : ''}`} aria-label={t('Sound: {mode}', { mode: audioMode === 'voice' ? t('Voice') : audioMode === 'sounds' ? t('Sounds') : t('Off') })} onClick={() => setPanel('audio')}>
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M4 10v4h3l5 4V6L7 10H4z" />
                 {audioMode === 'voice' && <path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11" />}
@@ -776,7 +777,7 @@ const QrScanner = () => {
               </svg>
             </button>
             {shopping && (
-              <button type="button" className="nav-icon-btn nav-icon-btn--badge" aria-label="Shopping list" onClick={() => setPanel('trip')}>
+              <button type="button" className="nav-icon-btn nav-icon-btn--badge" aria-label={t('Shopping list')} onClick={() => setPanel('trip')}>
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M5 8h14l-1.500 11H6.500z" />
                   <path d="M8.500 8l2-4M15.500 8l-2-4M3 8h18" />
@@ -785,7 +786,7 @@ const QrScanner = () => {
               </button>
             )}
             {!locating && !shopping && (
-              <button type="button" className="nav-icon-btn" aria-label="Directions list" onClick={() => setPanel('steps')}>
+              <button type="button" className="nav-icon-btn" aria-label={t('Directions list')} onClick={() => setPanel('steps')}>
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
                   <path d="M9 6h11M9 12h11M9 18h11" />
                   <path d="M4.5 6h.01M4.5 12h.01M4.5 18h.01" strokeWidth="3" />
@@ -794,7 +795,7 @@ const QrScanner = () => {
             )}
             {source !== 'manual' && !xrSession && (
               <button type="button" className="nav-icon-btn nav-icon-btn--wide" onClick={() => setView(showAr ? 'map' : 'ar')}>
-                {showAr ? 'Map' : source === 'demo' ? '3D' : 'AR'}
+                {showAr ? t('Map') : source === 'demo' ? '3D' : 'AR'}
               </button>
             )}
           </div>
@@ -809,17 +810,17 @@ const QrScanner = () => {
       )}
       {panel === 'leave' && (
         <div className="panel-scrim" onClick={() => setPanel(null)}>
-          <div className="panel" role="dialog" aria-label="End navigation" onClick={(e) => e.stopPropagation()}>
+          <div className="panel" role="dialog" aria-label={t('End navigation')} onClick={(e) => e.stopPropagation()}>
             <div className="panel__head">
-              <h3>{shopping ? 'End this shopping trip?' : 'End navigation?'}</h3>
+              <h3>{shopping ? t('End this shopping trip?') : t('End navigation?')}</h3>
             </div>
-            <p className="panel__lead">{shopping ? 'Your list is kept, so you can start again later.' : 'You can start again from the destination list.'}</p>
+            <p className="panel__lead">{shopping ? t('Your list is kept, so you can start again later.') : t('You can start again from the destination list.')}</p>
             <div className="panel__actions">
               <button type="button" className="btn-nav btn-nav--soft" onClick={() => setPanel(null)}>
-                Keep going
+                {t('Keep going')}
               </button>
               <button type="button" className="btn-nav btn-nav--danger" onClick={() => navigate('/')}>
-                End
+                {t('End')}
               </button>
             </div>
           </div>
@@ -827,27 +828,28 @@ const QrScanner = () => {
       )}
       {facing && facingTarget && phase === 'running' && !sensorsMissing && !arrived && !snapshot.headingCalibrated && panel === null && (
         <div className="panel-scrim panel-scrim--clear">
-          <div className="panel face-prompt" role="dialog" aria-label="Which way are you facing?">
+          <div className="panel face-prompt" role="dialog" aria-label={t('Which way are you facing?')}>
             <div className="face-prompt__row">
               <span className="face-prompt__icon">
                 <ManeuverIcon type="straight" size={30} />
               </span>
               <div>
-                <h3>Face the way you will walk</h3>
+                <h3>{t('Face the way you will walk')}</h3>
                 <p className="panel__lead">
-                  Turn towards <strong>{facingTarget.node && facingTarget.node.label ? building.displayName(facingTarget.node) : 'the start of the blue route line'}</strong>, hold the phone pointing ahead of you, then tap.
+                  {t('Turn towards')} <strong>{facingTarget.node && facingTarget.node.label ? building.displayName(facingTarget.node) : t('the start of the blue route line')}</strong>
+                  {t(', hold the phone pointing ahead of you, then tap.')}
                 </p>
               </div>
             </div>
             <div className="panel__actions">
               <button type="button" className="btn-nav btn-nav--soft" onClick={() => setFacing(false)}>
-                Skip
+                {t('Skip')}
               </button>
               <button type="button" className="btn-nav btn-nav--primary" onClick={confirmFacing}>
-                I'm facing it
+                {t("I'm facing it")}
               </button>
             </div>
-            <p className="panel__hint">Scanning a QR marker sets this automatically. If you skip, the direction is worked out from your first steps.</p>
+            <p className="panel__hint">{t('Scanning a QR marker sets this automatically. If you skip, the direction is worked out from your first steps.')}</p>
           </div>
         </div>
       )}
@@ -861,13 +863,13 @@ const QrScanner = () => {
           </div>
           {shopping ? (
             <>
-              <h2>{tripDone ? 'Checkout' : destName}</h2>
+              <h2>{tripDone ? t('Checkout') : destName}</h2>
               <p>
                 {tripDone
-                  ? `${trip!.picked.length} item${trip!.picked.length === 1 ? '' : 's'} in your basket${trip!.skipped.length > 0 ? ` · ${trip!.skipped.length} skipped` : ''}`
-                  : `Stop ${stopNumber} of ${trip!.total}`}
-                {!tripDone && snapshot.destinationSide === 'left' && ' · on your left'}
-                {!tripDone && snapshot.destinationSide === 'right' && ' · on your right'}
+                  ? `${plural(trip!.picked.length, '{n} item in your basket', '{n} items in your basket')}${trip!.skipped.length > 0 ? ` · ${t('{n} skipped', { n: trip!.skipped.length })}` : ''}`
+                  : t('Stop {n} of {total}', { n: stopNumber, total: trip!.total })}
+                {!tripDone && snapshot.destinationSide === 'left' && ` · ${t('on your left')}`}
+                {!tripDone && snapshot.destinationSide === 'right' && ` · ${t('on your right')}`}
               </p>
               {!tripDone && stop && stop.products.length > 0 && (
                 <ul className="pick-list">
@@ -877,48 +879,48 @@ const QrScanner = () => {
                         type="button"
                         className="pick-list__tick"
                         aria-pressed={ticked.indexOf(p.id) >= 0}
-                        aria-label={`${p.name}: in the basket`}
-                        onClick={() => setTicked((t) => (t.indexOf(p.id) >= 0 ? t.filter((x) => x !== p.id) : t.concat(p.id)))}
+                        aria-label={t('{name}: in the basket', { name: p.name })}
+                        onClick={() => setTicked((list) => (list.indexOf(p.id) >= 0 ? list.filter((x) => x !== p.id) : list.concat(p.id)))}
                       >
                         <i aria-hidden="true" />
                         <span>{p.name}</span>
                       </button>
-                      <button type="button" className="pick-list__skip" aria-label={`${p.name} is not here: skip it`} onClick={() => skipProduct(p.id)}>
-                        Not here
+                      <button type="button" className="pick-list__skip" aria-label={t('{name} is not here: skip it', { name: p.name })} onClick={() => skipProduct(p.id)}>
+                        {t('Not here')}
                       </button>
                     </li>
                   ))}
                 </ul>
               )}
               {tripDone && trip!.skipped.length > 0 && (
-                <p className="sheet__skipped">Skipped: {trip!.skipped.map((id) => (building.product(id) || { name: id }).name).join(', ')}</p>
+                <p className="sheet__skipped">{t('Skipped')}: {trip!.skipped.map((id) => (building.product(id) || { name: id }).name).join(', ')}</p>
               )}
               {tripDone ? (
                 <Link className="btn-nav btn-nav--primary" to="/?done=1">
-                  Finish
+                  {t('Finish')}
                 </Link>
               ) : (
                 <>
                   <button type="button" className="btn-nav btn-nav--primary" onClick={completeStop}>
-                    Got it · next stop
+                    {t('Got it · next stop')}
                   </button>
                   <button type="button" className="btn-nav btn-nav--ghost" onClick={() => setPanel('trip')}>
-                    Add or change items
+                    {t('Add or change items')}
                   </button>
                 </>
               )}
             </>
           ) : (
             <>
-              <h2>You have arrived</h2>
+              <h2>{t('You have arrived')}</h2>
               <p>
                 {destName}
                 {destFloor ? ` · ${destFloor.name}` : ''}
-                {snapshot.destinationSide === 'left' && ' · on your left'}
-                {snapshot.destinationSide === 'right' && ' · on your right'}
+                {snapshot.destinationSide === 'left' && ` · ${t('on your left')}`}
+                {snapshot.destinationSide === 'right' && ` · ${t('on your right')}`}
               </p>
               <Link className="btn-nav btn-nav--primary" to="/">
-                Done
+                {t('Done')}
               </Link>
             </>
           )}
@@ -928,7 +930,7 @@ const QrScanner = () => {
       {/* ------------------------------------------------------------- intro */}
       {phase === 'intro' && (
         <div className="sheet sheet--intro">
-          <Link className="sheet__close" to="/" aria-label="Back to destinations">
+          <Link className="sheet__close" to="/" aria-label={t('Back to destinations')}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
               <path d="M15 5l-7 7 7 7" />
             </svg>
@@ -938,11 +940,11 @@ const QrScanner = () => {
               <KindIcon kind={destination.kind} size={26} />
             </span>
             <div>
-              <p className="sheet__eyebrow">{shopping ? 'Shopping trip' : 'Navigate to'}</p>
-              <h2>{shopping ? `${trip!.pending.length} items · ${trip!.stops.length} stops` : destName}</h2>
+              <p className="sheet__eyebrow">{shopping ? t('Shopping trip') : t('Navigate to')}</p>
+              <h2>{shopping ? t('{items} items · {stops} stops', { items: trip!.pending.length, stops: trip!.stops.length }) : destName}</h2>
               <p className="sheet__sub">
-                {shopping ? `About ${Math.round(trip!.length / 5) * 5} m by the shortest way, ending at the checkout` : `${destFloor ? destFloor.name : ''} · ${building.name}`}
-                {startId !== null && ` · from ${building.displayName(building.node(startId)!)}`}
+                {shopping ? t('About {d} m by the shortest way, ending at the checkout', { d: Math.round(trip!.length / 5) * 5 }) : `${destFloor ? destFloor.name : ''} · ${building.name}`}
+                {startId !== null && ` · ${t('from {place}', { place: building.displayName(building.node(startId)!) })}`}
               </p>
             </div>
           </div>
@@ -950,33 +952,35 @@ const QrScanner = () => {
             <li>
               <b>1</b>
               <span>
-                <strong>Scan one QR marker</strong> so the app knows where you are.
+                <strong>{t('Scan one QR marker')}</strong> {t('so the app knows where you are.')}
               </span>
             </li>
             <li>
               <b>2</b>
               <span>
-                <strong>Just walk.</strong> Arrows and spoken directions take you there. No more scanning.
+                <strong>{t('Just walk.')}</strong> {t('Arrows and spoken directions take you there. No more scanning.')}
               </span>
             </li>
           </ol>
           {building.floors.length > 1 && (
             <label className="switch-row switch-row--dark">
               <span>
-                <strong>Avoid stairs</strong>
-                <small>Use the lift between floors</small>
+                <strong>{t('Avoid stairs')}</strong>
+                <small>{t('Use the lift between floors')}</small>
               </span>
               <input type="checkbox" checked={stepFree} onChange={(e) => changeStepFree(e.target.checked)} />
               <i aria-hidden="true" />
             </label>
           )}
           <button type="button" className="btn-nav btn-nav--primary btn-nav--large" onClick={startCamera} disabled={starting}>
-            {starting ? 'Starting…' : 'Start camera navigation'}
+            {starting ? t('Starting…') : t('Start camera navigation')}
           </button>
           <button type="button" className="btn-nav btn-nav--ghost" onClick={startDemo}>
-            Try a simulated walk
+            {t('Try a simulated walk')}
           </button>
-          <p className="sheet__note">The camera and motion sensors are only used on this device. Nothing is uploaded.</p>
+          <p className="sheet__note">
+            {t('The camera and motion sensors are only used on this device. Nothing is uploaded.')} <Link to="/privacy">{t('Privacy')}</Link>
+          </p>
         </div>
       )}
     </div>

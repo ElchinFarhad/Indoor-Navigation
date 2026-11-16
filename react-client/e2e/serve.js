@@ -23,7 +23,19 @@ const TYPES = {
   '.txt': 'text/plain',
 };
 
-function createServer(root) {
+/**
+ * The security headers of the production web server (deploy/nginx.conf), so
+ * that the tests run under the same Content-Security-Policy as the real site.
+ */
+function productionHeaders() {
+  const conf = fs.readFileSync(path.resolve(__dirname, '../../deploy/nginx.conf'), 'utf8');
+  const headers = {};
+  for (const m of conf.matchAll(/^\s*add_header\s+([A-Za-z-]+)\s+"([^"]*)"\s+always;/gm)) headers[m[1]] = m[2];
+  return headers;
+}
+
+function createServer(root, extraHeaders) {
+  const extra = extraHeaders || {};
   return http.createServer((req, res) => {
     const urlPath = decodeURIComponent(req.url.split('?')[0]);
     let file = path.normalize(path.join(root, urlPath));
@@ -32,12 +44,12 @@ function createServer(root) {
       return;
     }
     if (!fs.existsSync(file) || fs.statSync(file).isDirectory()) file = path.join(root, 'index.html');
-    res.writeHead(200, { 'Content-Type': TYPES[path.extname(file)] || 'application/octet-stream' });
+    res.writeHead(200, Object.assign({ 'Content-Type': TYPES[path.extname(file)] || 'application/octet-stream' }, extra));
     fs.createReadStream(file).pipe(res);
   });
 }
 
-module.exports = { createServer };
+module.exports = { createServer, productionHeaders };
 
 if (require.main === module) {
   const port = parseInt(process.argv[2] || '5000', 10);

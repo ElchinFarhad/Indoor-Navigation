@@ -1,0 +1,16 @@
+{
+ "id": "engineering",
+ "order": 1,
+ "name": "Engineering Building",
+ "name_it": "Edificio di Ingegneria",
+ "retailer": {
+  "id": "demo",
+  "name": "Demo"
+ },
+ "store": {
+  "id": "engineering-building",
+  "name": "Engineering Building"
+ },
+ "type": "building",
+ "version": "2026-11-16"
+}

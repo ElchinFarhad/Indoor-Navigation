@@ -1,4 +1,6 @@
-import supermarket from '../../db/supermarket.json';
+import { venueGraph } from '../../test/venues';
+
+const supermarket = venueGraph('supermarket');
 import { Building, RawGraph } from '../building';
 import { findRoute, walkingDistance } from '../routing';
 import { checkoutNode, entranceNode, planTrip, ShoppingTrip } from '../shopping';

@@ -6,6 +6,7 @@
  * down). 0 points to the right of the map, +90 degrees points down, and a
  * positive change of direction is a turn to the right for somebody walking.
  */
+import { t } from '../i18n';
 
 export const DEG = Math.PI / 180;
 export const TWO_PI = Math.PI * 2;
@@ -94,7 +95,7 @@ export function mat3Apply(m: Mat3, v: Vec3): Vec3 {
 /** Human readable distance for the UI ("7 m", "120 m"). */
 export function formatDistance(meters: number): string {
   if (!isFinite(meters)) return '';
-  if (meters < 1) return 'now';
+  if (meters < 1) return t('now');
   if (meters < 20) return `${Math.round(meters)} m`;
   return `${Math.round(meters / 5) * 5} m`;
 }

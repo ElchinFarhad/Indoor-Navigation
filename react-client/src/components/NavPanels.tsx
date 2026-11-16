@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { t } from '../i18n';
 import { AudioGuide, AudioMode } from '../audio/guide';
 import { VoiceInfo } from '../audio/voice';
 import { Building } from '../nav/building';
@@ -18,7 +19,7 @@ export const Panel = ({ title, onClose, children }: SheetProps) => (
     <div className="panel" role="dialog" aria-label={title} onClick={(e) => e.stopPropagation()}>
       <div className="panel__head">
         <h3>{title}</h3>
-        <button type="button" className="panel__close" aria-label="Close" onClick={onClose}>
+        <button type="button" className="panel__close" aria-label={t('Close')} onClick={onClose}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
             <path d="M6 6l12 12M18 6L6 18" />
           </svg>
@@ -41,19 +42,19 @@ interface StepsProps {
 /** The remaining route as a list of steps. */
 export const StepsPanel = ({ building, snapshot, onStepFree, onClose }: StepsProps) => {
   const position = snapshot.position;
-  const start = snapshot.lastFix ? building.displayName(snapshot.lastFix.node) : 'your position';
+  const start = snapshot.lastFix ? building.displayName(snapshot.lastFix.node) : t('your position');
   return (
-    <Panel title="Directions" onClose={onClose}>
+    <Panel title={t('Directions')} onClose={onClose}>
       <p className="panel__lead">
-        {formatDistance(snapshot.remaining)} · about {Math.max(1, Math.round(snapshot.etaSeconds / 60))} min to {building.displayName(snapshot.destination)}
+        {t('{distance} · about {min} min to {place}', { distance: formatDistance(snapshot.remaining), min: Math.max(1, Math.round(snapshot.etaSeconds / 60)), place: building.displayName(snapshot.destination) })}
       </p>
       <ol className="route-steps">
         {position && (
           <li className="route-steps__here">
             <span className="route-steps__dot" />
             <div>
-              <strong>You are here</strong>
-              <span>Last marker: {start}</span>
+              <strong>{t('You are here')}</strong>
+              <span>{t('Last marker: {place}', { place: start })}</span>
             </div>
           </li>
         )}
@@ -66,15 +67,15 @@ export const StepsPanel = ({ building, snapshot, onStepFree, onClose }: StepsPro
               <strong>{m.text}</strong>
               {m.detail && <span>{m.detail}</span>}
             </div>
-            <em>{m.at < 1 ? 'now' : formatDistance(m.at)}</em>
+            <em>{m.at < 1 ? t('now') : formatDistance(m.at)}</em>
           </li>
         ))}
       </ol>
       {onStepFree && building.floors.length > 1 && (
         <label className="switch-row">
           <span>
-            <strong>Avoid stairs</strong>
-            <small>Use the lift between floors</small>
+            <strong>{t('Avoid stairs')}</strong>
+            <small>{t('Use the lift between floors')}</small>
           </span>
           <input type="checkbox" checked={snapshot.stepFree} onChange={(e) => onStepFree(e.target.checked)} />
           <i aria-hidden="true" />
@@ -93,10 +94,10 @@ interface AudioProps {
   onClose: () => void;
 }
 
-const MODES: Array<{ id: AudioMode; label: string; hint: string }> = [
-  { id: 'voice', label: 'Voice', hint: 'Spoken directions and sounds' },
-  { id: 'sounds', label: 'Sounds', hint: 'Sound cues only' },
-  { id: 'off', label: 'Off', hint: 'Silent' },
+const modes = (): Array<{ id: AudioMode; label: string; hint: string }> => [
+  { id: 'voice', label: t('Voice'), hint: t('Spoken directions and sounds') },
+  { id: 'sounds', label: t('Sounds'), hint: t('Sound cues only') },
+  { id: 'off', label: t('Off'), hint: t('Silent') },
 ];
 
 /** Voice and sound settings. */
@@ -122,10 +123,11 @@ export const AudioPanel = ({ guide, mode, onMode, onClose }: AudioProps) => {
   }, [guide]);
 
   const best = voices.length > 0 ? voices[0].uri : '';
+  const MODES = modes();
 
   return (
-    <Panel title="Sound" onClose={onClose}>
-      <div className="segmented" role="radiogroup" aria-label="Guidance sound">
+    <Panel title={t('Sound')} onClose={onClose}>
+      <div className="segmented" role="radiogroup" aria-label={t('Guidance sound')}>
         {MODES.map((m) => (
           <button key={m.id} type="button" role="radio" aria-checked={mode === m.id} className={mode === m.id ? 'is-active' : ''} onClick={() => onMode(m.id)}>
             {m.label}
@@ -137,7 +139,7 @@ export const AudioPanel = ({ guide, mode, onMode, onClose }: AudioProps) => {
       {mode === 'voice' && guide.voice.supported && (
         <>
           <label className="field">
-            <span>Voice</span>
+            <span>{t('Voice')}</span>
             <select
               value={selected}
               onChange={(e) => {
@@ -145,25 +147,24 @@ export const AudioPanel = ({ guide, mode, onMode, onClose }: AudioProps) => {
                 setSelected(e.target.value);
               }}
             >
-              {voices.length === 0 && <option value="">Default voice</option>}
+              {voices.length === 0 && <option value="">{t('Default voice')}</option>}
               {voices.slice(0, 30).map((v) => (
                 <option key={v.uri} value={v.uri}>
                   {v.name}
-                  {v.uri === best ? ' (recommended)' : ''}
+                  {v.uri === best ? ` ${t('(recommended)')}` : ''}
                 </option>
               ))}
             </select>
           </label>
-          <button type="button" className="btn-nav btn-nav--soft" onClick={() => guide.preview('In about ten metres, turn left, at the lobby.')}>
-            Play a sample
+          <button type="button" className="btn-nav btn-nav--soft" onClick={() => guide.preview(t('In about ten metres, turn left, at the lobby.'))}>
+            {t('Play a sample')}
           </button>
           <p className="panel__note">
-            Voices come from your device. The most natural one found is chosen automatically; if it still sounds
-            flat, install an enhanced voice in the system's speech settings and pick it here.
+            {t("Voices come from your device. The most natural one found is chosen automatically; if it still sounds flat, install an enhanced voice in the system's speech settings and pick it here.")}
           </p>
         </>
       )}
-      {mode === 'voice' && !guide.voice.supported && <p className="panel__note">This browser cannot speak; sound cues are still played.</p>}
+      {mode === 'voice' && !guide.voice.supported && <p className="panel__note">{t('This browser cannot speak; sound cues are still played.')}</p>}
     </Panel>
   );
 };
@@ -179,19 +180,16 @@ interface FixProps {
 
 /** "Where am I?" recovery: scan any marker again, or point at the map. */
 export const FixPanel = ({ canScan, onScan, onPick, onClose }: FixProps) => (
-  <Panel title="Fix my position" onClose={onClose}>
-    <p className="panel__lead">
-      One scan is normally enough for the whole trip. If the blue dot has drifted, either of these puts it right
-      again and the route adapts.
-    </p>
+  <Panel title={t('Fix my position')} onClose={onClose}>
+    <p className="panel__lead">{t('One scan is normally enough for the whole trip. If the blue dot has drifted, either of these puts it right again and the route adapts.')}</p>
     {canScan && (
       <button type="button" className="option" onClick={onScan}>
         <span className="option__icon">
           <ManeuverIcon type="scan" size={24} />
         </span>
         <span>
-          <strong>Scan a marker</strong>
-          <small>Point the camera at any QR marker nearby</small>
+          <strong>{t('Scan a marker')}</strong>
+          <small>{t('Point the camera at any QR marker nearby')}</small>
         </span>
       </button>
     )}
@@ -200,8 +198,8 @@ export const FixPanel = ({ canScan, onScan, onPick, onClose }: FixProps) => (
         <ManeuverIcon type="arrive" size={24} />
       </span>
       <span>
-        <strong>Choose on the map</strong>
-        <small>Tap the marker you are standing at</small>
+        <strong>{t('Choose on the map')}</strong>
+        <small>{t('Tap the marker you are standing at')}</small>
       </span>
     </button>
   </Panel>

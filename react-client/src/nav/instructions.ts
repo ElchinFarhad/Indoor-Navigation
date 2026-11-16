@@ -1,6 +1,7 @@
 /**
  * Turns a route (a polyline through the graph) into turn-by-turn guidance.
  */
+import { t } from '../i18n';
 import { Building, NavNode } from './building';
 import { angleDiff, DEG, formatDistance } from './geometry';
 import { Route } from './routing';
@@ -56,26 +57,34 @@ export function classifyTurn(angle: number): ManeuverType {
 
 /** "at Stairs A", "at the lobby", "at marker B": where a maneuver happens, in words. */
 export function landmark(building: Building, node: NavNode): string {
-  if (!node.label) return `at marker ${node.name}`;
-  if (node.type === 'node') return `at the ${node.label.toLowerCase()}`;
-  if (node.type === 'elevator') return 'at the lift';
-  if (node.type === 'stairs') return `at ${node.label}`;
-  return `by ${building.displayName(node)}`;
+  if (!node.label) return t('at marker {name}', { name: node.name });
+  if (node.type === 'node') return t('at the {place}', { place: node.label.toLowerCase() });
+  if (node.type === 'elevator') return t('at the lift');
+  if (node.type === 'stairs') return t('at {place}', { place: node.label });
+  return t('by {place}', { place: building.displayName(node) });
 }
 
-const TURN_TEXT: { [k: string]: string } = {
-  straight: 'Continue straight',
-  'slight-left': 'Keep left',
-  left: 'Turn left',
-  'sharp-left': 'Turn sharp left',
-  'slight-right': 'Keep right',
-  right: 'Turn right',
-  'sharp-right': 'Turn sharp right',
-  uturn: 'Turn around',
-};
-
 export function turnText(type: ManeuverType): string {
-  return TURN_TEXT[type] || '';
+  switch (type) {
+    case 'straight':
+      return t('Continue straight');
+    case 'slight-left':
+      return t('Keep left');
+    case 'left':
+      return t('Turn left');
+    case 'sharp-left':
+      return t('Turn sharp left');
+    case 'slight-right':
+      return t('Keep right');
+    case 'right':
+      return t('Turn right');
+    case 'sharp-right':
+      return t('Turn sharp right');
+    case 'uturn':
+      return t('Turn around');
+    default:
+      return '';
+  }
 }
 
 /**
@@ -95,14 +104,14 @@ export function buildManeuvers(building: Building, route: Route, incomingDir?: n
     if (leg.kind !== 'walk') {
       const up = leg.to.floor > leg.from.floor;
       const floor = building.floor(leg.to.floor);
-      const via = node && node.label && leg.kind === 'stairs' ? ` via ${node.label}` : '';
+      const via = node && node.label && leg.kind === 'stairs' ? t(' via {place}', { place: node.label }) : '';
       const type = (`${leg.kind === 'elevator' ? 'elevator' : 'stairs'}-${up ? 'up' : 'down'}`) as ManeuverType;
       out.push({
         type,
         at: leg.startsAt,
         pointIndex: i,
-        text: leg.kind === 'elevator' ? `Take the lift ${up ? 'up' : 'down'}` : `Take the stairs ${up ? 'up' : 'down'}`,
-        detail: `to ${floor ? floor.name : `floor ${leg.to.floor}`}${via}`,
+        text: leg.kind === 'elevator' ? (up ? t('Take the lift up') : t('Take the lift down')) : up ? t('Take the stairs up') : t('Take the stairs down'),
+        detail: t('to {floor}', { floor: floor ? floor.name : t('floor {n}', { n: leg.to.floor }) }) + via,
         nodeId: node ? node.id : null,
         toFloor: leg.to.floor,
       });
@@ -110,9 +119,7 @@ export function buildManeuvers(building: Building, route: Route, incomingDir?: n
     }
 
     // Direction change at the start of this leg.
-    let previousDir: number | null | undefined = null;
-    if (i > 0) previousDir = legs[i - 1].kind === 'walk' ? legs[i - 1].dir : null;
-    else previousDir = incomingDir;
+    const previousDir: number | null | undefined = i > 0 ? (legs[i - 1].kind === 'walk' ? legs[i - 1].dir : null) : incomingDir;
     if (previousDir === null || previousDir === undefined) continue;
 
     const angle = angleDiff(leg.dir, previousDir);
@@ -134,7 +141,7 @@ export function buildManeuvers(building: Building, route: Route, incomingDir?: n
     type: 'arrive',
     at: route.length,
     pointIndex: route.points.length - 1,
-    text: dest ? `Arrive at ${building.displayName(dest)}` : 'Arrive at your destination',
+    text: dest ? t('Arrive at {place}', { place: building.displayName(dest) }) : t('Arrive at your destination'),
     nodeId: route.destId,
   });
   return out;
@@ -165,9 +172,9 @@ export function guidanceAt(maneuvers: Maneuver[], s: number): Guidance | null {
   if (dist < 1.5) {
     headline = maneuver.text;
   } else if (maneuver.type === 'arrive') {
-    headline = `Continue ${formatDistance(dist)}`;
+    headline = t('Continue {distance}', { distance: formatDistance(dist) });
   } else {
-    headline = `In ${formatDistance(dist)}, ${lowerFirst(maneuver.text)}`;
+    headline = t('In {distance}, {action}', { distance: formatDistance(dist), action: lowerFirst(maneuver.text) });
   }
   return { maneuver, distance: dist, headline, then };
 }

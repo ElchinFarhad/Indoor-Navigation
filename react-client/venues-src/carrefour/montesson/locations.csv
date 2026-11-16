@@ -1,0 +1,72 @@
+code,section,kind,name,name_it
+D01-01,multimedia,household,"TV, audio & phones","TV, audio e telefonia"
+D01-02,appliances,household,Home appliances,Elettrodomestici
+D02-01,kitchen,household,Kitchen & tableware,Cucina e tavola
+D02-02,home,household,Home & decoration,Casa e arredo
+D03-01,clothing,care,Clothing,Abbigliamento
+D03-02,shoes,care,Shoes & accessories,Scarpe e accessori
+D04-01,toys,care,Toys & games,Giocattoli
+D04-02,books,care,Books & stationery,Libri e cartoleria
+D05-01,beauty,care,Health & beauty,Salute e bellezza
+D05-02,cleaning,household,Cleaning & laundry,Pulizia e bucato
+A01-01,fruits,produce,Fruit,Frutta
+A01-02,juices,drinks,Fruit juices,Succhi di frutta
+A01-03,vegetables,produce,Vegetables,Verdura
+A01-04,nuts,snacks,Nuts & dried fruit,Frutta secca
+A02-01,breads,bakery,Bread,Pane
+A02-02,biscuits,snacks,Biscuits,Biscotti
+A02-03,viennoiseries,bakery,Pastries & brioches,Brioche e cornetti
+A02-04,cakes,snacks,Cakes,Torte e merendine
+A03-01,cereals,pantry,Breakfast cereals,Cereali per la colazione
+A03-02,honeys,pantry,Honey,Miele
+A03-03,jams,pantry,Jams,Marmellate
+A03-04,spreads,pantry,Chocolate spreads,Creme spalmabili
+A04-01,coffees,pantry,Coffee,Caffè
+A04-02,chocolates,snacks,Chocolate,Cioccolato
+A04-03,teas,pantry,Tea & infusions,Tè e tisane
+A04-04,candies,snacks,Sweets,Caramelle
+A05-01,pastas,pantry,Pasta,Pasta
+A05-02,canned-vegetables,pantry,Canned vegetables,Verdure in scatola
+A05-03,rices,pantry,Rice,Riso
+A05-04,canned-fish,pantry,Canned fish,Pesce in scatola
+A06-01,oils,pantry,Oils,Oli
+A06-02,soups,pantry,Soups,Zuppe
+A06-03,sauces,pantry,Sauces,Salse
+A06-04,condiments,pantry,Mustard & condiments,Senape e condimenti
+A07-01,flours,pantry,Flour & baking,Farine
+A07-02,crisps,snacks,Crisps,Patatine
+A07-03,sugars,pantry,Sugar,Zucchero
+A07-04,aperitif,snacks,Aperitif snacks,Snack per aperitivo
+A08-01,waters,drinks,Water,Acqua
+A08-02,beers,drinks,Beer,Birra
+A08-03,sodas,drinks,Soft drinks,Bibite
+A08-04,wines,drinks,Wine,Vino
+A09-01,milks,dairy,Milk,Latte
+A09-02,butters,dairy,Butter,Burro
+A09-03,yogurts,dairy,Yoghurt,Yogurt
+A09-04,creams,dairy,Cream,Panna
+A10-01,cheeses,dairy,Cheese,Formaggi
+A10-02,desserts,dairy,Dairy desserts,Dessert
+A10-03,eggs,dairy,Eggs,Uova
+A10-04,plant-milks,dairy,Plant-based drinks,Bevande vegetali
+A11-01,hams,meat,Ham,Prosciutto
+A11-02,poultry,meat,Poultry,Pollame
+A11-03,sausages,meat,Sausages,Salumi e salsicce
+A11-04,seafood,fish,Smoked fish & seafood,Pesce affumicato e frutti di mare
+A12-01,frozen-pizzas,frozen,Pizzas,Pizze
+A12-02,ice-creams,frozen,Ice cream,Gelati
+A12-03,frozen-vegetables,frozen,Frozen vegetables,Verdure surgelate
+A12-04,frozen-meals,frozen,Frozen meals,Piatti surgelati
+A13-01,baby,care,Baby food,Alimenti per l’infanzia
+A13-02,syrups,drinks,Syrups,Sciroppi
+A13-03,compotes,pantry,Compotes,Composte di frutta
+A13-04,sandwiches,bakery,Sandwiches,Tramezzini e panini
+A14-01,meals,pantry,Ready meals,Piatti pronti
+A14-02,dips,pantry,Dips & spreads,Salse e creme salate
+A14-03,quiches,bakery,Quiches & savoury pies,Torte salate
+A14-04,vegetarian,produce,Vegetarian,Vegetariano
+B-01,bakery-counter,bakery,Bakery counter,Banco panetteria
+B-02,butcher,meat,Butcher,Macelleria
+B-03,fishmonger,fish,Fishmonger,Pescheria
+B-04,cheese-counter,dairy,Cheese counter,Banco formaggi
+B-05,deli,meat,Deli counter,Gastronomia

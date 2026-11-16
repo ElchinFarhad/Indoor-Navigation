@@ -19,13 +19,13 @@ const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
 const { chromium, devices } = require('playwright');
-const { createServer } = require('./serve');
+const { createServer, productionHeaders } = require('./serve.js');
 
 const PORT = 5173;
 const BASE = `http://localhost:${PORT}`;
 const SHOTS = process.argv[2] ? path.resolve(process.argv[2]) : null;
 const MARKERS = path.resolve(__dirname, '../../QRCodeImages');
-const GRAPH = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../src/db/graph.json'), 'utf8'));
+const GRAPH = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../venues-src/demo/engineering-building/map.json'), 'utf8'));
 
 /** Node of the building by its label (and floor). */
 function node(label, floor = 0) {
@@ -114,7 +114,7 @@ function installFakes() {
       if (u.volume === 0) return;
       if (this.active) window.__speech.overlaps++;
       this.active = u;
-      window.__speech.said.push({ text: u.text, voice: u.voice ? u.voice.name : null });
+      window.__speech.said.push({ text: u.text, voice: u.voice ? u.voice.name : null, lang: u.lang });
       u.timer = setTimeout(() => {
         if (this.active === u) this.active = null;
         if (u.onend) u.onend();
@@ -303,7 +303,8 @@ const near = (actual, expected, tolerance, what) =>
   assert.ok(Math.abs(actual - expected) <= tolerance, `${what}: expected ~${expected}, got ${actual}`);
 
 async function run() {
-  const server = createServer(path.resolve(__dirname, '../build')).listen(PORT);
+  // Served with the production security headers: a blocked script or request fails the run.
+  const server = createServer(path.resolve(__dirname, '../build'), productionHeaders()).listen(PORT);
   const browser = await chromium.launch({
     args: ['--use-gl=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist', '--autoplay-policy=no-user-gesture-required'],
   });
@@ -311,7 +312,7 @@ async function run() {
   let shotIndex = 0;
 
   const open = async (url, options = {}) => {
-    const context = await browser.newContext({ ...devices['iPhone 13'] });
+    const context = await browser.newContext({ ...devices['iPhone 13'], ...(options.locale ? { locale: options.locale } : {}) });
     const page = await context.newPage();
     page.on('pageerror', (e) => errors.push(e.message));
     page.on('console', (m) => {
@@ -733,8 +734,10 @@ async function run() {
     /* ------------------------------------------------------------------ */
     console.log('8. Real data: Carrefour Montesson (OpenStreetMap outline, Open Food Facts products)');
     {
-      const venue = require('../src/db/carrefour-montesson.json');
-      const first = (section) => venue.products.find((p) => p.section === section);
+      // The catalogue as published: a product is at a location code, a code holds a section.
+      const venue = require('../scripts/venues.js').compileAll().find((v) => v.entry.id === 'carrefour').catalog;
+      const codeOf = (section) => venue.locations.find((l) => l.section === section).code;
+      const first = (section) => venue.products.find((p) => p.location === codeOf(section));
       // Three real products from aisles near the main entrance, so the simulated walk stays short.
       const picks = [first('meals'), first('ice-creams'), first('frozen-pizzas')];
       assert.ok(picks.every(Boolean), 'the catalogue has products in the sections used here');
@@ -790,6 +793,48 @@ async function run() {
       const summary = await page.textContent('.sheet--arrival');
       assert.ok(summary.indexOf('3 items in your basket') >= 0, summary);
       await shot(page, 'carrefour-checkout');
+      await page.context().close();
+    }
+
+    /* ------------------------------------------------------------------ */
+    console.log('9. Italian: a phone set to Italian gets the interface, the venue and the voice in Italian');
+    {
+      const page = await open('/?venue=supermarket', { locale: 'it-IT' });
+      await page.waitForSelector('.shopping');
+      assert.strictEqual(await page.evaluate(() => document.documentElement.lang), 'it');
+      assert.strictEqual(await page.textContent('.hero h1'), 'Cosa ti serve oggi?');
+      step('Italian product and section names from the venue data');
+      for (const name of ['Latte', 'Pane']) await page.click(`[aria-label="Aggiungi ${name}"]`);
+      const go = await page.textContent('.cta-bar');
+      assert.ok(go.indexOf('2 prodotti2 tappe') === 0 && go.indexOf('Inizia la spesa') > 0, go);
+      await shot(page, 'it-home');
+      await page.click('.shopping__go');
+      await page.waitForSelector('.sheet--intro');
+      assert.strictEqual(await page.textContent('.sheet--intro h2'), '2 prodotti · 3 tappe');
+      step('spoken guidance is Italian and asks for an Italian voice');
+      await page.click('text=Prova un percorso simulato');
+      await page.waitForSelector('.ar-view__canvas');
+      await waitForBanner(page, /^(Tra \d+ m, |Prosegui|Gira|Tieni)/);
+      await quiet(page);
+      const s = await state(page);
+      assert.ok(s.spoken.some((x) => /^Inizio la navigazione verso (Panetteria|Latte e yogurt)\./.test(x)), JSON.stringify(s.spoken));
+      const langs = await page.evaluate(() => window.__speech.said.map((u) => u.lang));
+      assert.ok(langs.length > 0 && langs.every((l) => /^it/.test(l)), JSON.stringify(langs));
+      await shot(page, 'it-navigation');
+      step('the privacy notice, and deleting what the app stored on the phone');
+      await page.goto(BASE + '/privacy');
+      await page.waitForSelector('h1');
+      assert.strictEqual(await page.textContent('h1'), 'Privacy');
+      assert.ok(/Impostazioni salvate: \d+\./.test(await page.textContent('[role="status"]')));
+      await page.click('text=Elimina i dati salvati su questo telefono');
+      await page.waitForFunction(() => /non è salvato nulla/.test(document.querySelector('[role="status"]').textContent));
+      assert.strictEqual(await page.evaluate(() => Object.keys(localStorage).filter((k) => k.indexOf('indoor-nav.') === 0).length), 0);
+      await shot(page, 'it-privacy');
+      step('switching to English from the menu');
+      await page.click('.app-navbar__lang');
+      await page.waitForFunction(() => document.documentElement.lang === 'en');
+      assert.strictEqual(await page.textContent('h1'), 'Privacy');
+      assert.ok(/Nothing is stored|setting\(s\) stored/.test(await page.textContent('[role="status"]')));
       await page.context().close();
     }
 

@@ -8,6 +8,7 @@
  * said once. Playing the cues (voice, sound, queueing) is the job of
  * audio/guide.ts; this module has no audio code and is plain logic.
  */
+import { t } from '../i18n';
 import { Building, NavNode } from './building';
 import { Guidance, Maneuver, ManeuverType } from './instructions';
 import { NavEvent, NavSnapshot } from './navigator';
@@ -39,24 +40,37 @@ export function spokenDistance(meters: number): string {
   if (meters < 8) n = Math.max(2, Math.round(meters));
   else if (meters < 30) n = Math.round(meters / 5) * 5;
   else n = Math.round(meters / 10) * 10;
-  return `about ${n} metres`;
+  return t('about {n} metres', { n });
 }
 
 /** Room codes are read as people say them: "0.21" becomes "0 21" (zero twenty-one). */
 export function spokenName(text: string): string {
-  return text.replace(/(\d)\.(\d\d)\b/g, '$1 $2').replace(/\bWC\b/g, 'restrooms');
+  return text.replace(/(\d)\.(\d\d)\b/g, '$1 $2').replace(/\bWC\b/g, t('restrooms'));
 }
 
-const ACTION: { [k: string]: string } = {
-  'slight-left': 'keep left',
-  left: 'turn left',
-  'sharp-left': 'take a sharp left',
-  'slight-right': 'keep right',
-  right: 'turn right',
-  'sharp-right': 'take a sharp right',
-  uturn: 'turn around',
-  straight: 'continue straight',
-};
+/** A turn as a phrase without capital or full stop. */
+function turnPhrase(type: ManeuverType): string {
+  switch (type) {
+    case 'slight-left':
+      return t('keep left');
+    case 'left':
+      return t('turn left');
+    case 'sharp-left':
+      return t('take a sharp left');
+    case 'slight-right':
+      return t('keep right');
+    case 'right':
+      return t('turn right');
+    case 'sharp-right':
+      return t('take a sharp right');
+    case 'uturn':
+      return t('turn around');
+    case 'straight':
+      return t('continue straight');
+    default:
+      return t('continue');
+  }
+}
 
 function capital(s: string): string {
   return s.charAt(0).toUpperCase() + s.slice(1);
@@ -83,11 +97,11 @@ export class Announcer {
   private action(m: Maneuver): string {
     if (m.type.indexOf('stairs') === 0 || m.type.indexOf('elevator') === 0) {
       const floor = m.toFloor !== undefined ? this.building.floor(m.toFloor) : undefined;
-      const way = m.type.indexOf('stairs') === 0 ? 'take the stairs' : 'take the lift';
-      const direction = m.type.slice(-2) === 'up' ? 'up' : 'down';
-      return `${way} ${direction}${floor ? ` to ${floor.spoken}` : ''}`;
+      const up = m.type.slice(-2) === 'up';
+      const way = m.type.indexOf('stairs') === 0 ? (up ? t('take the stairs up') : t('take the stairs down')) : up ? t('take the lift up') : t('take the lift down');
+      return `${way}${floor ? t(' to {floor}', { floor: floor.spoken }) : ''}`;
     }
-    return ACTION[m.type] || 'continue';
+    return turnPhrase(m.type);
   }
 
   /** ", at the lobby" - where the maneuver happens, if that is worth saying. */
@@ -103,9 +117,9 @@ export class Announcer {
   }
 
   private sidePhrase(snapshot: NavSnapshot): string {
-    if (snapshot.destinationSide === 'left') return ', on your left';
-    if (snapshot.destinationSide === 'right') return ', on your right';
-    if (snapshot.destinationSide === 'ahead') return ', straight ahead';
+    if (snapshot.destinationSide === 'left') return t(', on your left');
+    if (snapshot.destinationSide === 'right') return t(', on your right');
+    if (snapshot.destinationSide === 'ahead') return t(', straight ahead');
     return '';
   }
 
@@ -117,11 +131,16 @@ export class Announcer {
   private instruction(g: Guidance, snapshot: NavSnapshot): string {
     const m = g.maneuver;
     if (m.type === 'arrive') {
-      if (g.distance < 3) return `It's right here${this.sidePhrase(snapshot)}.`;
-      return `It's ${spokenDistance(g.distance)} ahead${this.sidePhrase(snapshot)}.`;
+      if (g.distance < 3) return t("It's right here{side}.", { side: this.sidePhrase(snapshot) });
+      return t("It's {distance} ahead{side}.", { distance: spokenDistance(g.distance), side: this.sidePhrase(snapshot) });
     }
     if (g.distance <= NOW_AT) return `${capital(this.action(m))}${this.where(m)}.`;
-    return `In ${spokenDistance(g.distance)}, ${this.action(m)}${this.where(m)}.`;
+    return this.ahead(g);
+  }
+
+  /** "In about 10 metres, turn left, at the lobby." */
+  private ahead(g: Guidance): string {
+    return t('In {distance}, {action}{where}.', { distance: spokenDistance(g.distance), action: this.action(g.maneuver), where: this.where(g.maneuver) });
   }
 
   /** Remembers that the current guidance has just been spoken as part of another sentence. */
@@ -151,7 +170,7 @@ export class Announcer {
                 key: 'start',
                 sound: 'start',
                 priority: 2,
-                text: `Starting navigation to ${this.destinationName(snapshot)}. ${this.instruction(g, snapshot)}`,
+                text: t('Starting navigation to {place}. {next}', { place: this.destinationName(snapshot), next: this.instruction(g, snapshot) }),
               });
               this.markSpoken(g);
             }
@@ -161,7 +180,7 @@ export class Announcer {
               key: `relocated:${event.node.id}:${snapshot.rerouteCount}`,
               sound: 'reroute',
               priority: 2,
-              text: `I've updated your position and the route. ${this.instruction(g, snapshot)}`,
+              text: t("I've updated your position and the route. {next}", { next: this.instruction(g, snapshot) }),
             });
             this.markSpoken(g);
           } else {
@@ -176,7 +195,7 @@ export class Announcer {
               key: `reroute:${snapshot.rerouteCount}`,
               sound: 'reroute',
               priority: 2,
-              text: `Route updated. ${this.instruction(g, snapshot)}`,
+              text: t('Route updated. {next}', { next: this.instruction(g, snapshot) }),
             });
             this.markSpoken(g);
           }
@@ -186,7 +205,7 @@ export class Announcer {
             key: `wrong-way:${snapshot.rerouteCount}:${Math.round(snapshot.remaining)}`,
             sound: 'warning',
             priority: 3,
-            text: "You're heading the wrong way. Please turn around.",
+            text: t("You're heading the wrong way. Please turn around."),
           });
           break;
         case 'floor': {
@@ -196,7 +215,7 @@ export class Announcer {
             key: `floor:${event.floor}:${snapshot.rerouteCount}`,
             sound: 'floor',
             priority: 2,
-            text: `You're on ${floor ? floor.spoken : `floor ${event.floor}`}.${g && snapshot.status === 'navigating' ? ` ${this.instruction(g, snapshot)}` : ''}`,
+            text: `${t("You're on {floor}.", { floor: floor ? floor.spoken : t('floor {n}', { n: event.floor }) })}${g && snapshot.status === 'navigating' ? ` ${this.instruction(g, snapshot)}` : ''}`,
           });
           if (g) this.markSpoken(g);
           break;
@@ -206,7 +225,7 @@ export class Announcer {
             key: `arrived:${snapshot.destination.id}`,
             sound: 'arrive',
             priority: 3,
-            text: `You've arrived at ${this.destinationName(snapshot)}${this.sidePhrase(snapshot)}.`,
+            text: t("You've arrived at {place}{side}.", { place: this.destinationName(snapshot), side: this.sidePhrase(snapshot) }),
           });
           break;
         default:
@@ -234,10 +253,10 @@ export class Announcer {
           key: `${k}/preview`,
           priority: 1,
           ttl: 5000,
-          text: `Your destination is ${spokenDistance(g.distance)} ahead${this.sidePhrase(snapshot)}.`,
+          text: t('Your destination is {distance} ahead{side}.', { distance: spokenDistance(g.distance), side: this.sidePhrase(snapshot) }),
         });
       } else if (changed && g.distance >= REASSURE_FROM && once('continue')) {
-        cues.push({ key: `${k}/continue`, priority: 1, ttl: 5000, text: `Continue straight for ${spokenDistance(g.distance)}.` });
+        cues.push({ key: `${k}/continue`, priority: 1, ttl: 5000, text: t('Continue straight for {distance}.', { distance: spokenDistance(g.distance) }) });
       }
     } else if (g.distance <= NOW_AT) {
       if (once('now')) {
@@ -257,11 +276,11 @@ export class Announcer {
           key: `${k}/preview`,
           priority: 1,
           ttl: 5000,
-          text: `In ${spokenDistance(g.distance)}, ${this.action(m)}${this.where(m)}.`,
+          text: this.ahead(g),
         });
       }
     } else if (changed && g.distance >= REASSURE_FROM && once('continue')) {
-      cues.push({ key: `${k}/continue`, priority: 1, ttl: 5000, text: `Continue straight for ${spokenDistance(g.distance)}.` });
+      cues.push({ key: `${k}/continue`, priority: 1, ttl: 5000, text: t('Continue straight for {distance}.', { distance: spokenDistance(g.distance) }) });
     }
 
     // The estimate has become vague: mention it once, gently.
@@ -270,7 +289,7 @@ export class Announcer {
         key: `uncertain:${snapshot.lastFix ? snapshot.lastFix.node.id : 'x'}`,
         priority: 0,
         ttl: 6000,
-        text: "I'm a little less sure where you are. If you pass a marker, point the camera at it.",
+        text: t("I'm a little less sure where you are. If you pass a marker, point the camera at it."),
       });
     }
     this.wasUncertain = snapshot.needsRecalibration;

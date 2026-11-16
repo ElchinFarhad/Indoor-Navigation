@@ -11,8 +11,8 @@ import { Building, RawGraph } from '../nav/building';
 import { shortestPath } from '../nav/routing';
 
 /**
- * The building the app is showing: the one described by `graph.json`, or
- * another venue of `venues.ts` if the user chose one. Shared by the whole app.
+ * The building the app is showing: the venue that was loaded at start-up
+ * (see venues.ts). Shared by the whole app.
  */
 export const building = new Building(currentVenue().graph as RawGraph);
 

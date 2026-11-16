@@ -78,7 +78,7 @@ tracked between markers, so the app says so and falls back to scanning the marke
 
 ## Run it
 
-You need `node` and `npm`. The compiled WebAssembly module is committed (`react-client/public/wasm`), so
+You need Node 22 and `npm`. The client is built with Vite, React 18 and TypeScript. The compiled WebAssembly module is committed (`react-client/public/wasm`), so
 Rust is only needed to change the Rust code.
 
 ```bash
@@ -87,13 +87,16 @@ npm install
 npm start
 ```
 
-Then open `http://localhost:3000`.
+Then open `http://localhost:3000`. The interface follows the phone's language (English or Italian);
+`EN` / `IT` in the top bar switches it, as does `?lang=it` in the address.
 
-Production build:
+Production build (static files in `react-client/build`):
 
 ```bash
 npm run build
 ```
+
+Hosting it on your own domain, in the EU, with security headers: [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
 ### Rust code
 
@@ -124,8 +127,7 @@ Browsers only give a page the camera and the motion sensors on a **secure origin
 a LAN address over plain `http` does not. Two easy options:
 
 - a tunnel (the thesis used ngrok): `ngrok http 3000`, open the `https://…` address on the phone;
-- the dev server's own HTTPS: `HTTPS=true npm start`, open `https://<computer-ip>:3000` and accept the
-  self-signed certificate.
+- serve the production build from any https host (see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)).
 
 On iPhone the first tap on *Start camera navigation* asks for motion-sensor access as well as the camera.
 
@@ -152,8 +154,9 @@ site is not served from the root), upload `react-client/build`, and make unknown
 
 ## The building
 
-Everything about the building lives in `react-client/src/db/graph.json`, the JSON "database" of the
-thesis, extended. It holds two things:
+Everything about the building lives in `react-client/venues-src/demo/engineering-building/map.json`,
+the JSON "database" of the thesis, extended. Venues are data that the app loads at start-up, organised
+as retailer / store / version: see [docs/VENUE-DATA.md](docs/VENUE-DATA.md). The map holds two things:
 
 - the **graph**: nodes (QR markers at doors and junctions) with weighted links between them, as before;
 - the **floor plan** as vector data: per floor, the rooms (rectangles with a kind, a name and door
@@ -204,7 +207,7 @@ its dimensions and layout, but it is not a survey of an existing building. It is
 **Using a real building.** Trace its plan into the same structure (rooms as rectangles in a coordinate
 system of your choice, `metersPerUnit` giving the scale), put a node in the corridor in front of each
 door and at each junction, and link neighbouring nodes along the corridor centre lines. Either edit
-`graph.json` directly or adapt the tables in the generator script. A scanned plan can be shown under the
+`map.json` directly or adapt the tables in the generator script. A scanned plan can be shown under the
 vector layer while tracing: set `"map": "file.png"` on the floor and register the image in
 `src/assets/maps.ts`. Then print the markers:
 
@@ -233,6 +236,11 @@ trip-planning logic and what a real store would still need are in
 [docs/SUPERMARKET.md](docs/SUPERMARKET.md).
 
 ### Real data: Carrefour Montesson
+
+In a store the map and the assortment are separate files: every shelf bay has a permanent location
+code (`A03-02`), and two CSV files say which category and which products stand at each code. Moving a
+product is one changed line; the map is untouched. Format, validation and publishing:
+[docs/VENUE-DATA.md](docs/VENUE-DATA.md).
 
 A third venue tests the system on data that was not designed for it: the real outline, entrances and
 surroundings of the Carrefour hypermarket in Montesson (from OpenStreetMap's indoor mapping) and some
@@ -274,7 +282,8 @@ switches between voice + sounds, sounds only and silent; the choice is remembere
 
 ```bash
 cd react-client
-npm test              # unit + component tests
+npm test              # unit + component tests (Vitest)
+npm run lint          # ESLint
 npm run build && npm run test:e2e    # end-to-end in a mobile-emulated Chromium
 ```
 
@@ -293,8 +302,13 @@ wasm/                      Rust crate compiled to WebAssembly
 react-client/
   public/qr-worker.js      Web Worker that runs the WebAssembly scanner
   public/wasm/             built WebAssembly module (committed)
-  src/db/graph.json        the building: graph + vector floor plan
+  venues-src/              venue data: <retailer>/<store>/ with store.json, map.json and, for
+                           stores, locations.csv and products.csv (docs/VENUE-DATA.md)
+  scripts/venues.js        validates and compiles the venues into public/venues/
+  src/db/venues.ts         loads the chosen venue at start-up; assemble.ts joins map and catalogue
   src/db/dijkstra.ts       shortestPathF (original API) on top of the new router
+  src/i18n/                interface languages (English, Italian)
+deploy/                    container image and nginx configuration for self-hosting
   src/nav/                 pure logic: building model, routing, instructions, orientation maths,
                            QR pose interpretation, step detector, tracker, navigation session,
                            announcer (what to say and when), simulator
@@ -311,8 +325,8 @@ docs/ARCHITECTURE.md
 
 ## What has and has not been verified
 
-Verified here, automatically: the Rust unit tests (9), the unit/component tests (84) and seven
-end-to-end scenarios in a mobile-emulated Chromium:
+Verified here, automatically: the Rust unit tests (9), the unit/component tests (120) and ten
+end-to-end scenarios in a mobile-emulated Chromium, served with the production security headers:
 
 1. choosing a destination on the floor plan;
 2. **one scan at the entrance, then only walking** through two turns to a classroom, with the spoken
@@ -322,7 +336,10 @@ end-to-end scenarios in a mobile-emulated Chromium:
 4. no motion sensors (scan each marker);
 5. camera refused;
 6. a step-free trip to the first floor by lift in the 3D walk-through;
-7. the WebXR mode against a scripted XR device.
+7. the WebXR mode against a scripted XR device;
+8. a supermarket shopping trip, with items added and skipped on the way;
+9. the real-data venue (Carrefour Montesson);
+10. Italian: interface, venue names, voice language, the privacy page and the language switch.
 
 **Not** verified, because no phone, building or loudspeaker was available during this work:
 
@@ -339,5 +356,7 @@ end-to-end scenarios in a mobile-emulated Chromium:
   `immersive-ar` support (Chrome on ARCore phones) and has only been exercised with a simulated XR device.
   Markers cannot be scanned while it runs, because the XR session owns the camera.
 
-Development note: the ejected create-react-app toolchain in this repository lints with an old TypeScript
-parser that cannot read tuple types (`[number, number]`); use `number[]` in `src/`.
+- **The Italian texts.** They were written without review by a native speaker; have one read
+  `src/i18n/it.ts` and the Italian names in the venue data before showing it to a customer.
+- **The container image.** `deploy/Dockerfile` and `deploy/nginx.conf` were written but not built or run
+  here; only the security headers are exercised, by the end-to-end tests.

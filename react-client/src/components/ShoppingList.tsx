@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { building } from '../db/dijkstra';
 import { currentVenue } from '../db/venues';
+import { plural, t } from '../i18n';
 import { planTrip } from '../nav/shopping';
 
 const KEY = `indoor-nav.list.${currentVenue().id}`;
@@ -71,18 +72,18 @@ const ShoppingList = ({ query, startId, finished }: Props) => {
   const toggle = (id: string) => setIds((list) => (list.indexOf(id) >= 0 ? list.filter((x) => x !== id) : list.concat(id)));
 
   return (
-    <section className="shopping" aria-label="Shopping list">
+    <section className="shopping" aria-label={t('Shopping list')}>
       <div className="shopping__head">
-        <h2>Shopping list</h2>
+        <h2>{t('Shopping list')}</h2>
         {ids.length > 0 && (
           <button type="button" className="shopping__clear" onClick={() => setIds([])}>
-            Clear
+            {t('Clear')}
           </button>
         )}
       </div>
 
       {ids.length === 0 ? (
-        <p className="shopping__empty">Add what you need. The app works out the shortest way round the shop and takes you from shelf to shelf.</p>
+        <p className="shopping__empty">{t('Add what you need. The app works out the shortest way round the shop and takes you from shelf to shelf.')}</p>
       ) : (
         <ul className="shopping__items">
           {ids.map((id) => {
@@ -93,7 +94,7 @@ const ShoppingList = ({ query, startId, finished }: Props) => {
                   <strong>{p.name}</strong>
                   <small>{[productDetail(p), p.section.name].filter(Boolean).join(' · ')}</small>
                 </span>
-                <button type="button" aria-label={`Remove ${p.name}`} onClick={() => toggle(id)}>
+                <button type="button" aria-label={t('Remove {name}', { name: p.name })} onClick={() => toggle(id)}>
                   ×
                 </button>
               </li>
@@ -102,12 +103,12 @@ const ShoppingList = ({ query, startId, finished }: Props) => {
         </ul>
       )}
 
-      <p className="shopping__label">{q ? 'Matching products' : 'Often bought'}</p>
+      <p className="shopping__label">{q ? t('Matching products') : t('Often bought')}</p>
       <div className={`shopping__products${rich ? ' shopping__products--rich' : ''}`}>
         {matches.map((p) => {
           const on = ids.indexOf(p.id) >= 0;
           return (
-            <button key={p.id} type="button" className={`product${on ? ' is-on' : ''}${rich ? ' product--rich' : ''}`} aria-pressed={on} aria-label={`${on ? 'Remove' : 'Add'} ${p.name}`} onClick={() => toggle(p.id)}>
+            <button key={p.id} type="button" className={`product${on ? ' is-on' : ''}${rich ? ' product--rich' : ''}`} aria-pressed={on} aria-label={on ? t('Remove {name}', { name: p.name }) : t('Add {name}', { name: p.name })} onClick={() => toggle(p.id)}>
               <span>{on ? '✓' : '+'}</span>
               {rich && p.image && <img src={p.image} alt="" loading="lazy" width={36} height={36} onError={(e) => ((e.target as HTMLImageElement).style.visibility = 'hidden')} />}
               {rich ? (
@@ -121,22 +122,18 @@ const ShoppingList = ({ query, startId, finished }: Props) => {
             </button>
           );
         })}
-        {matches.length === 0 && <span className="shopping__none">No product matches “{query}”.</span>}
+        {matches.length === 0 && <span className="shopping__none">{t('No product matches “{query}”.', { query })}</span>}
       </div>
 
       {/* Always within reach of the thumb, wherever the page is scrolled to. */}
       {trip.stops.length > 0 && (
         <div className="cta-bar">
           <div className="cta-bar__info">
-            <strong>
-              {ids.length} item{ids.length === 1 ? '' : 's'}
-            </strong>
-            <span>
-              {trip.stops.length - 1} stop{trip.stops.length === 2 ? '' : 's'} · about {Math.round(trip.length / 5) * 5} m
-            </span>
+            <strong>{plural(ids.length, '{n} item', '{n} items')}</strong>
+            <span>{plural(trip.stops.length - 1, '{n} stop · about {d} m', '{n} stops · about {d} m', { d: Math.round(trip.length / 5) * 5 })}</span>
           </div>
           <button type="button" className="btn-nav btn-nav--primary shopping__go" onClick={() => navigate(`shop?items=${ids.join(',')}${startId !== null ? `&from=${startId}` : ''}`)}>
-            Start shopping
+            {t('Start shopping')}
           </button>
         </div>
       )}

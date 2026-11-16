@@ -38,9 +38,7 @@ jobs:
         run: npm ci
       - name: Test
         working-directory: react-client
-        run: npm test -- --watchAll=false
-        env:
-          CI: 'true'
+        run: npm test
       - name: Build
         working-directory: react-client
         run: npm run build

@@ -1,0 +1,94 @@
+id,name,name_it,location
+apple-juice,Apple juice,Succo di mela,A03-04
+apples,Apples,Mele,A01-01
+baby-food,Baby food,Omogeneizzati,A05-01
+baking-powder,Baking powder,Lievito per dolci,A02-04
+bananas,Bananas,Banane,A01-01
+beans,Beans,Fagioli,A02-03
+beer,Beer,Birra,A04-01
+bin-bags,Bin bags,Sacchi spazzatura,A05-02
+biscuits,Biscuits,Biscotti,A03-03
+black-pepper,Black pepper,Pepe nero,A02-04
+bread,Bread,Pane,B-01
+bread-rolls,Bread rolls,Panini,B-01
+butter,Butter,Burro,A06-02
+canned-tomatoes,Canned tomatoes,Pomodori pelati,A02-03
+carrots,Carrots,Carote,A01-03
+cat-food,Cat food,Cibo per gatti,A05-03
+chewing-gum,Chewing gum,Gomme da masticare,A03-03
+chicken-breast,Chicken breast,Petto di pollo,B-02
+chocolate,Chocolate,Cioccolato,A03-03
+coffee,Coffee,Caffè,A01-04
+cola,Cola,Cola,A03-02
+corn-flakes,Corn flakes,Corn flakes,A01-02
+couscous,Couscous,Cous cous,A02-01
+crackers,Crackers,Cracker,A03-01
+cream,Cream,Panna,A06-02
+crisps,Crisps,Patatine,A03-01
+croissants,Croissants,Cornetti,B-01
+cucumber,Cucumber,Cetrioli,A01-03
+deodorant,Deodorant,Deodorante,A06-03
+dog-food,Dog food,Cibo per cani,A05-03
+eggs,Eggs,Uova,A06-04
+fish-fingers,Fish fingers,Bastoncini di pesce,A04-02
+flour,Flour,Farina,A02-04
+frozen-peas,Frozen peas,Piselli surgelati,A04-02
+frozen-pizza,Frozen pizza,Pizza surgelata,A04-02
+grapes,Grapes,Uva,A01-01
+ham,Ham,Prosciutto,B-02
+honey,Honey,Miele,A01-02
+ice-lollies,Ice lollies,Ghiaccioli,A04-04
+iced-tea,Iced tea,Tè freddo,A03-02
+jam,Jam,Marmellata,A01-02
+ketchup,Ketchup,Ketchup,A02-02
+kitchen-roll,Kitchen roll,Carta da cucina,A05-04
+laundry-detergent,Laundry detergent,Detersivo lavatrice,A05-02
+lemonade,Lemonade,Limonata,A03-02
+lemons,Lemons,Limoni,A01-01
+mayonnaise,Mayonnaise,Maionese,A02-02
+milk,Milk,Latte,A06-02
+minced-beef,Minced beef,Macinato di manzo,B-02
+mozzarella,Mozzarella,Mozzarella,A06-04
+muesli,Muesli,Muesli,A01-02
+nappies,Nappies,Pannolini,A05-01
+noodles,Noodles,Noodles,A04-03
+oats,Oats,Fiocchi d'avena,A01-02
+olive-oil,Olive oil,Olio d'oliva,A02-02
+onions,Onions,Cipolle,A01-03
+orange-juice,Orange juice,Succo d'arancia,A03-04
+oranges,Oranges,Arance,A01-01
+parmesan,Parmesan,Parmigiano,A06-04
+peanuts,Peanuts,Arachidi,A03-01
+penne,Penne,Penne,A02-01
+plasters,Plasters,Cerotti,A06-01
+potatoes,Potatoes,Patate,A01-03
+prawns,Prawns,Gamberi,B-03
+red-wine,Red wine,Vino rosso,A04-01
+rice,Rice,Riso,A02-01
+salad,Salad,Insalata,A01-03
+salmon,Salmon,Salmone,B-03
+salt,Salt,Sale,A02-04
+sausages,Sausages,Salsicce,B-02
+shampoo,Shampoo,Shampoo,A06-01
+soap,Soap,Sapone,A06-03
+soy-sauce,Soy sauce,Salsa di soia,A04-03
+spaghetti,Spaghetti,Spaghetti,A02-01
+sparkling-water,Sparkling water,Acqua frizzante,A03-04
+sponges,Sponges,Spugne,A05-02
+still-water,Still water,Acqua naturale,A03-04
+sugar,Sugar,Zucchero,A01-04
+sun-cream,Sun cream,Crema solare,A06-01
+sweetcorn,Sweetcorn,Mais,A02-03
+tea,Tea,Tè,A01-04
+tissues,Tissues,Fazzoletti,A05-04
+toilet-paper,Toilet paper,Carta igienica,A05-04
+tomato-sauce,Tomato sauce,Passata di pomodoro,A02-02
+tomatoes,Tomatoes,Pomodori,A01-03
+toothpaste,Toothpaste,Dentifricio,A06-03
+tortillas,Tortillas,Tortillas,A04-03
+tuna,Tuna,Tonno,A02-03
+vanilla-ice-cream,Vanilla ice cream,Gelato alla vaniglia,A04-04
+vinegar,Vinegar,Aceto,A02-02
+washing-up-liquid,Washing-up liquid,Detersivo piatti,A05-02
+white-wine,White wine,Vino bianco,A04-01
+yoghurt,Yoghurt,Yogurt,A06-02

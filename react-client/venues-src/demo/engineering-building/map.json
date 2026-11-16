@@ -1,14 +1,16 @@
 {
  "meta": {
-  "name": "Engineering Building",
   "metersPerUnit": 0.1,
   "qrSize": 0.18,
   "floors": [
    {
     "id": 0,
     "name": "Ground floor",
+    "name_it": "Piano terra",
     "short": "G",
+    "short_it": "T",
     "spoken": "the ground floor",
+    "spoken_it": "piano terra",
     "width": 640,
     "height": 400,
     "corridors": [
@@ -64,7 +66,8 @@
         "y": 90
        }
       ],
-      "node": 4
+      "node": 4,
+      "name_it": "Ufficio 0.20"
      },
      {
       "id": "0.21",
@@ -81,7 +84,8 @@
         "y": 90
        }
       ],
-      "node": 5
+      "node": 5,
+      "name_it": "Aula seminari 0.21"
      },
      {
       "id": "stairs-a-0",
@@ -98,7 +102,9 @@
         "y": 90
        }
       ],
-      "node": 6
+      "node": 6,
+      "name_it": "Scale A",
+      "short_it": "Scale A"
      },
      {
       "id": "lift-0",
@@ -115,7 +121,9 @@
         "y": 90
        }
       ],
-      "node": 7
+      "node": 7,
+      "name_it": "Ascensore",
+      "short_it": "Ascensore"
      },
      {
       "id": "0.22",
@@ -132,7 +140,8 @@
         "y": 90
        }
       ],
-      "node": 8
+      "node": 8,
+      "name_it": "Aula 0.22"
      },
      {
       "id": "wc-0",
@@ -149,7 +158,8 @@
         "y": 90
        }
       ],
-      "node": 9
+      "node": 9,
+      "name_it": "Servizi"
      },
      {
       "id": "0.23",
@@ -166,7 +176,8 @@
         "y": 90
        }
       ],
-      "node": 10
+      "node": 10,
+      "name_it": "Ufficio 0.23"
      },
      {
       "id": "0.40",
@@ -183,7 +194,8 @@
         "y": 150
        }
       ],
-      "node": 11
+      "node": 11,
+      "name_it": "Aula 0.40"
      },
      {
       "id": "0.41",
@@ -200,7 +212,8 @@
         "y": 250
        }
       ],
-      "node": 12
+      "node": 12,
+      "name_it": "Aula 0.41"
      },
      {
       "id": "stairs-b-0",
@@ -217,7 +230,9 @@
         "y": 140
        }
       ],
-      "node": 13
+      "node": 13,
+      "name_it": "Scale B",
+      "short_it": "Scale B"
      },
      {
       "id": "0.30",
@@ -234,7 +249,8 @@
         "y": 200
        }
       ],
-      "node": 14
+      "node": 14,
+      "name_it": "Laboratorio 0.30"
      },
      {
       "id": "0.31",
@@ -251,7 +267,8 @@
         "y": 260
        }
       ],
-      "node": 15
+      "node": 15,
+      "name_it": "Sala studio 0.31"
      },
      {
       "id": "0.01",
@@ -268,7 +285,8 @@
         "y": 310
        }
       ],
-      "node": 16
+      "node": 16,
+      "name_it": "Officina 0.01"
      },
      {
       "id": "reception",
@@ -302,7 +320,9 @@
         "y": 310
        }
       ],
-      "node": 3
+      "node": 3,
+      "name_it": "Bar",
+      "short_it": "Bar"
      },
      {
       "id": "library",
@@ -319,7 +339,9 @@
         "y": 310
        }
       ],
-      "node": 17
+      "node": 17,
+      "name_it": "Biblioteca",
+      "short_it": "Biblioteca"
      },
      {
       "id": "auditorium",
@@ -353,7 +375,8 @@
         "y": 120
        }
       ],
-      "node": 19
+      "node": 19,
+      "name_it": "Laboratorio 0.11"
      },
      {
       "id": "0.12",
@@ -370,7 +393,8 @@
         "y": 280
        }
       ],
-      "node": 20
+      "node": 20,
+      "name_it": "Laboratorio 0.12"
      },
      {
       "id": "lobby",
@@ -394,15 +418,19 @@
         "entrance": true
        }
       ],
-      "node": 0
+      "node": 0,
+      "name_it": "Atrio",
+      "short_it": "Atrio"
      }
     ]
    },
    {
     "id": 1,
     "name": "First floor",
+    "name_it": "Primo piano",
     "short": "1",
     "spoken": "the first floor",
+    "spoken_it": "primo piano",
     "width": 640,
     "height": 400,
     "corridors": [
@@ -458,7 +486,8 @@
         "y": 90
        }
       ],
-      "node": 24
+      "node": 24,
+      "name_it": "Ufficio 1.20"
      },
      {
       "id": "1.21",
@@ -475,7 +504,8 @@
         "y": 90
        }
       ],
-      "node": 25
+      "node": 25,
+      "name_it": "Aula seminari 1.21"
      },
      {
       "id": "stairs-a-1",
@@ -492,7 +522,9 @@
         "y": 90
        }
       ],
-      "node": 26
+      "node": 26,
+      "name_it": "Scale A",
+      "short_it": "Scale A"
      },
      {
       "id": "lift-1",
@@ -509,7 +541,9 @@
         "y": 90
        }
       ],
-      "node": 27
+      "node": 27,
+      "name_it": "Ascensore",
+      "short_it": "Ascensore"
      },
      {
       "id": "1.22",
@@ -526,7 +560,8 @@
         "y": 90
        }
       ],
-      "node": 28
+      "node": 28,
+      "name_it": "Aula 1.22"
      },
      {
       "id": "wc-1",
@@ -543,7 +578,8 @@
         "y": 90
        }
       ],
-      "node": 29
+      "node": 29,
+      "name_it": "Servizi"
      },
      {
       "id": "1.23",
@@ -560,7 +596,8 @@
         "y": 90
        }
       ],
-      "node": 30
+      "node": 30,
+      "name_it": "Ufficio 1.23"
      },
      {
       "id": "1.40",
@@ -577,7 +614,8 @@
         "y": 150
        }
       ],
-      "node": 31
+      "node": 31,
+      "name_it": "Ufficio 1.40"
      },
      {
       "id": "1.41",
@@ -594,7 +632,8 @@
         "y": 250
        }
       ],
-      "node": 32
+      "node": 32,
+      "name_it": "Ufficio 1.41"
      },
      {
       "id": "stairs-b-1",
@@ -611,7 +650,9 @@
         "y": 140
        }
       ],
-      "node": 33
+      "node": 33,
+      "name_it": "Scale B",
+      "short_it": "Scale B"
      },
      {
       "id": "1.30",
@@ -628,7 +669,8 @@
         "y": 200
        }
       ],
-      "node": 34
+      "node": 34,
+      "name_it": "Laboratorio 1.30"
      },
      {
       "id": "1.31",
@@ -645,7 +687,8 @@
         "y": 260
        }
       ],
-      "node": 35
+      "node": 35,
+      "name_it": "Sala riunioni 1.31"
      },
      {
       "id": "1.01",
@@ -662,7 +705,8 @@
         "y": 310
        }
       ],
-      "node": 36
+      "node": 36,
+      "name_it": "Laboratorio informatico 1.01"
      },
      {
       "id": "1.02",
@@ -679,7 +723,8 @@
         "y": 310
        }
       ],
-      "node": 37
+      "node": 37,
+      "name_it": "Ufficio 1.02"
      },
      {
       "id": "1.03",
@@ -696,7 +741,8 @@
         "y": 310
        }
       ],
-      "node": 38
+      "node": 38,
+      "name_it": "Ufficio 1.03"
      },
      {
       "id": "1.04",
@@ -713,7 +759,8 @@
         "y": 310
        }
       ],
-      "node": 39
+      "node": 39,
+      "name_it": "Sala lettura 1.04"
      },
      {
       "id": "1.10",
@@ -730,7 +777,8 @@
         "y": 120
        }
       ],
-      "node": 40
+      "node": 40,
+      "name_it": "Aula magna 1.10"
      },
      {
       "id": "1.11",
@@ -747,7 +795,8 @@
         "y": 120
        }
       ],
-      "node": 41
+      "node": 41,
+      "name_it": "Laboratorio 1.11"
      },
      {
       "id": "1.12",
@@ -764,7 +813,8 @@
         "y": 280
        }
       ],
-      "node": 42
+      "node": 42,
+      "name_it": "Laboratorio 1.12"
      },
      {
       "id": "lounge",
@@ -803,7 +853,8 @@
      "nodeID": 1,
      "weight": 7.7
     }
-   ]
+   ],
+   "label_it": "Ingresso principale"
   },
   {
    "name": "G02",
@@ -830,7 +881,8 @@
      "nodeID": 0,
      "weight": 7.7
     }
-   ]
+   ],
+   "label_it": "Atrio"
   },
   {
    "name": "G03",
@@ -870,7 +922,8 @@
      "nodeID": 20,
      "weight": 5
     }
-   ]
+   ],
+   "label_it": "Bar"
   },
   {
    "name": "G05",
@@ -890,7 +943,8 @@
      "nodeID": 11,
      "weight": 4.5
     }
-   ]
+   ],
+   "label_it": "Ufficio 0.20"
   },
   {
    "name": "G06",
@@ -910,7 +964,8 @@
      "nodeID": 18,
      "weight": 5.5
     }
-   ]
+   ],
+   "label_it": "Aula seminari 0.21"
   },
   {
    "name": "G07",
@@ -936,7 +991,8 @@
      "kind": "stairs",
      "length": 9
     }
-   ]
+   ],
+   "label_it": "Scale A"
   },
   {
    "name": "G08",
@@ -966,7 +1022,8 @@
      "kind": "elevator",
      "length": 4
     }
-   ]
+   ],
+   "label_it": "Ascensore"
   },
   {
    "name": "G09",
@@ -986,7 +1043,8 @@
      "nodeID": 19,
      "weight": 5
     }
-   ]
+   ],
+   "label_it": "Aula 0.22"
   },
   {
    "name": "G10",
@@ -1006,7 +1064,8 @@
      "nodeID": 10,
      "weight": 6.5
     }
-   ]
+   ],
+   "label_it": "Servizi"
   },
   {
    "name": "G11",
@@ -1026,7 +1085,8 @@
      "nodeID": 13,
      "weight": 3.5
     }
-   ]
+   ],
+   "label_it": "Ufficio 0.23"
   },
   {
    "name": "G12",
@@ -1046,7 +1106,8 @@
      "nodeID": 12,
      "weight": 10
     }
-   ]
+   ],
+   "label_it": "Aula 0.40"
   },
   {
    "name": "G13",
@@ -1066,7 +1127,8 @@
      "nodeID": 21,
      "weight": 4.5
     }
-   ]
+   ],
+   "label_it": "Aula 0.41"
   },
   {
    "name": "G14",
@@ -1092,7 +1154,8 @@
      "kind": "stairs",
      "length": 9
     }
-   ]
+   ],
+   "label_it": "Scale B"
   },
   {
    "name": "G15",
@@ -1112,7 +1175,8 @@
      "nodeID": 15,
      "weight": 6
     }
-   ]
+   ],
+   "label_it": "Laboratorio 0.30"
   },
   {
    "name": "G16",
@@ -1132,7 +1196,8 @@
      "nodeID": 22,
      "weight": 3.5
     }
-   ]
+   ],
+   "label_it": "Sala studio 0.31"
   },
   {
    "name": "G17",
@@ -1152,7 +1217,8 @@
      "nodeID": 2,
      "weight": 10
     }
-   ]
+   ],
+   "label_it": "Officina 0.01"
   },
   {
    "name": "G18",
@@ -1172,7 +1238,8 @@
      "nodeID": 22,
      "weight": 4
     }
-   ]
+   ],
+   "label_it": "Biblioteca"
   },
   {
    "name": "G19",
@@ -1212,7 +1279,8 @@
      "nodeID": 9,
      "weight": 5
     }
-   ]
+   ],
+   "label_it": "Laboratorio 0.11"
   },
   {
    "name": "G21",
@@ -1232,7 +1300,8 @@
      "nodeID": 17,
      "weight": 5
     }
-   ]
+   ],
+   "label_it": "Laboratorio 0.12"
   },
   {
    "name": "G22",
@@ -1309,7 +1378,8 @@
      "nodeID": 31,
      "weight": 4.5
     }
-   ]
+   ],
+   "label_it": "Ufficio 1.20"
   },
   {
    "name": "F02",
@@ -1329,7 +1399,8 @@
      "nodeID": 40,
      "weight": 5.5
     }
-   ]
+   ],
+   "label_it": "Aula seminari 1.21"
   },
   {
    "name": "F03",
@@ -1355,7 +1426,8 @@
      "kind": "stairs",
      "length": 9
     }
-   ]
+   ],
+   "label_it": "Scale A"
   },
   {
    "name": "F04",
@@ -1385,7 +1457,8 @@
      "kind": "elevator",
      "length": 4
     }
-   ]
+   ],
+   "label_it": "Ascensore"
   },
   {
    "name": "F05",
@@ -1405,7 +1478,8 @@
      "nodeID": 41,
      "weight": 5
     }
-   ]
+   ],
+   "label_it": "Aula 1.22"
   },
   {
    "name": "F06",
@@ -1425,7 +1499,8 @@
      "nodeID": 30,
      "weight": 6.5
     }
-   ]
+   ],
+   "label_it": "Servizi"
   },
   {
    "name": "F07",
@@ -1445,7 +1520,8 @@
      "nodeID": 33,
      "weight": 3.5
     }
-   ]
+   ],
+   "label_it": "Ufficio 1.23"
   },
   {
    "name": "F08",
@@ -1465,7 +1541,8 @@
      "nodeID": 32,
      "weight": 10
     }
-   ]
+   ],
+   "label_it": "Ufficio 1.40"
   },
   {
    "name": "F09",
@@ -1485,7 +1562,8 @@
      "nodeID": 44,
      "weight": 4.5
     }
-   ]
+   ],
+   "label_it": "Ufficio 1.41"
   },
   {
    "name": "F10",
@@ -1511,7 +1589,8 @@
      "kind": "stairs",
      "length": 9
     }
-   ]
+   ],
+   "label_it": "Scale B"
   },
   {
    "name": "F11",
@@ -1531,7 +1610,8 @@
      "nodeID": 35,
      "weight": 6
     }
-   ]
+   ],
+   "label_it": "Laboratorio 1.30"
   },
   {
    "name": "F12",
@@ -1551,7 +1631,8 @@
      "nodeID": 45,
      "weight": 3.5
     }
-   ]
+   ],
+   "label_it": "Sala riunioni 1.31"
   },
   {
    "name": "F13",
@@ -1571,7 +1652,8 @@
      "nodeID": 37,
      "weight": 10
     }
-   ]
+   ],
+   "label_it": "Laboratorio informatico 1.01"
   },
   {
    "name": "F14",
@@ -1591,7 +1673,8 @@
      "nodeID": 43,
      "weight": 7
     }
-   ]
+   ],
+   "label_it": "Ufficio 1.02"
   },
   {
    "name": "F15",
@@ -1611,7 +1694,8 @@
      "nodeID": 42,
      "weight": 5
     }
-   ]
+   ],
+   "label_it": "Ufficio 1.03"
   },
   {
    "name": "F16",
@@ -1631,7 +1715,8 @@
      "nodeID": 45,
      "weight": 4
     }
-   ]
+   ],
+   "label_it": "Sala lettura 1.04"
   },
   {
    "name": "F17",
@@ -1651,7 +1736,8 @@
      "nodeID": 26,
      "weight": 4.5
     }
-   ]
+   ],
+   "label_it": "Aula magna 1.10"
   },
   {
    "name": "F18",
@@ -1671,7 +1757,8 @@
      "nodeID": 29,
      "weight": 5
     }
-   ]
+   ],
+   "label_it": "Laboratorio 1.11"
   },
   {
    "name": "F19",
@@ -1691,7 +1778,8 @@
      "nodeID": 39,
      "weight": 5
     }
-   ]
+   ],
+   "label_it": "Laboratorio 1.12"
   },
   {
    "name": "F20",

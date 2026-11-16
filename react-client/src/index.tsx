@@ -1,17 +1,33 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+import { loadVenue } from './db/venues';
+import { currentLang, t } from './i18n';
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
-);
+document.documentElement.lang = currentLang();
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+const root = createRoot(document.getElementById('root')!);
+
+// The venue (map and catalogue) is data on the server, not part of the app:
+// load it first, then start the app, whose modules read it as a constant.
+loadVenue()
+  .then(() => import('./App'))
+  .then(({ default: App }) => {
+    root.render(
+      <React.StrictMode>
+        <App />
+      </React.StrictMode>
+    );
+  })
+  .catch((error) => {
+    console.error(error);
+    root.render(
+      <div className="boot-error" role="alert">
+        <h1>{t('The map could not be loaded')}</h1>
+        <p>{t('Check your connection and try again.')}</p>
+        <button type="button" onClick={() => window.location.reload()}>
+          {t('Try again')}
+        </button>
+      </div>
+    );
+  });

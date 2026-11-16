@@ -1,0 +1,28 @@
+code,section,kind,name,name_it
+A01-01,fruit,produce,Fruit,Frutta
+A01-02,cereals,pantry,Breakfast & cereals,Colazione e cereali
+A01-03,vegetables,produce,Vegetables,Verdura
+A01-04,coffee,pantry,Coffee & tea,Caffè e tè
+A02-01,pasta,pantry,Pasta & rice,Pasta e riso
+A02-02,sauces,pantry,Sauces & oils,Salse e oli
+A02-03,canned,pantry,Canned food,Conserve
+A02-04,baking,pantry,Baking & spices,Farine e spezie
+A03-01,snacks,snacks,Snacks & crisps,Snack e patatine
+A03-02,softdrinks,drinks,Soft drinks,Bibite
+A03-03,sweets,snacks,Sweets & chocolate,Dolci e cioccolato
+A03-04,water,drinks,Water & juice,Acqua e succhi
+A04-01,wine,drinks,Beer & wine,Birra e vino
+A04-02,frozen,frozen,Frozen food,Surgelati
+A04-03,world,pantry,World food,Cucina dal mondo
+A04-04,icecream,frozen,Ice cream,Gelati
+A05-01,baby,care,Baby,Infanzia
+A05-02,cleaning,household,Cleaning,Pulizia casa
+A05-03,pets,household,Pet food,Animali
+A05-04,paper,household,Paper & tissues,Carta e fazzoletti
+A06-01,beauty,care,Health & beauty,Salute e bellezza
+A06-02,milk,dairy,Milk & yoghurt,Latte e yogurt
+A06-03,hygiene,care,Personal care,Igiene personale
+A06-04,cheese,dairy,Cheese & eggs,Formaggi e uova
+B-01,bakery,bakery,Bakery,Panetteria
+B-02,butcher,meat,Butcher,Macelleria
+B-03,fish,fish,Fish counter,Pescheria

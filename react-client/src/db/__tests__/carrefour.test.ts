@@ -1,10 +1,10 @@
-import carrefour from '../carrefour-montesson.json';
-import { Building, RawGraph } from '../../nav/building';
+import { venueGraph } from '../../test/venues';
+import { Building } from '../../nav/building';
 import { walkingDistance } from '../../nav/routing';
 import { checkoutNode, entranceNode, planTrip, ShoppingTrip } from '../../nav/shopping';
 import { wallSegments } from '../../map/plan';
 
-const building = new Building(carrefour as RawGraph);
+const building = new Building(venueGraph('carrefour'));
 const floor = building.floors[0];
 const store = floor.outlines.find((o) => o.kind === 'store')!;
 

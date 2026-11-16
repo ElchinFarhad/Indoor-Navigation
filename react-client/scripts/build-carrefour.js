@@ -1,8 +1,13 @@
 /**
- * Generates src/db/carrefour-montesson.json: a venue built on real, open data.
+ * Generates venues-src/carrefour/montesson/: a venue built on real, open data.
  *
- *   node scripts/fetch-carrefour-data.js   # refresh the snapshots (needs network)
- *   node scripts/build-carrefour.js        # build the venue from the snapshots
+ *   node scripts/fetch-carrefour-data.js      # refresh the snapshots (needs network)
+ *   node scripts/build-carrefour.js           # map.json (and the CSV files if they do not exist)
+ *   node scripts/build-carrefour.js --reseed  # also rewrite locations.csv and products.csv
+ *
+ * Location codes: A<aisle>-<bay> in the food hall (bays counted from the back
+ * wall, odd on the left of the aisle, even on the right), D<aisle>-<bay> for
+ * the departments, B-<n> for the counters along the back wall.
  *
  * What is real
  *  - The outline of the Carrefour hypermarket in the Montesson shopping centre
@@ -28,6 +33,25 @@ const DATA = path.resolve(__dirname, 'data/carrefour-montesson');
 const osm = JSON.parse(fs.readFileSync(path.join(DATA, 'osm.json'), 'utf8'));
 const off = JSON.parse(fs.readFileSync(path.join(DATA, 'off-products.json'), 'utf8'));
 const SECTIONS = require('./carrefour-sections');
+const { writeVenue } = require('./venue-out');
+
+// Italian names of the sections (product names stay as printed on the pack).
+const IT = {
+  fruits: 'Frutta', vegetables: 'Verdura', juices: 'Succhi di frutta', nuts: 'Frutta secca', breads: 'Pane', viennoiseries: 'Brioche e cornetti',
+  biscuits: 'Biscotti', cakes: 'Torte e merendine', cereals: 'Cereali per la colazione', jams: 'Marmellate', honeys: 'Miele',
+  spreads: 'Creme spalmabili', coffees: 'Caffè', teas: 'Tè e tisane', chocolates: 'Cioccolato', candies: 'Caramelle', pastas: 'Pasta',
+  rices: 'Riso', 'canned-vegetables': 'Verdure in scatola', 'canned-fish': 'Pesce in scatola', oils: 'Oli', sauces: 'Salse', soups: 'Zuppe',
+  condiments: 'Senape e condimenti', flours: 'Farine', sugars: 'Zucchero', crisps: 'Patatine', aperitif: 'Snack per aperitivo',
+  waters: 'Acqua', sodas: 'Bibite', beers: 'Birra', wines: 'Vino', milks: 'Latte', yogurts: 'Yogurt', butters: 'Burro', creams: 'Panna',
+  cheeses: 'Formaggi', eggs: 'Uova', desserts: 'Dessert', 'plant-milks': 'Bevande vegetali', hams: 'Prosciutto', sausages: 'Salumi e salsicce',
+  poultry: 'Pollame', seafood: 'Pesce affumicato e frutti di mare', 'frozen-pizzas': 'Pizze', 'frozen-vegetables': 'Verdure surgelate',
+  'ice-creams': 'Gelati', 'frozen-meals': 'Piatti surgelati', baby: 'Alimenti per l’infanzia', compotes: 'Composte di frutta',
+  syrups: 'Sciroppi', sandwiches: 'Tramezzini e panini', meals: 'Piatti pronti', quiches: 'Torte salate', dips: 'Salse e creme salate',
+  vegetarian: 'Vegetariano', multimedia: 'TV, audio e telefonia', appliances: 'Elettrodomestici', kitchen: 'Cucina e tavola',
+  home: 'Casa e arredo', clothing: 'Abbigliamento', shoes: 'Scarpe e accessori', toys: 'Giocattoli', books: 'Libri e cartoleria',
+  beauty: 'Salute e bellezza', cleaning: 'Pulizia e bucato', 'bakery-counter': 'Banco panetteria', butcher: 'Macelleria',
+  fishmonger: 'Pescheria', 'cheese-counter': 'Banco formaggi', deli: 'Gastronomia',
+};
 
 const MPU = 0.2; // metres per map unit
 const PER_SECTION = 6;
@@ -170,9 +194,9 @@ function rect(x, y, w, h) {
 }
 
 /** A shelf or department: a solid block with one face towards the stop in its aisle. */
-function block(id, name, kind, x, y, w, h, faceX, faceY, stop) {
+function block(code, id, name, kind, x, y, w, h, faceX, faceY, stop) {
   Object.assign(stop, { type: 'room', label: name, room: id });
-  rooms.push({ id, name, short: name, kind, solid: true, ...rect(x, y, w, h), doors: [{ x: ux(faceX), y: uy(faceY) }], node: stop.id });
+  rooms.push({ id, code, name, name_it: IT[id], kind, solid: true, ...rect(x, y, w, h), doors: [{ x: ux(faceX), y: uy(faceY) }], node: stop.id });
 }
 
 // Entrances first: the main one gets id 0 and is where a trip starts by default.
@@ -190,25 +214,28 @@ entrances.forEach((e, i) => {
   const wall = Math.min(e.at[1], frontDepthAt(x));
   const top = FRONT + 4.5;
   const half = 4.5;
-  const n = node(x, (top + wall) / 2, { type: 'room', label: e.main ? 'Main entrance' : 'Mall entrance', room: i === 0 ? 'entrance' : `entrance-${i + 1}`, qr: true });
+  const n = node(x, (top + wall) / 2, { type: 'room', label: e.main ? 'Main entrance' : 'Mall entrance', label_it: e.main ? 'Ingresso principale' : 'Ingresso galleria', room: i === 0 ? 'entrance' : `entrance-${i + 1}`, qr: true });
   rooms.push({
     id: n.room,
     name: n.label,
+    name_it: n.label_it,
     short: 'Entrance',
+    short_it: 'Ingresso',
     kind: 'lobby',
     x: ux(x - half), y: uy(top), w: r1((2 * half) / MPU), h: r1((wall - top) / MPU),
     doors: [{ x: ux(x), y: uy(top), width: r1(5 / MPU) }, { x: ux(x), y: uy(wall), width: r1(4 / MPU), entrance: true }],
     node: n.id,
   });
-  link(n, node(x, FRONT, { label: 'front aisle' }));
+  link(n, node(x, FRONT, { label: 'front aisle', label_it: 'corsia frontale' }));
 });
 
 // Cross aisles: a marker at the back and at the front of every aisle.
 aisles.forEach((x, i) => {
   const label = i < nonfoodAisles.length ? `department aisle ${i + 1}` : `aisle ${i - nonfoodAisles.length + 1}`;
-  node(x, BACK, { label: `back of ${label}`, qr: true });
-  node(x, MID, { label: `middle of ${label}` });
-  node(x, FRONT, { label: `front of ${label}`, qr: true });
+  const it = i < nonfoodAisles.length ? `corsia reparti ${i + 1}` : `corsia ${i - nonfoodAisles.length + 1}`;
+  node(x, BACK, { label: `back of ${label}`, label_it: `fondo della ${it}`, qr: true });
+  node(x, MID, { label: `middle of ${label}`, label_it: `metà della ${it}` });
+  node(x, FRONT, { label: `front of ${label}`, label_it: `inizio della ${it}`, qr: true });
 });
 
 // Non-food departments: big blocks between the wide aisles, two deep.
@@ -216,8 +243,9 @@ for (let k = 0; k + 1 < nonfoodAisles.length; k++) {
   const x0 = nonfoodAisles[k] + HALF_AISLE;
   const w = NONFOOD_PITCH - 2 * HALF_AISLE;
   const [rear, near] = [NONFOOD[2 * k], NONFOOD[2 * k + 1]];
-  block(rear[0], rear[1], rear[2], x0, REAR[0], w, REAR[1] - REAR[0], x0, STOP.rearRight, node(nonfoodAisles[k], STOP.rearRight, {}));
-  block(near[0], near[1], near[2], x0, NEAR[0], w, NEAR[1] - NEAR[0], x0, STOP.frontRight, node(nonfoodAisles[k], STOP.frontRight, {}));
+  const d = (bay) => `D${String(k + 1).padStart(2, '0')}-${String(bay).padStart(2, '0')}`;
+  block(d(1), rear[0], rear[1], rear[2], x0, REAR[0], w, REAR[1] - REAR[0], x0, STOP.rearRight, node(nonfoodAisles[k], STOP.rearRight, {}));
+  block(d(2), near[0], near[1], near[2], x0, NEAR[0], w, NEAR[1] - NEAR[0], x0, STOP.frontRight, node(nonfoodAisles[k], STOP.frontRight, {}));
 }
 
 // Food gondolas: every aisle has a shelf on its left and on its right, each in two halves.
@@ -225,10 +253,11 @@ foodAisles.forEach((x, j) => {
   const [leftRear, leftFront, rightRear, rightFront] = SECTIONS.slice(4 * j, 4 * j + 4);
   const lx = x - HALF_AISLE - SHELF;
   const rx = x + HALF_AISLE;
-  block(leftRear.id, leftRear.name, leftRear.kind, lx, REAR[0], SHELF, REAR[1] - REAR[0], x - HALF_AISLE, STOP.rearLeft, node(x, STOP.rearLeft, {}));
-  block(rightRear.id, rightRear.name, rightRear.kind, rx, REAR[0], SHELF, REAR[1] - REAR[0], rx, STOP.rearRight, node(x, STOP.rearRight, {}));
-  block(leftFront.id, leftFront.name, leftFront.kind, lx, NEAR[0], SHELF, NEAR[1] - NEAR[0], x - HALF_AISLE, STOP.frontLeft, node(x, STOP.frontLeft, {}));
-  block(rightFront.id, rightFront.name, rightFront.kind, rx, NEAR[0], SHELF, NEAR[1] - NEAR[0], rx, STOP.frontRight, node(x, STOP.frontRight, {}));
+  const a = (bay) => `A${String(j + 1).padStart(2, '0')}-${String(bay).padStart(2, '0')}`;
+  block(a(1), leftRear.id, leftRear.name, leftRear.kind, lx, REAR[0], SHELF, REAR[1] - REAR[0], x - HALF_AISLE, STOP.rearLeft, node(x, STOP.rearLeft, {}));
+  block(a(2), rightRear.id, rightRear.name, rightRear.kind, rx, REAR[0], SHELF, REAR[1] - REAR[0], rx, STOP.rearRight, node(x, STOP.rearRight, {}));
+  block(a(3), leftFront.id, leftFront.name, leftFront.kind, lx, NEAR[0], SHELF, NEAR[1] - NEAR[0], x - HALF_AISLE, STOP.frontLeft, node(x, STOP.frontLeft, {}));
+  block(a(4), rightFront.id, rightFront.name, rightFront.kind, rx, NEAR[0], SHELF, NEAR[1] - NEAR[0], rx, STOP.frontRight, node(x, STOP.frontRight, {}));
 });
 
 // Service counters along the back wall of the food hall.
@@ -240,7 +269,7 @@ foodAisles.forEach((x, j) => {
     const x0 = from + w * i;
     // served from the aisle end nearest to the middle of the counter
     const stopX = foodAisles.reduce((best, x) => (Math.abs(x - (x0 + w / 2)) < Math.abs(best - (x0 + w / 2)) ? x : best), foodAisles[0]);
-    block(id, name, kind, x0, 0.3, w, 2, stopX, 2.3, node(stopX, BACK, {}));
+    block(`B-${String(i + 1).padStart(2, '0')}`, id, name, kind, x0, 0.3, w, 2, stopX, 2.3, node(stopX, BACK, {}));
   });
 }
 
@@ -249,8 +278,8 @@ foodAisles.forEach((x, j) => {
   const x0 = foodAisles[1];
   const x1 = foodAisles[8];
   const stopX = foodAisles[5];
-  const checkout = node(stopX, FRONT, { type: 'room', label: 'Checkout', room: 'checkout', qr: true });
-  rooms.push({ id: 'checkout', name: 'Checkouts', short: 'Checkouts', kind: 'checkout', ...rect(x0, FRONT + 4.5, x1 - x0, 6), doors: [{ x: ux(stopX), y: uy(FRONT + 4.5), width: r1(12 / MPU) }], node: checkout.id });
+  const checkout = node(stopX, FRONT, { type: 'room', label: 'Checkout', label_it: 'Cassa', room: 'checkout', qr: true });
+  rooms.push({ id: 'checkout', name: 'Checkouts', name_it: 'Casse', short: 'Checkouts', short_it: 'Casse', kind: 'checkout', ...rect(x0, FRONT + 4.5, x1 - x0, 6), doors: [{ x: ux(stopX), y: uy(FRONT + 4.5), width: r1(12 / MPU) }], node: checkout.id });
 }
 
 // Links: along every aisle and along the three cross aisles.
@@ -306,6 +335,7 @@ products.sort((a, b) => a.name.localeCompare(b.name, 'fr'));
 const ordered = nodes.map((n) => {
   const out = { name: n.name, type: n.type, id: n.id, x: ux(n.mx), y: uy(n.my), floor: 0 };
   if (n.label) out.label = n.label;
+  if (n.label_it) out.label_it = n.label_it;
   if (n.room) out.room = n.room;
   if (!n.qr) out.qr = false;
   out.path = n.path;
@@ -313,38 +343,43 @@ const ordered = nodes.map((n) => {
 });
 
 const t = storeWay.tags;
+const floorSheet = { width: Math.ceil((maxX - minX) / MPU), height: Math.ceil((maxY - minY) / MPU) };
 const graph = {
   meta: {
-    name: `Carrefour ${t.branch ? t.branch.replace(/^Hypermarché\s+/i, '') : ''}`.trim(),
-    type: 'store',
     metersPerUnit: MPU,
     qrSize: 0.25,
-    address: [t['addr:housenumber'], t['addr:street']].filter(Boolean).join(' ') + ', Montesson, France',
-    attribution: '© OpenStreetMap contributors · Products: Open Food Facts · Aisle layout is illustrative',
-    sources: { map: `https://www.openstreetmap.org/way/${storeWay.id}`, products: 'https://world.openfoodfacts.org', mapFetched: osm.fetched, productsFetched: off.fetched },
-    featured,
-    floors: [
-      {
-        id: 0,
-        name: 'Sales floor',
-        short: 'S',
-        spoken: 'the sales floor',
-        width: Math.ceil((maxX - minX) / MPU),
-        height: Math.ceil((maxY - minY) / MPU),
-        outlines,
-        rooms,
-      },
-    ],
+    floors: [{ id: 0, name: 'Sales floor', name_it: 'Area vendita', short: 'S', spoken: 'the sales floor', spoken_it: 'piano vendita', ...floorSheet, outlines, rooms }],
   },
   nodes: ordered,
   products,
 };
+const productCount = products.length;
+const sectionCount = new Set(products.map((p) => p.section)).size;
+writeVenue({
+  retailer: 'carrefour',
+  storeId: 'montesson',
+  store: {
+    id: 'carrefour',
+    order: 3,
+    name: 'Carrefour Montesson (real data)',
+    name_it: 'Carrefour Montesson (dati reali)',
+    retailer: { id: 'carrefour', name: 'Carrefour' },
+    store: { id: 'montesson', name: t.branch || 'Montesson' },
+    type: 'store',
+    version: '2026-11-16',
+    address: [t['addr:housenumber'], t['addr:street']].filter(Boolean).join(' ') + ', Montesson, France',
+    attribution: '© OpenStreetMap contributors · Products: Open Food Facts · Aisle layout is illustrative',
+    attribution_it: '© OpenStreetMap contributors · Prodotti: Open Food Facts · La disposizione delle corsie è illustrativa',
+    sources: { map: `https://www.openstreetmap.org/way/${storeWay.id}`, products: 'https://world.openfoodfacts.org', mapFetched: osm.fetched, productsFetched: off.fetched },
+    featured,
+  },
+  graph,
+  productColumns: ['id', 'name', 'brand', 'quantity', 'location', 'image'],
+});
 
-const file = path.resolve(__dirname, '../src/db/carrefour-montesson.json');
-fs.writeFileSync(file, JSON.stringify(graph) + '\n');
 const area = Math.abs(storePoly.reduce((s, p, i) => (i + 1 < storePoly.length ? s + p[0] * storePoly[i + 1][1] - storePoly[i + 1][0] * p[1] : s), 0)) / 2;
 console.log(
-  `${graph.meta.name}: real outline ${Math.round(area)} m2, ${outlines.length} outlines, ${entrances.length} entrances; ` +
-    `${ordered.length} nodes (${ordered.filter((n) => n.qr !== false).length} markers), ${rooms.length} sections, ${products.length} real products ` +
-    `in ${new Set(products.map((p) => p.section)).size} sections; sheet ${graph.meta.floors[0].width} x ${graph.meta.floors[0].height} units`
+  `Carrefour Montesson: real outline ${Math.round(area)} m2, ${outlines.length} outlines, ${entrances.length} entrances; ` +
+    `${ordered.length} nodes (${ordered.filter((n) => n.qr !== false).length} markers), ${rooms.length} sections, ${productCount} real products ` +
+    `in ${sectionCount} sections; sheet ${floorSheet.width} x ${floorSheet.height} units`
 );

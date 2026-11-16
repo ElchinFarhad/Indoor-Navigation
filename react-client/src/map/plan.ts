@@ -39,6 +39,8 @@ const STYLES: { [kind: string]: KindStyle } = {
   household: { fill: '#e7ebf0', category: 'Household' },
   care: { fill: '#f6e1ee', category: 'Household' },
   checkout: { fill: '#e3e7ef', category: 'Checkout' },
+  // a shelf bay with nothing assigned to it
+  empty: { fill: '#f1f2f5', category: 'Other' },
 };
 
 const DEFAULT_STYLE: KindStyle = { fill: '#eceff4', category: 'Other' };
