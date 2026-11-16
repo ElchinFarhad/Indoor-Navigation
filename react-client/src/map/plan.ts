@@ -4,7 +4,7 @@
  * for the ground texture of the 3D walk-through. The SVG map view and the
  * Three.js scene both build on this, so they always show the same building.
  */
-import { Floor, PlanDoor, PlanRoom } from '../nav/building';
+import { Floor, PlanDoor, PlanOutline, PlanRoom } from '../nav/building';
 
 export interface KindStyle {
   /** Fill colour of the room on the map. */
@@ -46,6 +46,29 @@ const DEFAULT_STYLE: KindStyle = { fill: '#eceff4', category: 'Other' };
 export const CORRIDOR_FILL = '#ffffff';
 export const WALL_COLOR = '#8f99ad';
 export const OUTLINE_COLOR = '#4d566b';
+
+/** Colours of surveyed outlines (see PlanOutline), by kind. */
+export const OUTLINE_FILL: { [kind: string]: string } = {
+  site: '#e3e6ec',
+  shop: '#d5d9e2',
+  corridor: '#f1f3f6',
+  store: CORRIDOR_FILL,
+};
+/** Colour around the building when the plan has surveyed outlines. */
+export const OUTSIDE_FILL = '#c9ccd3';
+
+export function outlineFill(outline: PlanOutline): string {
+  return OUTLINE_FILL[outline.kind] || OUTLINE_FILL.shop;
+}
+
+/** The middle of an outline's bounding box and its size, for placing its name. */
+export function outlineBox(outline: PlanOutline) {
+  const xs = outline.points.map((p) => p[0]);
+  const ys = outline.points.map((p) => p[1]);
+  const x = Math.min(...xs);
+  const y = Math.min(...ys);
+  return { x, y, w: Math.max(...xs) - x, h: Math.max(...ys) - y };
+}
 
 export function kindStyle(kind: string): KindStyle {
   return STYLES[kind] || DEFAULT_STYLE;
@@ -108,6 +131,36 @@ export function wallSegments(floor: Floor, metersPerUnit: number): Segment[] {
       }
     }
   }
+  // The surveyed outline of the store is a wall too, open where an entrance door meets it.
+  const entrances: PlanDoor[] = [];
+  for (const room of floor.rooms) for (const door of room.doors || []) if (door.entrance) entrances.push(door);
+  for (const outline of floor.outlines) {
+    if (outline.kind !== 'store') continue;
+    const pts = outline.points;
+    for (let i = 0; i + 1 < pts.length; i++) {
+      const ax = pts[i][0];
+      const ay = pts[i][1];
+      const dx = pts[i + 1][0] - ax;
+      const dy = pts[i + 1][1] - ay;
+      const length = Math.hypot(dx, dy);
+      if (length < 0.5) continue;
+      const gaps: number[][] = [];
+      for (const door of entrances) {
+        const along = ((door.x - ax) * dx + (door.y - ay) * dy) / length;
+        const across = Math.abs((door.x - ax) * dy - (door.y - ay) * dx) / length;
+        const half = doorWidth(door, metersPerUnit) / 2;
+        if (across < 3 && along > -half && along < length + half) gaps.push([along - half, along + half]);
+      }
+      gaps.sort((a, b) => a[0] - b[0]);
+      let from = 0;
+      const piece = (a: number, b: number) => out.push({ x1: ax + (dx * a) / length, y1: ay + (dy * a) / length, x2: ax + (dx * b) / length, y2: ay + (dy * b) / length });
+      for (const gap of gaps) {
+        if (gap[0] > from + 0.5) piece(from, Math.min(gap[0], length));
+        from = Math.max(from, gap[1]);
+      }
+      if (length > from + 0.5) piece(from, length);
+    }
+  }
   return out;
 }
 
@@ -115,8 +168,20 @@ export function wallSegments(floor: Floor, metersPerUnit: number): Segment[] {
 export function drawPlan(ctx: CanvasRenderingContext2D, floor: Floor, scale: number, metersPerUnit: number) {
   ctx.save();
   ctx.scale(scale, scale);
-  ctx.fillStyle = CORRIDOR_FILL;
+  ctx.fillStyle = floor.outlines.length > 0 ? OUTSIDE_FILL : CORRIDOR_FILL;
   ctx.fillRect(0, 0, floor.width, floor.height);
+  for (const outline of floor.outlines) {
+    ctx.fillStyle = outlineFill(outline);
+    ctx.beginPath();
+    outline.points.forEach((p, i) => (i === 0 ? ctx.moveTo(p[0], p[1]) : ctx.lineTo(p[0], p[1])));
+    ctx.closePath();
+    ctx.fill();
+    if (outline.kind === 'shop') {
+      ctx.strokeStyle = 'rgba(77, 86, 107, 0.35)';
+      ctx.lineWidth = 0.8;
+      ctx.stroke();
+    }
+  }
   for (const room of floor.rooms) {
     ctx.fillStyle = kindStyle(room.kind).fill;
     ctx.fillRect(room.x, room.y, room.w, room.h);

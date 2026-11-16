@@ -1,6 +1,6 @@
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { floorPlanUrl } from '../assets/maps';
-import { CORRIDOR_FILL, doorSegment, kindStyle } from '../map/plan';
+import { CORRIDOR_FILL, doorSegment, kindStyle, outlineBox, outlineFill, OUTSIDE_FILL } from '../map/plan';
 import { Building, NavNode, PlanRoom } from '../nav/building';
 import { clamp } from '../nav/geometry';
 import { NavSnapshot } from '../nav/navigator';
@@ -91,9 +91,12 @@ const MapView = ({ building, floor, onFloorChange, snapshot, destinationId, comp
       const span = compact ? COMPACT_SPAN : FOLLOW_SPAN;
       return { cx: here.x, cy: here.y, upp: span / Math.min(size.w, size.h) };
     }
-    const upp = Math.max((f.width + 2 * MARGIN) / size.w, (f.height + 2 * MARGIN) / size.h);
-    return { cx: f.width / 2, cy: f.height / 2, upp };
-  }, [here, picking, compact, size.w, size.h, f.width, f.height]);
+    // (A surveyed plan shows the surroundings too: start on the store itself.)
+    const store = f.outlines.find((o) => o.kind === 'store');
+    const fit = store ? outlineBox(store) : { x: 0, y: 0, w: f.width, h: f.height };
+    const upp = Math.max((fit.w + 2 * MARGIN) / size.w, (fit.h + 2 * MARGIN) / size.h);
+    return { cx: fit.x + fit.w / 2, cy: fit.y + fit.h / 2, upp };
+  }, [here, picking, compact, size.w, size.h, f]);
 
   const view = (!compact && manual) || auto;
   const upp = view.upp;
@@ -179,6 +182,7 @@ const MapView = ({ building, floor, onFloorChange, snapshot, destinationId, comp
   const destHere = !!destination && destination.floor === f.id;
   const plan = floorPlanUrl(f.map);
   const hasVector = f.rooms.length > 0;
+  const surveyed = f.outlines.length > 0;
   const accuracyUnits = here && snapshot ? clamp(snapshot.accuracy / mpu, px(10), 90) : 0;
   const showMarkers = !!onPickNode || (!compact && upp < 0.9);
   const flow = px(16);
@@ -211,7 +215,30 @@ const MapView = ({ building, floor, onFloorChange, snapshot, destinationId, comp
         onWheel={onWheel}
       >
         {/* ------------------------------------------------------ building */}
-        <rect x={0} y={0} width={f.width} height={f.height} fill={CORRIDOR_FILL} />
+        <rect x={0} y={0} width={f.width} height={f.height} fill={surveyed ? OUTSIDE_FILL : CORRIDOR_FILL} />
+        {f.outlines.map((o) => (
+          <polygon
+            key={o.id}
+            points={o.points.map((pt) => pt.join(',')).join(' ')}
+            fill={outlineFill(o)}
+            className={`map-view__shape map-view__shape--${o.kind}`}
+            strokeWidth={o.kind === 'store' ? Math.max(2.6, px(2)) : Math.max(0.8, px(0.8))}
+          />
+        ))}
+        {f.outlines.map((o) => {
+          if (!o.name || compact) return null;
+          const b = outlineBox(o);
+          const fontPx = 9;
+          const fits = Math.floor(b.w / upp / (fontPx * 0.56)) - 1;
+          if (b.h / upp < fontPx * 1.6 || fits < 3) return null;
+          const lines = wrapLabel(o.name, fits);
+          if (!lines || lines.length !== 1) return null;
+          return (
+            <text key={`name-${o.id}`} className="map-view__shape-name" x={b.x + b.w / 2} y={b.y + b.h / 2} fontSize={px(fontPx)} textAnchor="middle" dominantBaseline="central">
+              {lines[0]}
+            </text>
+          );
+        })}
         {plan && <image href={plan} x={0} y={0} width={f.width} height={f.height} preserveAspectRatio="xMinYMin meet" />}
         {corridors.map((d, i) => (
           <path key={i} d={d} className="map-view__corridor" strokeWidth={px(2)} strokeDasharray={`${px(4)} ${px(5)}`} />
@@ -254,7 +281,7 @@ const MapView = ({ building, floor, onFloorChange, snapshot, destinationId, comp
             );
           })
         )}
-        {hasVector && <rect x={0} y={0} width={f.width} height={f.height} className="map-view__outline" strokeWidth={Math.max(2.6, px(2))} />}
+        {hasVector && !surveyed && <rect x={0} y={0} width={f.width} height={f.height} className="map-view__outline" strokeWidth={Math.max(2.6, px(2))} />}
 
         {/* stairs get a few treads so they read as stairs */}
         {f.rooms
@@ -354,6 +381,7 @@ const MapView = ({ building, floor, onFloorChange, snapshot, destinationId, comp
           </g>
         )}
       </svg>
+      {surveyed && building.attribution && <div className="map-view__credit">{building.attribution}</div>}
 
       {!compact && !!onFloorChange && building.floors.length > 1 && (
         <div className="map-view__floors" role="tablist" aria-label="Floor">

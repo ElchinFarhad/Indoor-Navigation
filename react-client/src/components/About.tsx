@@ -78,6 +78,8 @@ const About = () => (
         {building.name}: {building.floors.length} floor{building.floors.length === 1 ? '' : 's'},{' '}
         {building.rooms().length} destinations, {building.markers().length} QR markers.
       </p>
+      {building.address && <p>{building.address}</p>}
+      {building.attribution && <p className="footnote">{building.attribution}</p>}
       <p className="footnote">Master's thesis project, Politecnico di Torino — Rust, WebAssembly and React.</p>
     </main>
   </div>

@@ -8,6 +8,7 @@
  */
 import graph from './graph.json';
 import supermarket from './supermarket.json';
+import carrefour from './carrefour-montesson.json';
 
 export interface Venue {
   id: string;
@@ -18,6 +19,8 @@ export interface Venue {
 export const VENUES: Venue[] = [
   { id: 'engineering', name: 'Engineering Building', graph },
   { id: 'supermarket', name: 'FreshMart Supermarket', graph: supermarket },
+  // Real outline (OpenStreetMap) and real products (Open Food Facts): see docs/REAL-DATA.md.
+  { id: 'carrefour', name: 'Carrefour Montesson (real data)', graph: carrefour },
 ];
 
 const KEY = 'indoor-nav.venue';
