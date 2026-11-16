@@ -319,6 +319,7 @@ async function run() {
     });
     await page.addInitScript(installFakes);
     if (options.xr) await page.addInitScript(installFakeXr);
+    if (options.before) await options.before(page);
     await page.goto(BASE + url);
     return page;
   };
@@ -726,6 +727,69 @@ async function run() {
       step('finishing clears the list');
       await page.click('text=Finish');
       await page.waitForSelector('.shopping__empty');
+      await page.context().close();
+    }
+
+    /* ------------------------------------------------------------------ */
+    console.log('8. Real data: Carrefour Montesson (OpenStreetMap outline, Open Food Facts products)');
+    {
+      const venue = require('../src/db/carrefour-montesson.json');
+      const first = (section) => venue.products.find((p) => p.section === section);
+      // Three real products from aisles near the main entrance, so the simulated walk stays short.
+      const picks = [first('meals'), first('ice-creams'), first('frozen-pizzas')];
+      assert.ok(picks.every(Boolean), 'the catalogue has products in the sections used here');
+      // Product photos come from Open Food Facts: answered locally so the test needs no network.
+      const pixel = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', 'base64');
+      const page = await open('/?venue=carrefour', {
+        before: (p) => p.route('**/*openfoodfacts.org/**', (route) => route.fulfill({ status: 200, contentType: 'image/png', body: pixel })),
+      });
+      await page.waitForSelector('.shopping');
+      assert.strictEqual(await page.inputValue('[aria-label="Venue"]'), 'carrefour');
+      step('the real outline, the neighbouring shops and the data credit are on the map');
+      assert.ok((await page.$$('.map-view__shape--shop')).length > 30, 'neighbouring shops from OpenStreetMap');
+      assert.strictEqual((await page.$$('.map-view__shape--store')).length, 1);
+      assert.ok(/OpenStreetMap contributors/.test(await page.textContent(".map-view__credit")));
+      step('real products are found by name, with brand and pack size shown');
+      assert.ok((await page.$$('.product--rich')).length >= 5, 'featured products before any search');
+      for (const p of picks) {
+        await page.fill('[aria-label="Search products and sections"]', p.name);
+        const row = page.locator('.product--rich', { hasText: p.name }).first();
+        await row.waitFor();
+        if (p.brand) assert.ok((await row.textContent()).includes(p.brand), `brand of ${p.name}`);
+        await row.click();
+      }
+      await page.fill('[aria-label="Search products and sections"]', '');
+      const go = await page.textContent('.cta-bar');
+      assert.ok(go.indexOf('3 items3 stops') === 0 && go.indexOf('Start shopping') > 0, go);
+      await shot(page, 'carrefour-home');
+      await page.click('.shopping__go');
+      await page.waitForSelector('.sheet--intro');
+      await shot(page, 'carrefour-intro');
+
+      step('simulated walk from the main entrance through the three shelves to the checkout');
+      await page.click('text=Try a simulated walk');
+      await page.waitForSelector('.ar-view__canvas');
+      await page.waitForTimeout(2500);
+      await shot(page, 'carrefour-3d');
+      await page.click('button:has-text("Map")'); // (the credit line on the map mentions "OpenStreetMap" too)
+      await page.waitForTimeout(500);
+      await shot(page, 'carrefour-map');
+      await page.click('button:has-text("3D")');
+      const seen = [];
+      for (let i = 0; i < 4; i++) {
+        await page.waitForSelector('.sheet--arrival', { timeout: 180000 });
+        seen.push(await page.textContent('.sheet--arrival h2'));
+        if (i === 0) await shot(page, 'carrefour-stop');
+        if (i < 3) {
+          await page.click('text=Got it · next stop');
+          await page.waitForFunction(() => !document.querySelector('.sheet--arrival'));
+        }
+      }
+      assert.deepStrictEqual(seen.slice().sort(), ['Checkout', 'Ice cream', 'Pizzas', 'Ready meals'].sort(), JSON.stringify(seen));
+      assert.strictEqual(seen[3], 'Checkout');
+      const summary = await page.textContent('.sheet--arrival');
+      assert.ok(summary.indexOf('3 items in your basket') >= 0, summary);
+      await shot(page, 'carrefour-checkout');
       await page.context().close();
     }
 

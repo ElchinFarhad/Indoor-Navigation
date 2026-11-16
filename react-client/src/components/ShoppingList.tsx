@@ -16,6 +16,19 @@ function load(): string[] {
   }
 }
 
+/** Lower case without accents, so "creme" finds "Crème". */
+function plain(text: string): string {
+  return text
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
+}
+
+/** "Brand · 1 l", for catalogues that know it. */
+export function productDetail(p: { brand?: string; quantity?: string }): string {
+  return [p.brand, p.quantity].filter(Boolean).join(' · ');
+}
+
 interface Props {
   /** Text of the page's search box: matching products are offered for the list. */
   query: string;
@@ -43,12 +56,17 @@ const ShoppingList = ({ query, startId, finished }: Props) => {
 
   const q = query.trim().toLowerCase();
   const matches = useMemo(() => {
+    const has = (text: string | undefined) => !!text && plain(text).includes(plain(q));
     const pool = q
-      ? building.products.filter((p) => p.name.toLowerCase().includes(q) || p.section.name.toLowerCase().includes(q))
+      ? building.products.filter((p) => has(p.name) || has(p.brand) || has(p.section.name))
+      : building.featured.length > 0
+      ? building.featured
       : building.products.filter((p) => ['milk', 'bread', 'eggs', 'apples', 'coffee', 'spaghetti', 'still-water', 'toilet-paper'].indexOf(p.id) >= 0);
     return pool.slice(0, 12);
   }, [q]);
 
+  // A catalogue with brands and photos gets rows instead of chips.
+  const rich = building.products.some((p) => !!p.brand || !!p.image);
   const trip = useMemo(() => planTrip(building, ids, startId), [ids, startId]);
   const toggle = (id: string) => setIds((list) => (list.indexOf(id) >= 0 ? list.filter((x) => x !== id) : list.concat(id)));
 
@@ -73,7 +91,7 @@ const ShoppingList = ({ query, startId, finished }: Props) => {
               <li key={id}>
                 <span>
                   <strong>{p.name}</strong>
-                  <small>{p.section.name}</small>
+                  <small>{[productDetail(p), p.section.name].filter(Boolean).join(' · ')}</small>
                 </span>
                 <button type="button" aria-label={`Remove ${p.name}`} onClick={() => toggle(id)}>
                   ×
@@ -85,13 +103,21 @@ const ShoppingList = ({ query, startId, finished }: Props) => {
       )}
 
       <p className="shopping__label">{q ? 'Matching products' : 'Often bought'}</p>
-      <div className="shopping__products">
+      <div className={`shopping__products${rich ? ' shopping__products--rich' : ''}`}>
         {matches.map((p) => {
           const on = ids.indexOf(p.id) >= 0;
           return (
-            <button key={p.id} type="button" className={`product${on ? ' is-on' : ''}`} aria-pressed={on} aria-label={`${on ? 'Remove' : 'Add'} ${p.name}`} onClick={() => toggle(p.id)}>
+            <button key={p.id} type="button" className={`product${on ? ' is-on' : ''}${rich ? ' product--rich' : ''}`} aria-pressed={on} aria-label={`${on ? 'Remove' : 'Add'} ${p.name}`} onClick={() => toggle(p.id)}>
               <span>{on ? '✓' : '+'}</span>
-              {p.name}
+              {rich && p.image && <img src={p.image} alt="" loading="lazy" width={36} height={36} onError={(e) => ((e.target as HTMLImageElement).style.visibility = 'hidden')} />}
+              {rich ? (
+                <span className="product__text">
+                  <strong>{p.name}</strong>
+                  <small>{[productDetail(p), p.section.name].filter(Boolean).join(' · ')}</small>
+                </span>
+              ) : (
+                p.name
+              )}
             </button>
           );
         })}

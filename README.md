@@ -232,6 +232,16 @@ Requirements, data model, the
 trip-planning logic and what a real store would still need are in
 [docs/SUPERMARKET.md](docs/SUPERMARKET.md).
 
+### Real data: Carrefour Montesson
+
+A third venue tests the system on data that was not designed for it: the real outline, entrances and
+surroundings of the Carrefour hypermarket in Montesson (from OpenStreetMap's indoor mapping) and some
+330 real products with brand, pack size, barcode and photo (from the Open Food Facts API, products
+recorded as sold at Carrefour). Open `/?venue=carrefour`. Carrefour itself publishes neither an API
+nor floor plans, so the aisles inside the real outline, and which category stands where, are laid out
+by a script and are *not* the real store's. What is real, what is not, how it is built and the
+licences: [docs/REAL-DATA.md](docs/REAL-DATA.md).
+
 ## Voice and sounds
 
 **Speech.** A web page without a server cannot ship its own recorded or neural voice, so the app speaks

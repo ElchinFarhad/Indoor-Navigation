@@ -1,0 +1,2101 @@
+{
+ "source": "Open Food Facts, https://world.openfoodfacts.org, ODbL 1.0; product images CC BY-SA",
+ "query": "stores_tags=carrefour, countries=france, sorted by number of scans",
+ "fetched": "2026-11-16",
+ "sections": {
+  "fruits": {
+   "category": "fresh-fruits",
+   "products": [
+    {
+     "code": "3276559424773",
+     "name": "KIWIS bio",
+     "brand": "Carrefour BIO",
+     "quantity": "6 fruits",
+     "image": "https://images.openfoodfacts.org/images/products/327/655/942/4773/front_fr.28.200.jpg",
+     "scans": 6
+    },
+    {
+     "code": "8717496045126",
+     "name": "Driscoll’s 125g",
+     "brand": "Driscoll's",
+     "quantity": "125 g",
+     "image": "https://images.openfoodfacts.org/images/products/871/749/604/5126/front_en.13.200.jpg",
+     "scans": 10
+    },
+    {
+     "code": "3523680468016",
+     "name": "Citrons",
+     "brand": "Carrefour BIO",
+     "quantity": "500g",
+     "image": "https://images.openfoodfacts.org/images/products/352/368/046/8016/front_fr.10.200.jpg",
+     "scans": 6
+    },
+    {
+     "code": "3523680345614",
+     "name": "Gariguette de pleine terre du Périgord IGP",
+     "brand": "Carrefour",
+     "quantity": "250 g",
+     "image": "https://images.openfoodfacts.org/images/products/352/368/034/5614/front_fr.13.200.jpg",
+     "scans": 2
+    },
+    {
+     "code": "3276554567963",
+     "name": "Fraises",
+     "brand": "",
+     "quantity": "500 g",
+     "image": "https://images.openfoodfacts.org/images/products/327/655/456/7963/front_fr.15.200.jpg",
+     "scans": 2
+    },
+    {
+     "code": "8445509112175",
+     "name": "Citrons verts 3 pièces",
+     "brand": "Westfalia Fruit",
+     "quantity": "3",
+     "image": "https://images.openfoodfacts.org/images/products/844/550/911/2175/front_fr.6.200.jpg",
+     "scans": 2
+    },
+    {
+     "code": "3276554565495",
+     "name": "Citrons jaunes Primofiori",
+     "brand": "",
+     "quantity": "1 kg",
+     "image": "https://images.openfoodfacts.org/images/products/327/655/456/5495/front_fr.6.200.jpg",
+     "scans": 1
+    },
+    {
+     "code": "2868532028866",
+     "name": "Mangue carrefour",
+     "brand": "",
+     "quantity": "",
+     "image": "https://images.openfoodfacts.org/images/products/286/853/202/8866/front_fr.4.200.jpg",
+     "scans": 1
+    },
+    {
+     "code": "3276550063575",
+     "name": "Pommes",
+     "brand": "Carrefour BIO",
+     "quantity": "8 fruits (115 à 135 g)",
+     "image": "https://images.openfoodfacts.org/images/products/327/655/006/3575/front_fr.3.200.jpg",
+     "scans": 1
+    },
+    {
+     "code": "3276550374428",
+     "name": "Pomelo",
+     "brand": "Carrefour",
+     "quantity": "2",
+     "image": "https://images.openfoodfacts.org/images/products/327/655/037/4428/front_fr.11.200.jpg",
+     "scans": 1
+    },
+    {
+     "code": "3523680407350",
+     "name": "Mirabelles bio",
+     "brand": "Carrefour",
+     "quantity": "500 g",
+     "image": "https://images.openfoodfacts.org/images/products/352/368/040/7350/front_fr.4.200.jpg",
+     "scans": 0
+    },
+    {
+     "code": "3276555700192",
+     "name": "Oranges à jus",
+     "brand": "",
+     "quantity": "3 kg",
+     "image": "https://images.openfoodfacts.org/images/products/327/655/570/0192/front_fr.4.200.jpg",
+     "scans": 2
+    }
+   ]
+  },
+  "vegetables": {
+   "category": "fresh-vegetables",
+   "products": [
+    {
+     "code": "3504182960123",
+     "name": "Tomates Cerises Allongées",
+     "brand": "Azura",
+     "quantity": "250 g",
+     "image": "https://images.openfoodfacts.org/images/products/350/418/296/0123/front_fr.50.200.jpg",
+     "scans": 158
+    },
+    {
+     "code": "3245413157522",
+     "name": "Roquette",
+     "brand": "Carrefour",
+     "quantity": "125 g",
+     "image": "https://images.openfoodfacts.org/images/products/324/541/315/7522/front_fr.46.200.jpg",
+     "scans": 7
+    },
+    {
+     "code": "3245413152527",
+     "name": "Salade prête à consommer Iceberg",
+     "brand": "Carrefour",
+     "quantity": "300 g",
+     "image": "https://images.openfoodfacts.org/images/products/324/541/315/2527/front_fr.85.200.jpg",
+     "scans": 6
+    },
+    {
+     "code": "3560071486945",
+     "name": "Jeunes pousses d'épinard",
+     "brand": "Carrefour",
+     "quantity": "100 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/148/6945/front_fr.3.200.jpg",
+     "scans": 1
+    },
+    {
+     "code": "3280221911140",
+     "name": "Champignons de Paris émincés",
+     "brand": "Florette",
+     "quantity": "350 g",
+     "image": "https://images.openfoodfacts.org/images/products/328/022/191/1140/front_fr.20.200.jpg",
+     "scans": 1
+    },
+    {
+     "code": "3560070476923",
+     "name": "Epinards à cuire",
+     "brand": "Carrefour",
+     "quantity": "300 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/047/6923/front_fr.3.200.jpg",
+     "scans": 1
+    },
+    {
+     "code": "4316268407267",
+     "name": "Poivrons (mini poivrons multicolores",
+     "brand": "The Greenery",
+     "quantity": "200g",
+     "image": "https://images.openfoodfacts.org/images/products/431/626/840/7267/front_fr.9.200.jpg",
+     "scans": 3
+    },
+    {
+     "code": "3523680482258",
+     "name": "Oignon jaune",
+     "brand": "Carrefour",
+     "quantity": "500g",
+     "image": "https://images.openfoodfacts.org/images/products/352/368/048/2258/front_fr.26.200.jpg",
+     "scans": 1
+    },
+    {
+     "code": "3276554571304",
+     "name": "Blancs de Poireaux",
+     "brand": "Carrefour",
+     "quantity": "500 g",
+     "image": "https://images.openfoodfacts.org/images/products/327/655/457/1304/front_fr.17.200.jpg",
+     "scans": 3
+    },
+    {
+     "code": "3276554574848",
+     "name": "Oignon jaune",
+     "brand": "Le Geste Saveur",
+     "quantity": "1 kg",
+     "image": "https://images.openfoodfacts.org/images/products/327/655/457/4848/front_fr.4.200.jpg",
+     "scans": 1
+    },
+    {
+     "code": "3276555494497",
+     "name": "Asperges blanches",
+     "brand": "Carrefour",
+     "quantity": "500 g",
+     "image": "https://images.openfoodfacts.org/images/products/327/655/549/4497/front_fr.28.200.jpg",
+     "scans": 1
+    },
+    {
+     "code": "3760038600043",
+     "name": "2kg De Carottes carrefour",
+     "brand": "",
+     "quantity": "2 kg",
+     "image": "https://images.openfoodfacts.org/images/products/376/003/860/0043/front_fr.11.200.jpg",
+     "scans": 1
+    },
+    {
+     "code": "3276550102137",
+     "name": "Ail",
+     "brand": "Carrefour",
+     "quantity": "",
+     "image": "https://images.openfoodfacts.org/images/products/327/655/010/2137/front_fr.6.200.jpg",
+     "scans": 1
+    }
+   ]
+  },
+  "juices": {
+   "category": "fruit-juices",
+   "products": [
+    {
+     "code": "3560070820597",
+     "name": "100% pur jus JUS DE POMME",
+     "brand": "Carrefour BIO",
+     "quantity": "1 l",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/082/0597/front_fr.139.200.jpg",
+     "scans": 78
+    },
+    {
+     "code": "3560070823246",
+     "name": "100% pur jus jus d'orange sans pulpe",
+     "brand": "Carrefour",
+     "quantity": "1 l",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/082/3246/front_fr.112.200.jpg",
+     "scans": 45
+    },
+    {
+     "code": "3502110010643",
+     "name": "Tropicana Essentiels Vitalité pomme, banane, kiwi, ananas, épinard vitamine C & magnésium 1 L",
+     "brand": "Tropicana",
+     "quantity": "1000 ml",
+     "image": "https://images.openfoodfacts.org/images/products/350/211/001/0643/front_fr.103.200.jpg",
+     "scans": 25
+    },
+    {
+     "code": "3560070275267",
+     "name": "100% Pur Jus - Pomme",
+     "brand": "CMI (Carrefour Marchandises Internationales)",
+     "quantity": "1 L",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/027/5267/front_fr.100.200.jpg",
+     "scans": 61
+    },
+    {
+     "code": "3245412373039",
+     "name": "100% pur jus orange sans pulpe",
+     "brand": "Carrefour",
+     "quantity": "1 l",
+     "image": "https://images.openfoodfacts.org/images/products/324/541/237/3039/front_fr.134.200.jpg",
+     "scans": 24
+    },
+    {
+     "code": "3123340008035",
+     "name": "Jus d orange",
+     "brand": "Joker",
+     "quantity": "1,5 l",
+     "image": "https://images.openfoodfacts.org/images/products/312/334/000/8035/front_fr.72.200.jpg",
+     "scans": 9
+    },
+    {
+     "code": "3560071438951",
+     "name": "100% pur jus Pomme",
+     "brand": "Carrefour",
+     "quantity": "90 cl",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/143/8951/front_fr.16.200.jpg",
+     "scans": 11
+    },
+    {
+     "code": "3560070338337",
+     "name": "100% PUR JUS ORANGE Avec pulpe",
+     "brand": "Carrefour",
+     "quantity": "1 l",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/033/8337/front_fr.85.200.jpg",
+     "scans": 17
+    },
+    {
+     "code": "3560071516376",
+     "name": "100% pur jus ANANAS, MANGUE PASSION",
+     "brand": "Carrefour",
+     "quantity": "1 l",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/151/6376/front_fr.32.200.jpg",
+     "scans": 9
+    },
+    {
+     "code": "3560071227661",
+     "name": "Jus de citron",
+     "brand": "Carrefour",
+     "quantity": "200 ml",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/122/7661/front_fr.55.200.jpg",
+     "scans": 19
+    },
+    {
+     "code": "3560071040420",
+     "name": "100% pur jus pomme",
+     "brand": "Carrefour",
+     "quantity": "20 cl",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/104/0420/front_fr.75.200.jpg",
+     "scans": 11
+    },
+    {
+     "code": "3608580913856",
+     "name": "100% Pur Jus Clémentines pressées",
+     "brand": "Andros",
+     "quantity": "1l",
+     "image": "https://images.openfoodfacts.org/images/products/360/858/091/3856/front_fr.39.200.jpg",
+     "scans": 5
+    },
+    {
+     "code": "3560071405830",
+     "name": "Multifruits",
+     "brand": "Carrefour",
+     "quantity": "2 l",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/140/5830/front_fr.62.200.jpg",
+     "scans": 8
+    },
+    {
+     "code": "3502110004239",
+     "name": "Tropicana Pamplemousse rose 1 L",
+     "brand": "Tropicana",
+     "quantity": "1000 ml",
+     "image": "https://images.openfoodfacts.org/images/products/350/211/000/4239/front_fr.75.200.jpg",
+     "scans": 10
+    },
+    {
+     "code": "3560070788521",
+     "name": "100% pur jus 4 agrumes",
+     "brand": "Carrefour",
+     "quantity": "1,5 L",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/078/8521/front_fr.108.200.jpg",
+     "scans": 3
+    },
+    {
+     "code": "3560071482947",
+     "name": "100% PUR FRUIT PRESSE ORANGE Jus d'orange",
+     "brand": "Carrefour",
+     "quantity": "1 l",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/148/2947/front_fr.16.200.jpg",
+     "scans": 6
+    },
+    {
+     "code": "8431876059656",
+     "name": "Orange avec Pulpe",
+     "brand": "Carrefour",
+     "quantity": "1 l",
+     "image": "https://images.openfoodfacts.org/images/products/843/187/605/9656/front_fr.29.200.jpg",
+     "scans": 1
+    },
+    {
+     "code": "3560070234868",
+     "name": "Jus De Raisin Blanc",
+     "brand": "Carrefour",
+     "quantity": "1 l",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/023/4868/front_fr.16.200.jpg",
+     "scans": 3
+    },
+    {
+     "code": "3560071485849",
+     "name": "100% pur jus POMME",
+     "brand": "Carrefour",
+     "quantity": "1 l",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/148/5849/front_fr.3.200.jpg",
+     "scans": 2
+    },
+    {
+     "code": "3020640148709",
+     "name": "Boisson rafraîchissante Multifruits.",
+     "brand": "REA",
+     "quantity": "2 l",
+     "image": "https://images.openfoodfacts.org/images/products/302/064/014/8709/front_fr.66.200.jpg",
+     "scans": 2
+    }
+   ]
+  },
+  "nuts": {
+   "category": "nuts",
+   "products": [
+    {
+     "code": "3560071084042",
+     "name": "Cacahuètes grillées sans sel ajouté.",
+     "brand": "Carrefour",
+     "quantity": "200 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/108/4042/front_fr.61.200.jpg",
+     "scans": 97
+    },
+    {
+     "code": "4008258065013",
+     "name": "Mandeln",
+     "brand": "Seeberger",
+     "quantity": "200g",
+     "image": "https://images.openfoodfacts.org/images/products/400/825/806/5013/front_de.105.200.jpg",
+     "scans": 98
+    },
+    {
+     "code": "4008258130018",
+     "name": "Cerneaux de noix",
+     "brand": "Seeberger",
+     "quantity": "150g",
+     "image": "https://images.openfoodfacts.org/images/products/400/825/813/0018/front_de.155.200.jpg",
+     "scans": 67
+    },
+    {
+     "code": "3560071051181",
+     "name": "Amandes décortiquées",
+     "brand": "Carrefour BIO",
+     "quantity": "200 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/105/1181/front_fr.57.200.jpg",
+     "scans": 45
+    },
+    {
+     "code": "4008258109007",
+     "name": "Noix de cajou",
+     "brand": "Seeberger",
+     "quantity": "150g",
+     "image": "https://images.openfoodfacts.org/images/products/400/825/810/9007/front_de.45.200.jpg",
+     "scans": 50
+    },
+    {
+     "code": "4008258100011",
+     "name": "Noisettes",
+     "brand": "Seeberger",
+     "quantity": "200g",
+     "image": "https://images.openfoodfacts.org/images/products/400/825/810/0011/front_en.34.200.jpg",
+     "scans": 25
+    },
+    {
+     "code": "3560071008574",
+     "name": "PISTACHES Grillées & salées",
+     "brand": "Carrefour",
+     "quantity": "300 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/100/8574/front_fr.76.200.jpg",
+     "scans": 43
+    },
+    {
+     "code": "3560070350889",
+     "name": "Châtaignes Pelées au feu",
+     "brand": "Carrefour",
+     "quantity": "210 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/035/0889/front_fr.43.200.jpg",
+     "scans": 18
+    },
+    {
+     "code": "3560071493714",
+     "name": "Nature of Nuts - Cajou & Cranberries sans sel ajouté",
+     "brand": "Carrefour",
+     "quantity": "200 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/149/3714/front_fr.27.200.jpg",
+     "scans": 16
+    },
+    {
+     "code": "3270720812505",
+     "name": "Noix de pécan",
+     "brand": "daco bello",
+     "quantity": "2x62,5g (125g)",
+     "image": "https://images.openfoodfacts.org/images/products/327/072/081/2505/front_fr.35.200.jpg",
+     "scans": 16
+    },
+    {
+     "code": "3327271206861",
+     "name": "Menguy's cacahuetes grillees salees 410 g",
+     "brand": "Menguy's",
+     "quantity": "0.41 kg",
+     "image": "https://images.openfoodfacts.org/images/products/332/727/120/6861/front_fr.22.200.jpg",
+     "scans": 13
+    },
+    {
+     "code": "3560070713615",
+     "name": "COCKTAIL Grillé & Salé",
+     "brand": "Carrefour",
+     "quantity": "110 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/071/3615/front_es.53.200.jpg",
+     "scans": 23
+    },
+    {
+     "code": "3560071112974",
+     "name": "Pistaches grillées salées",
+     "brand": "Carrefour",
+     "quantity": "250 g (2 x 125 g)",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/111/2974/front_fr.67.200.jpg",
+     "scans": 12
+    },
+    {
+     "code": "3560071231750",
+     "name": "Amandes Grillées sans sel ajouté",
+     "brand": "Carrefour",
+     "quantity": "200 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/123/1750/front_fr.61.200.jpg",
+     "scans": 24
+    },
+    {
+     "code": "0014113230018",
+     "name": "Amandes décortiquées sans sel ajouté",
+     "brand": "Wonderful",
+     "quantity": "200 g",
+     "image": "https://images.openfoodfacts.org/images/products/001/411/323/0018/front_en.78.200.jpg",
+     "scans": 13
+    },
+    {
+     "code": "3560071449315",
+     "name": "Pistache",
+     "brand": "CARREFOUR FRANCE",
+     "quantity": "500 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/144/9315/front_fr.19.200.jpg",
+     "scans": 13
+    },
+    {
+     "code": "3270720007956",
+     "name": "Noix de cajou grillées sans sel ajoutés",
+     "brand": "Daco Bello",
+     "quantity": "200 g",
+     "image": "https://images.openfoodfacts.org/images/products/327/072/000/7956/front_fr.30.200.jpg",
+     "scans": 7
+    },
+    {
+     "code": "3270720008137",
+     "name": "Noisettes grillées sans sel ajoutés",
+     "brand": "Daco Bello",
+     "quantity": "175 g",
+     "image": "https://images.openfoodfacts.org/images/products/327/072/000/8137/front_fr.22.200.jpg",
+     "scans": 1
+    },
+    {
+     "code": "3560071416966",
+     "name": "Noix de cajou Caramélisées Fleur de sel",
+     "brand": "Carrefour",
+     "quantity": "120 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/141/6966/front_fr.37.200.jpg",
+     "scans": 7
+    },
+    {
+     "code": "3068230015567",
+     "name": "Noix bio au naturel",
+     "brand": "Sun",
+     "quantity": "100 g",
+     "image": "https://images.openfoodfacts.org/images/products/306/823/001/5567/front_fr.4.200.jpg",
+     "scans": 3
+    }
+   ]
+  },
+  "breads": {
+   "category": "breads",
+   "products": [
+    {
+     "code": "3760049790214",
+     "name": "Pain de mie Bio grandes tranches à la farine complète 500g",
+     "brand": "La Boulangère",
+     "quantity": "500 g",
+     "image": "https://images.openfoodfacts.org/images/products/376/004/979/0214/front_en.262.200.jpg",
+     "scans": 1105
+    },
+    {
+     "code": "3017760542890",
+     "name": "pain grillé pelletier",
+     "brand": "LU",
+     "quantity": "500 g e",
+     "image": "https://images.openfoodfacts.org/images/products/301/776/054/2890/front_en.187.200.jpg",
+     "scans": 315
+    },
+    {
+     "code": "3182180001477",
+     "name": "Grilletine au froment sans sucres ajoutés",
+     "brand": "Pasquier",
+     "quantity": "255 g",
+     "image": "https://images.openfoodfacts.org/images/products/318/218/000/1477/front_fr.81.200.jpg",
+     "scans": 335
+    },
+    {
+     "code": "3182180001996",
+     "name": "Biscottes Sans sucres ajoutés Blé complet",
+     "brand": "Pasquier",
+     "quantity": "300 g",
+     "image": "https://images.openfoodfacts.org/images/products/318/218/000/1996/front_fr.69.200.jpg",
+     "scans": 349
+    },
+    {
+     "code": "7311070032604",
+     "name": "Krisprolls complets",
+     "brand": "Pågen",
+     "quantity": "425 g",
+     "image": "https://images.openfoodfacts.org/images/products/731/107/003/2604/front_en.95.200.jpg",
+     "scans": 301
+    },
+    {
+     "code": "3228857000883",
+     "name": "Extra moelleux nature",
+     "brand": "Harrys",
+     "quantity": "500 g",
+     "image": "https://images.openfoodfacts.org/images/products/322/885/700/0883/front_en.130.200.jpg",
+     "scans": 227
+    },
+    {
+     "code": "3228857001101",
+     "name": "Beau & bon à la farine complète de blé",
+     "brand": "Harrys",
+     "quantity": "320 g",
+     "image": "https://images.openfoodfacts.org/images/products/322/885/700/1101/front_fr.132.200.jpg",
+     "scans": 287
+    },
+    {
+     "code": "3182180002542",
+     "name": "Grilletine Sans sucres ajoutés Blé complet",
+     "brand": "Pasquier",
+     "quantity": "255 g",
+     "image": "https://images.openfoodfacts.org/images/products/318/218/000/2542/front_fr.27.200.jpg",
+     "scans": 231
+    },
+    {
+     "code": "3560070308316",
+     "name": "Biscottes Complètes bio",
+     "brand": "Carrefour BIO",
+     "quantity": "300 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/030/8316/front_fr.146.200.jpg",
+     "scans": 159
+    },
+    {
+     "code": "3560070710713",
+     "name": "Pain grillé au ble complet bio",
+     "brand": "CARREFOUR FRANCE",
+     "quantity": "250 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/071/0713/front_es.81.200.jpg",
+     "scans": 162
+    },
+    {
+     "code": "2023040000005",
+     "name": "Pain bio",
+     "brand": "Carrefour",
+     "quantity": "500 g",
+     "image": "https://images.openfoodfacts.org/images/products/202/304/000/0005/front_fr.65.200.jpg",
+     "scans": 86
+    },
+    {
+     "code": "3256540000704",
+     "name": "Pains au lait format familial",
+     "brand": "Pasquier",
+     "quantity": "700 g  (2 x 350 g)",
+     "image": "https://images.openfoodfacts.org/images/products/325/654/000/0704/front_fr.144.200.jpg",
+     "scans": 86
+    },
+    {
+     "code": "3560070823291",
+     "name": "Biscottes Blé complet",
+     "brand": "Carrefour",
+     "quantity": "300 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/082/3291/front_fr.108.200.jpg",
+     "scans": 66
+    },
+    {
+     "code": "3245413497901",
+     "name": "8 Tortillas Blé et maïs",
+     "brand": "Sensation",
+     "quantity": "320 g",
+     "image": "https://images.openfoodfacts.org/images/products/324/541/349/7901/front_fr.75.200.jpg",
+     "scans": 61
+    },
+    {
+     "code": "3245412563256",
+     "name": "8 Tortillas au blé",
+     "brand": "Carrefour",
+     "quantity": "320 g",
+     "image": "https://images.openfoodfacts.org/images/products/324/541/256/3256/front_en.127.200.jpg",
+     "scans": 74
+    },
+    {
+     "code": "3276550087069",
+     "name": "baguette campagnarde",
+     "brand": "Carrefour",
+     "quantity": "250 g",
+     "image": "https://images.openfoodfacts.org/images/products/327/655/008/7069/front_fr.90.200.jpg",
+     "scans": 37
+    },
+    {
+     "code": "3245412567223",
+     "name": "Maxi Tranches Céréales",
+     "brand": "Pain de mie aux céréales et graines",
+     "quantity": "550 g",
+     "image": "https://images.openfoodfacts.org/images/products/324/541/256/7223/front_fr.139.200.jpg",
+     "scans": 51
+    },
+    {
+     "code": "3276550087038",
+     "name": "Pain complet",
+     "brand": "Carrefour",
+     "quantity": "300 g",
+     "image": "https://images.openfoodfacts.org/images/products/327/655/008/7038/front_fr.37.200.jpg",
+     "scans": 29
+    },
+    {
+     "code": "3560071253028",
+     "name": "6 Tortillas Blé",
+     "brand": "Carrefour BIO",
+     "quantity": "240g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/125/3028/front_fr.54.200.jpg",
+     "scans": 49
+    },
+    {
+     "code": "7622210141552",
+     "name": "Biscottes La Bretonne",
+     "brand": "LU",
+     "quantity": "290  g",
+     "image": "https://images.openfoodfacts.org/images/products/762/221/014/1552/front_fr.35.200.jpg",
+     "scans": 37
+    }
+   ]
+  },
+  "viennoiseries": {
+   "category": "viennoiseries",
+   "products": [
+    {
+     "code": "3270190207924",
+     "name": "Brioche Tranchée",
+     "brand": "Carrefour",
+     "quantity": "500 g",
+     "image": "https://images.openfoodfacts.org/images/products/327/019/020/7924/front_en.118.200.jpg",
+     "scans": 80
+    },
+    {
+     "code": "3256540000704",
+     "name": "Pains au lait format familial",
+     "brand": "Pasquier",
+     "quantity": "700 g  (2 x 350 g)",
+     "image": "https://images.openfoodfacts.org/images/products/325/654/000/0704/front_fr.144.200.jpg",
+     "scans": 86
+    },
+    {
+     "code": "3173310017307",
+     "name": "Gâche en tranches épaisses",
+     "brand": "Brioches et viennoiseries thomas",
+     "quantity": "600 g",
+     "image": "https://images.openfoodfacts.org/images/products/317/331/001/7307/front_fr.63.200.jpg",
+     "scans": 36
+    },
+    {
+     "code": "3256540003491",
+     "name": "Gâche tranchée aux œufs frais, beurre et crème fraîche",
+     "brand": "Pasquier",
+     "quantity": "500 grammes",
+     "image": "https://images.openfoodfacts.org/images/products/325/654/000/3491/front_fr.8.200.jpg",
+     "scans": 59
+    },
+    {
+     "code": "3560070798414",
+     "name": "Brioche tressée aux œufs frais",
+     "brand": "Carrefour",
+     "quantity": "600 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/079/8414/front_fr.28.200.jpg",
+     "scans": 22
+    },
+    {
+     "code": "8431876270013",
+     "name": "Mini Panettone avec pépites de chocolat",
+     "brand": "Carrefour",
+     "quantity": "90 g",
+     "image": "https://images.openfoodfacts.org/images/products/843/187/627/0013/front_fr.47.200.jpg",
+     "scans": 5
+    },
+    {
+     "code": "3276559431825",
+     "name": "chouquette nature - x 30",
+     "brand": "Carrefour",
+     "quantity": "280 g",
+     "image": "https://images.openfoodfacts.org/images/products/327/655/943/1825/front_en.34.200.jpg",
+     "scans": 7
+    },
+    {
+     "code": "8076809540643",
+     "name": "Cornetti Albicocca",
+     "brand": "Mulino Bianco",
+     "quantity": "300g",
+     "image": "https://images.openfoodfacts.org/images/products/807/680/954/0643/front_it.66.200.jpg",
+     "scans": 5
+    },
+    {
+     "code": "3228857001309",
+     "name": "Brioche tressée choco sans additif",
+     "brand": "Harrys",
+     "quantity": "500 g",
+     "image": "https://images.openfoodfacts.org/images/products/322/885/700/1309/front_fr.47.200.jpg",
+     "scans": 4
+    },
+    {
+     "code": "3245390213747",
+     "name": "8 mini-gâches",
+     "brand": "Grand Jury",
+     "quantity": "360 g",
+     "image": "https://images.openfoodfacts.org/images/products/324/539/021/3747/front_fr.14.200.jpg",
+     "scans": 0
+    },
+    {
+     "code": "3256540012349",
+     "name": "Pain au lait",
+     "brand": "Pasquier",
+     "quantity": "700 g",
+     "image": "",
+     "scans": 1
+    },
+    {
+     "code": "3256540031074",
+     "name": "briochettes au levain pasquier",
+     "brand": "Pasquier",
+     "quantity": "560g",
+     "image": "https://images.openfoodfacts.org/images/products/325/654/003/1074/front_fr.6.200.jpg",
+     "scans": 1
+    },
+    {
+     "code": "3256540035676",
+     "name": "Brioche en tranches au levain",
+     "brand": "Pasquier",
+     "quantity": "500 g",
+     "image": "https://images.openfoodfacts.org/images/products/325/654/003/5676/front_fr.29.200.jpg",
+     "scans": 1
+    },
+    {
+     "code": "8032755884958",
+     "name": "Panini al latte",
+     "brand": "retail food system srl",
+     "quantity": "350 g",
+     "image": "https://images.openfoodfacts.org/images/products/803/275/588/4958/front_fr.4.200.jpg",
+     "scans": 1
+    },
+    {
+     "code": "0201124008532",
+     "name": "Croissant",
+     "brand": "Carrefour city",
+     "quantity": "2",
+     "image": "https://images.openfoodfacts.org/images/products/020/112/400/8532/front_fr.3.200.jpg",
+     "scans": 0
+    },
+    {
+     "code": "3336772444641",
+     "name": "chocolatines",
+     "brand": "St Rolan",
+     "quantity": "270 g",
+     "image": "https://images.openfoodfacts.org/images/products/333/677/244/4641/front_fr.4.200.jpg",
+     "scans": 1
+    },
+    {
+     "code": "0202179021972",
+     "name": "PAINS AUX RAISINS ×4 Carrefour",
+     "brand": "",
+     "quantity": "",
+     "image": "https://images.openfoodfacts.org/images/products/020/217/902/1972/front_fr.4.200.jpg",
+     "scans": 1
+    },
+    {
+     "code": "01160376",
+     "name": "brioche vendéenne reflets de France",
+     "brand": "Reflets de France",
+     "quantity": "600g",
+     "image": "",
+     "scans": 2
+    },
+    {
+     "code": "3560071594374",
+     "name": "Colombe classique",
+     "brand": "Carrefour",
+     "quantity": "1 kg",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/159/4374/front_fr.12.200.jpg",
+     "scans": 1
+    }
+   ]
+  },
+  "biscuits": {
+   "category": "biscuits",
+   "products": [
+    {
+     "code": "3229820021027",
+     "name": "P'tit Nature Complet",
+     "brand": "Bjorg",
+     "quantity": "200 g",
+     "image": "https://images.openfoodfacts.org/images/products/322/982/002/1027/front_fr.262.200.jpg",
+     "scans": 381
+    },
+    {
+     "code": "3175681105423",
+     "name": "Cookie cacao pépites Sans Sucre",
+     "brand": "Gerblé",
+     "quantity": "130 g",
+     "image": "https://images.openfoodfacts.org/images/products/317/568/110/5423/front_fr.135.200.jpg",
+     "scans": 499
+    },
+    {
+     "code": "3251490320001",
+     "name": "Biscuit complet au germe de blé",
+     "brand": "Gerblé",
+     "quantity": "210 g",
+     "image": "https://images.openfoodfacts.org/images/products/325/149/032/0001/front_en.138.200.jpg",
+     "scans": 447
+    },
+    {
+     "code": "3061990143365",
+     "name": "Goût chocolat",
+     "brand": "BN",
+     "quantity": "285 g",
+     "image": "https://images.openfoodfacts.org/images/products/306/199/014/3365/front_en.95.200.jpg",
+     "scans": 334
+    },
+    {
+     "code": "3175681257566",
+     "name": "Gingembre saveur citron",
+     "brand": "Gerblé",
+     "quantity": "132 g (12 x 11 g)",
+     "image": "https://images.openfoodfacts.org/images/products/317/568/125/7566/front_en.37.200.jpg",
+     "scans": 358
+    },
+    {
+     "code": "7622210713780",
+     "name": "Belvita Petit Déjeuner Chocolat",
+     "brand": "LU",
+     "quantity": "400 g",
+     "image": "https://images.openfoodfacts.org/images/products/762/221/071/3780/front_en.221.200.jpg",
+     "scans": 335
+    },
+    {
+     "code": "7622210476104",
+     "name": "Véritable Petit Beurre",
+     "brand": "LU",
+     "quantity": "400 g (4 x 100 g)",
+     "image": "https://images.openfoodfacts.org/images/products/762/221/047/6104/front_fr.141.200.jpg",
+     "scans": 269
+    },
+    {
+     "code": "3017760000062",
+     "name": "Véritable Petit Beurre Pocket",
+     "brand": "LU",
+     "quantity": "300 g",
+     "image": "https://images.openfoodfacts.org/images/products/301/776/000/0062/front_en.70.200.jpg",
+     "scans": 299
+    },
+    {
+     "code": "8076809573252",
+     "name": "Baiocchi nocciola & cacao",
+     "brand": "Barilla",
+     "quantity": "260 g",
+     "image": "https://images.openfoodfacts.org/images/products/807/680/957/3252/front_en.148.200.jpg",
+     "scans": 243
+    },
+    {
+     "code": "3175681077324",
+     "name": "Biscuit chocolat saveur amande",
+     "brand": "Gerblé",
+     "quantity": "200 g",
+     "image": "https://images.openfoodfacts.org/images/products/317/568/107/7324/front_fr.110.200.jpg",
+     "scans": 293
+    },
+    {
+     "code": "3175681116832",
+     "name": "Sablé saveur Coco",
+     "brand": "Gerblé",
+     "quantity": "132g",
+     "image": "https://images.openfoodfacts.org/images/products/317/568/111/6832/front_fr.140.200.jpg",
+     "scans": 288
+    },
+    {
+     "code": "3041090061615",
+     "name": "Cracotte Chocolat",
+     "brand": "LU",
+     "quantity": "200 g",
+     "image": "https://images.openfoodfacts.org/images/products/304/109/006/1615/front_fr.176.200.jpg",
+     "scans": 281
+    },
+    {
+     "code": "3229820791081",
+     "name": "Gaufres Miel",
+     "brand": "Bjorg",
+     "quantity": "175 g",
+     "image": "https://images.openfoodfacts.org/images/products/322/982/079/1081/front_fr.149.200.jpg",
+     "scans": 154
+    },
+    {
+     "code": "7622210449313",
+     "name": "Prince Multicéréales Goût Chocolat Au Blé Complet",
+     "brand": "Prince",
+     "quantity": "293 g ℮ (15 biscuits)",
+     "image": "https://images.openfoodfacts.org/images/products/762/221/044/9313/front_fr.69.200.jpg",
+     "scans": 206
+    },
+    {
+     "code": "3175681039599",
+     "name": "Biscuit fondant choco noir sans sucres ajoutés",
+     "brand": "Gerblé",
+     "quantity": "126 g",
+     "image": "https://images.openfoodfacts.org/images/products/317/568/103/9599/front_fr.136.200.jpg",
+     "scans": 203
+    },
+    {
+     "code": "7622210713902",
+     "name": "Belvita original  - Biscuits petit déjeuner miel & pépites de chocolat",
+     "brand": "Belvita",
+     "quantity": "650 g",
+     "image": "https://images.openfoodfacts.org/images/products/762/221/071/3902/front_fr.168.200.jpg",
+     "scans": 158
+    },
+    {
+     "code": "3175681060586",
+     "name": "Sablés bio chocolat noir intense",
+     "brand": "Céréal Bio",
+     "quantity": "132g",
+     "image": "https://images.openfoodfacts.org/images/products/317/568/106/0586/front_fr.97.200.jpg",
+     "scans": 140
+    },
+    {
+     "code": "3270190128519",
+     "name": "Petit beurre tablette Chocolat noir",
+     "brand": "Carrefour BIO",
+     "quantity": "150 g",
+     "image": "https://images.openfoodfacts.org/images/products/327/019/012/8519/front_fr.175.200.jpg",
+     "scans": 116
+    },
+    {
+     "code": "8410376037883",
+     "name": "Galletas Chip Choco Sin Gluten Sin Azúcares Añadidos",
+     "brand": "Galletas Gullon",
+     "quantity": "125 g",
+     "image": "https://images.openfoodfacts.org/images/products/841/037/603/7883/front_en.90.200.jpg",
+     "scans": 102
+    },
+    {
+     "code": "3229820181738",
+     "name": "Biscuits Farine de Blé et Graines de Sésame",
+     "brand": "Bjorg",
+     "quantity": "184 g",
+     "image": "https://images.openfoodfacts.org/images/products/322/982/018/1738/front_fr.205.200.jpg",
+     "scans": 112
+    }
+   ]
+  },
+  "cakes": {
+   "category": "cakes",
+   "products": [
+    {
+     "code": "7622201809638",
+     "name": "Napolitain l'Original",
+     "brand": "LU",
+     "quantity": "180 g (6 x 30 g)",
+     "image": "https://images.openfoodfacts.org/images/products/762/220/180/9638/front_en.118.200.jpg",
+     "scans": 319
+    },
+    {
+     "code": "3178530408546",
+     "name": "Petites madeleines pépites chocolat",
+     "brand": "St Michel",
+     "quantity": "75 g",
+     "image": "https://images.openfoodfacts.org/images/products/317/853/040/8546/front_fr.158.200.jpg",
+     "scans": 46
+    },
+    {
+     "code": "3560070850792",
+     "name": "Cuillers pâtissiers",
+     "brand": "Carrefour",
+     "quantity": "300 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/085/0792/front_fr.61.200.jpg",
+     "scans": 41
+    },
+    {
+     "code": "3660140929752",
+     "name": "P'tit savane Chocolat",
+     "brand": "Brossard",
+     "quantity": "150 g (5x30g)",
+     "image": "https://images.openfoodfacts.org/images/products/366/014/092/9752/front_fr.92.200.jpg",
+     "scans": 27
+    },
+    {
+     "code": "3700157500718",
+     "name": "La Madeleine Classique - Coque chocolat au lait",
+     "brand": "Maison Colibri",
+     "quantity": "182 g",
+     "image": "https://images.openfoodfacts.org/images/products/370/015/750/0718/front_fr.55.200.jpg",
+     "scans": 64
+    },
+    {
+     "code": "06163789",
+     "name": "Mini Cakes pepites de chocolat",
+     "brand": "Gerblé",
+     "quantity": "230g",
+     "image": "https://images.openfoodfacts.org/images/products/000/000/616/3789/front_fr.48.200.jpg",
+     "scans": 31
+    },
+    {
+     "code": "3560070478699",
+     "name": "Mini gâteaux au chocolat",
+     "brand": "Carrefour BIO",
+     "quantity": "150 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/047/8699/front_fr.59.200.jpg",
+     "scans": 27
+    },
+    {
+     "code": "5060425284190",
+     "name": "Cheesecake Caramel Beurre Salé",
+     "brand": "Gü",
+     "quantity": "184 g",
+     "image": "https://images.openfoodfacts.org/images/products/506/042/528/4190/front_fr.90.200.jpg",
+     "scans": 14
+    },
+    {
+     "code": "3498425562055",
+     "name": "Les petits cakes aux fruits confits et secs",
+     "brand": "Brossard",
+     "quantity": "300 g",
+     "image": "https://images.openfoodfacts.org/images/products/349/842/556/2055/front_fr.64.200.jpg",
+     "scans": 21
+    },
+    {
+     "code": "3245413527134",
+     "name": "Cœur fondant - Chocolat noir",
+     "brand": "Carrefour",
+     "quantity": "180 g (2 x 90 g)",
+     "image": "https://images.openfoodfacts.org/images/products/324/541/352/7134/front_fr.75.200.jpg",
+     "scans": 19
+    },
+    {
+     "code": "26018348",
+     "name": "Financiers pur beurre aux amandes",
+     "brand": "véritable délice",
+     "quantity": "200 g (8 x 25 g)",
+     "image": "https://images.openfoodfacts.org/images/products/000/002/601/8348/front_fr.54.200.jpg",
+     "scans": 14
+    },
+    {
+     "code": "7312930002201",
+     "name": "Almondy Cake Toblerone",
+     "brand": "Almondy",
+     "quantity": "400 g",
+     "image": "https://images.openfoodfacts.org/images/products/731/293/000/2201/front_de.41.200.jpg",
+     "scans": 5
+    },
+    {
+     "code": "3270190190349",
+     "name": "Quatre-Quarts Pur beurre",
+     "brand": "Carrefour",
+     "quantity": "800 g",
+     "image": "https://images.openfoodfacts.org/images/products/327/019/019/0349/front_fr.36.200.jpg",
+     "scans": 11
+    },
+    {
+     "code": "3560070556465",
+     "name": "6 Gaufres Poudrées au sucre",
+     "brand": "Carrefour",
+     "quantity": "260 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/055/6465/front_fr.39.200.jpg",
+     "scans": 6
+    },
+    {
+     "code": "8431876270013",
+     "name": "Mini Panettone avec pépites de chocolat",
+     "brand": "Carrefour",
+     "quantity": "90 g",
+     "image": "https://images.openfoodfacts.org/images/products/843/187/627/0013/front_fr.47.200.jpg",
+     "scans": 5
+    },
+    {
+     "code": "5410126010435",
+     "name": "Zebra original",
+     "brand": "Lotus",
+     "quantity": "6 x 31g",
+     "image": "https://images.openfoodfacts.org/images/products/541/012/601/0435/front_en.36.200.jpg",
+     "scans": 5
+    },
+    {
+     "code": "7622210634603",
+     "name": "Pepito Chocolait'o",
+     "brand": "LU",
+     "quantity": "180 g",
+     "image": "https://images.openfoodfacts.org/images/products/762/221/063/4603/front_fr.19.200.jpg",
+     "scans": 7
+    },
+    {
+     "code": "3560071471156",
+     "name": "COEUR FONDANT Caramel au beurre salé",
+     "brand": "Carrefour",
+     "quantity": "180 g (2 x 90 g)",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/147/1156/front_fr.22.200.jpg",
+     "scans": 1
+    },
+    {
+     "code": "3560070976867",
+     "name": "Brownies No Gluten !*",
+     "brand": "Carrefour",
+     "quantity": "240 g (8 x 30 g)",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/097/6867/front_fr.36.200.jpg",
+     "scans": 6
+    },
+    {
+     "code": "3560070390953",
+     "name": "Moelleux au chocolat",
+     "brand": "Bon App'",
+     "quantity": "90 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/039/0953/front_fr.66.200.jpg",
+     "scans": 6
+    }
+   ]
+  },
+  "cereals": {
+   "category": "breakfast-cereals",
+   "products": [
+    {
+     "code": "3229820019307",
+     "name": "Flocons d'avoine",
+     "brand": "Bjorg",
+     "quantity": "500 g",
+     "image": "https://images.openfoodfacts.org/images/products/322/982/001/9307/front_fr.324.200.jpg",
+     "scans": 654
+    },
+    {
+     "code": "7613036669146",
+     "name": "NESTLE CHOCAPIC BIO Céréales - Boite de 375g",
+     "brand": "Nestlé",
+     "quantity": "375 g",
+     "image": "https://images.openfoodfacts.org/images/products/761/303/666/9146/front_en.213.200.jpg",
+     "scans": 359
+    },
+    {
+     "code": "5010477348630",
+     "name": "Muesli 36% fruits noix & graines",
+     "brand": "The Jordans & Ryvita Company Limited - A Division of ABF Grain Products Limited",
+     "quantity": "500 g",
+     "image": "https://images.openfoodfacts.org/images/products/501/047/734/8630/front_fr.241.200.jpg",
+     "scans": 128
+    },
+    {
+     "code": "5010477348517",
+     "name": "Country Crisp 4 Baies",
+     "brand": "Jordans",
+     "quantity": "550 g",
+     "image": "https://images.openfoodfacts.org/images/products/501/047/734/8517/front_fr.143.200.jpg",
+     "scans": 337
+    },
+    {
+     "code": "3229820116716",
+     "name": "Muesli aux fruits",
+     "brand": "Bjorg",
+     "quantity": "750 g",
+     "image": "https://images.openfoodfacts.org/images/products/322/982/011/6716/front_fr.225.200.jpg",
+     "scans": 323
+    },
+    {
+     "code": "7613287514325",
+     "name": "Fitness Nature Céréales complètes",
+     "brand": "Nestlé",
+     "quantity": "475 g",
+     "image": "https://images.openfoodfacts.org/images/products/761/328/751/4325/front_fr.225.200.jpg",
+     "scans": 162
+    },
+    {
+     "code": "3229820794556",
+     "name": "Muesli Proteines Soja, Dattes, Fruits Rouges",
+     "brand": "Bjorg",
+     "quantity": "375 g",
+     "image": "https://images.openfoodfacts.org/images/products/322/982/079/4556/front_fr.140.200.jpg",
+     "scans": 262
+    },
+    {
+     "code": "3421557501630",
+     "name": "Muesli BIO Fruits raisins pommes abricots & noix de coco Sans sucres ajoutés",
+     "brand": "T&C Terre et Céréales",
+     "quantity": "1 kg",
+     "image": "https://images.openfoodfacts.org/images/products/342/155/750/1630/front_fr.80.200.jpg",
+     "scans": 152
+    },
+    {
+     "code": "3560071270285",
+     "name": "Petits flocons d'avoine complète",
+     "brand": "Carrefour BIO",
+     "quantity": "500 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/127/0285/front_fr.67.200.jpg",
+     "scans": 143
+    },
+    {
+     "code": "3560071407711",
+     "name": "Croustillant tout chocolat",
+     "brand": "Carrefour BIO",
+     "quantity": "375 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/140/7711/front_fr.54.200.jpg",
+     "scans": 143
+    },
+    {
+     "code": "8445290728791",
+     "name": "NESTLE KITKAT Céréales 330g",
+     "brand": "SOCIETE DES PRODUITS NESTLE S.A.",
+     "quantity": "330 g",
+     "image": "https://images.openfoodfacts.org/images/products/844/529/072/8791/front_de.103.200.jpg",
+     "scans": 130
+    },
+    {
+     "code": "3560071016074",
+     "name": "Corn flakes",
+     "brand": "Carrefour",
+     "quantity": "500 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/101/6074/front_fr.48.200.jpg",
+     "scans": 71
+    },
+    {
+     "code": "3560071015725",
+     "name": "Fibra",
+     "brand": "CARREFOUR FRANCE",
+     "quantity": "500 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/101/5725/front_fr.70.200.jpg",
+     "scans": 45
+    },
+    {
+     "code": "3560071013042",
+     "name": "Muesly croustillant cruchy chocolat noir intense",
+     "brand": "CARREFOUR FRANCE",
+     "quantity": "1 kg",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/101/3042/front_fr.108.200.jpg",
+     "scans": 78
+    },
+    {
+     "code": "3421557501869",
+     "name": "Crok fondant tout choco",
+     "brand": "Terres et Céréales",
+     "quantity": "375 g",
+     "image": "https://images.openfoodfacts.org/images/products/342/155/750/1869/front_fr.48.200.jpg",
+     "scans": 85
+    },
+    {
+     "code": "5053827199469",
+     "name": "Céréales Trésor Kellogg's Chocolat Noisettes",
+     "brand": "Kellogg's",
+     "quantity": "750 g",
+     "image": "https://images.openfoodfacts.org/images/products/505/382/719/9469/front_fr.50.200.jpg",
+     "scans": 87
+    },
+    {
+     "code": "3560071013011",
+     "name": "Crunchy 3 chocolates",
+     "brand": "CARREFOUR FRANCE",
+     "quantity": "500 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/101/3011/front_fr.71.200.jpg",
+     "scans": 52
+    },
+    {
+     "code": "3421557910067",
+     "name": "Flakes d'épeautre",
+     "brand": "Terres et cereales",
+     "quantity": "250 g",
+     "image": "https://images.openfoodfacts.org/images/products/342/155/791/0067/front_fr.65.200.jpg",
+     "scans": 53
+    },
+    {
+     "code": "3560071478643",
+     "name": "Flocons d'avoine complète",
+     "brand": "Carrefour",
+     "quantity": "800 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/147/8643/front_fr.66.200.jpg",
+     "scans": 1
+    },
+    {
+     "code": "3560070800292",
+     "name": "Choco Rice",
+     "brand": "Carrefour",
+     "quantity": "375 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/080/0292/front_fr.68.200.jpg",
+     "scans": 34
+    }
+   ]
+  },
+  "jams": {
+   "category": "jams",
+   "products": [
+    {
+     "code": "3608580758686",
+     "name": "Confiture extra de Fraises",
+     "brand": "Bonne Maman",
+     "quantity": "320g",
+     "image": "https://images.openfoodfacts.org/images/products/360/858/075/8686/front_fr.79.200.jpg",
+     "scans": 191
+    },
+    {
+     "code": "3330720244017",
+     "name": "Confiture fraise sans sucre ajoutes",
+     "brand": "Lucien Georgelin",
+     "quantity": "320 g",
+     "image": "https://images.openfoodfacts.org/images/products/333/072/024/4017/front_fr.44.200.jpg",
+     "scans": 296
+    },
+    {
+     "code": "3329757003926",
+     "name": "Confiture de fraise",
+     "brand": "Pure Via",
+     "quantity": "300g",
+     "image": "https://images.openfoodfacts.org/images/products/332/975/700/3926/front_fr.43.200.jpg",
+     "scans": 61
+    },
+    {
+     "code": "3560071501570",
+     "name": "Fraise",
+     "brand": "Carrefour",
+     "quantity": "340 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/150/1570/front_fr.23.200.jpg",
+     "scans": 53
+    },
+    {
+     "code": "3330720251039",
+     "name": "Poire Williams à la vanille",
+     "brand": "Lucien Georgelin",
+     "quantity": "320 g",
+     "image": "https://images.openfoodfacts.org/images/products/333/072/025/1039/front_fr.61.200.jpg",
+     "scans": 44
+    },
+    {
+     "code": "3045320023275",
+     "name": "Confiture Cerises noires",
+     "brand": "Bonne Maman",
+     "quantity": "370 g",
+     "image": "https://images.openfoodfacts.org/images/products/304/532/002/3275/front_fr.6.200.jpg",
+     "scans": 16
+    },
+    {
+     "code": "3560071530488",
+     "name": "Fraise 65% de fruit",
+     "brand": "Carrefour",
+     "quantity": "310 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/153/0488/front_fr.3.200.jpg",
+     "scans": 46
+    },
+    {
+     "code": "3560070272600",
+     "name": "Confiture châtaigne",
+     "brand": "Carrefour",
+     "quantity": "370 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/027/2600/front_fr.44.200.jpg",
+     "scans": 15
+    },
+    {
+     "code": "3560070369720",
+     "name": "Confiture Fraises",
+     "brand": "Carrefour",
+     "quantity": "750 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/036/9720/front_fr.29.200.jpg",
+     "scans": 16
+    },
+    {
+     "code": "3270190007074",
+     "name": "Confiture Cerises",
+     "brand": "Carrefour",
+     "quantity": "370 g",
+     "image": "https://images.openfoodfacts.org/images/products/327/019/000/7074/front_fr.52.200.jpg",
+     "scans": 18
+    },
+    {
+     "code": "3560070701490",
+     "name": "Confiture Mirabelles",
+     "brand": "Carrefour",
+     "quantity": "370 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/070/1490/front_fr.42.200.jpg",
+     "scans": 10
+    },
+    {
+     "code": "3560071485405",
+     "name": "4 fruits rouges",
+     "brand": "Carrefour",
+     "quantity": "450 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/148/5405/front_fr.16.200.jpg",
+     "scans": 5
+    },
+    {
+     "code": "3560071485382",
+     "name": "Abricots",
+     "brand": "Carrefour",
+     "quantity": "450 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/148/5382/front_fr.24.200.jpg",
+     "scans": 8
+    },
+    {
+     "code": "3330720251497",
+     "name": "Ananas - Kiwi",
+     "brand": "Lucien Georgelin",
+     "quantity": "320 g",
+     "image": "https://images.openfoodfacts.org/images/products/333/072/025/1497/front_fr.32.200.jpg",
+     "scans": 13
+    },
+    {
+     "code": "3470410134423",
+     "name": "Rhubarbe rouge",
+     "brand": "Les 4 Saisons",
+     "quantity": "400 g",
+     "image": "https://images.openfoodfacts.org/images/products/347/041/013/4423/front_fr.21.200.jpg",
+     "scans": 2
+    },
+    {
+     "code": "3270190194392",
+     "name": "Confiture Abricots",
+     "brand": "Carrefour",
+     "quantity": "750 g",
+     "image": "https://images.openfoodfacts.org/images/products/327/019/019/4392/front_fr.25.200.jpg",
+     "scans": 10
+    },
+    {
+     "code": "3560070702060",
+     "name": "Confiture Figues",
+     "brand": "Carrefour",
+     "quantity": "370 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/070/2060/front_fr.12.200.jpg",
+     "scans": 4
+    },
+    {
+     "code": "3245390146519",
+     "name": "Confiture de quetsches d'Alsace",
+     "brand": "Carrefour",
+     "quantity": "325 g",
+     "image": "https://images.openfoodfacts.org/images/products/324/539/014/6519/front_fr.49.200.jpg",
+     "scans": 1
+    },
+    {
+     "code": "3560070701520",
+     "name": "Confiture ananas",
+     "brand": "Carrefour",
+     "quantity": "370 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/070/1520/front_fr.24.200.jpg",
+     "scans": 1
+    },
+    {
+     "code": "3245390043009",
+     "name": "Confiture de fraises",
+     "brand": "Grand Jury",
+     "quantity": "750 g",
+     "image": "https://images.openfoodfacts.org/images/products/324/539/004/3009/front_fr.17.200.jpg",
+     "scans": 0
+    }
+   ]
+  },
+  "honeys": {
+   "category": "honeys",
+   "products": [
+    {
+     "code": "3088545004001",
+     "name": "Miel de Fleurs Liquide Doseur 500g",
+     "brand": "Lune de Miel",
+     "quantity": "500g",
+     "image": "https://images.openfoodfacts.org/images/products/308/854/500/4001/front_en.11.200.jpg",
+     "scans": 187
+    },
+    {
+     "code": "3560071264826",
+     "name": "Miel d'acacia",
+     "brand": "Carrefour",
+     "quantity": "375 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/126/4826/front_fr.19.200.jpg",
+     "scans": 16
+    },
+    {
+     "code": "3560071084066",
+     "name": "Miel de montagne du Massif Central",
+     "brand": "Carrefour",
+     "quantity": "375 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/108/4066/front_en.5.200.jpg",
+     "scans": 29
+    },
+    {
+     "code": "3560071082345",
+     "name": "Miel de france",
+     "brand": "Carrefour",
+     "quantity": "375 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/108/2345/front_fr.23.200.jpg",
+     "scans": 32
+    },
+    {
+     "code": "3560071082338",
+     "name": "MIEL de France crémeux",
+     "brand": "Carrefour",
+     "quantity": "375 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/108/2338/front_fr.53.200.jpg",
+     "scans": 9
+    },
+    {
+     "code": "3560071417741",
+     "name": "Miel de Lavande",
+     "brand": "Carrefour BIO",
+     "quantity": "250 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/141/7741/front_fr.16.200.jpg",
+     "scans": 12
+    },
+    {
+     "code": "3088540404226",
+     "name": "Miel",
+     "brand": "Lune de Miel",
+     "quantity": "1kg",
+     "image": "https://images.openfoodfacts.org/images/products/308/854/040/4226/front_fr.27.200.jpg",
+     "scans": 12
+    },
+    {
+     "code": "3560071264833",
+     "name": "Miel d'Oranger",
+     "brand": "Carrefour",
+     "quantity": "375 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/126/4833/front_fr.20.200.jpg",
+     "scans": 10
+    },
+    {
+     "code": "3560071084028",
+     "name": "Miel de Sologne",
+     "brand": "Carrefour",
+     "quantity": "375 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/108/4028/front_fr.15.200.jpg",
+     "scans": 7
+    },
+    {
+     "code": "8428919005305",
+     "name": "Miel Dosificador 1 / 2 500 Gr. luna De Miel",
+     "brand": "Luna de Miel",
+     "quantity": "500 g",
+     "image": "https://images.openfoodfacts.org/images/products/842/891/900/5305/front_es.4.200.jpg",
+     "scans": 6
+    },
+    {
+     "code": "3560071492564",
+     "name": "Miel de châtaignier d'Ile de France",
+     "brand": "Carrefour",
+     "quantity": "375 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/149/2564/front_fr.8.200.jpg",
+     "scans": 5
+    },
+    {
+     "code": "3760009390140",
+     "name": "Miel de châtaignier de France",
+     "brand": "Les Ruchers du Lubéron",
+     "quantity": "340 g",
+     "image": "https://images.openfoodfacts.org/images/products/376/000/939/0140/front_fr.12.200.jpg",
+     "scans": 2
+    },
+    {
+     "code": "3560071084011",
+     "name": "Miel du Gâtinais",
+     "brand": "Carrefour",
+     "quantity": "375 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/108/4011/front_fr.16.200.jpg",
+     "scans": 1
+    },
+    {
+     "code": "3578380007317",
+     "name": "Miel de cru hautes pyrénées",
+     "brand": "Famille Mortagne",
+     "quantity": "500g",
+     "image": "https://images.openfoodfacts.org/images/products/357/838/000/7317/front_fr.4.200.jpg",
+     "scans": 1
+    },
+    {
+     "code": "3760097454557",
+     "name": "Miel de fleurs des bois",
+     "brand": "miellerie veron",
+     "quantity": "500g",
+     "image": "https://images.openfoodfacts.org/images/products/376/009/745/4557/front_fr.3.200.jpg",
+     "scans": 1
+    },
+    {
+     "code": "3560070121182",
+     "name": "Miel de Fleurs",
+     "brand": "Carrefour",
+     "quantity": "500 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/012/1182/front_fr.27.200.jpg",
+     "scans": 3
+    },
+    {
+     "code": "3110770002818",
+     "name": "Miel de châtaignier",
+     "brand": "Miel Besacier",
+     "quantity": "500g",
+     "image": "https://images.openfoodfacts.org/images/products/311/077/000/2818/front_fr.12.200.jpg",
+     "scans": 3
+    },
+    {
+     "code": "3560071082369",
+     "name": "Miel de fleurs.",
+     "brand": "Carrefour",
+     "quantity": "500 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/108/2369/front_fr.4.200.jpg",
+     "scans": 3
+    },
+    {
+     "code": "3491561032109",
+     "name": "Miel de lavande de Provence",
+     "brand": "Les ruchers du Mont-Ventoux",
+     "quantity": "500 g",
+     "image": "https://images.openfoodfacts.org/images/products/349/156/103/2109/front_en.4.200.jpg",
+     "scans": 1
+    },
+    {
+     "code": "3560071417680",
+     "name": "Miel de FLEURS",
+     "brand": "Carrefour",
+     "quantity": "1 kg",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/141/7680/front_fr.5.200.jpg",
+     "scans": 0
+    }
+   ]
+  },
+  "spreads": {
+   "category": "hazelnut-spreads",
+   "products": [
+    {
+     "code": "3664346312936",
+     "name": "Pâte à tartiner aux noisettes et au cacao",
+     "brand": "Poulain",
+     "quantity": "400 g",
+     "image": "https://images.openfoodfacts.org/images/products/366/434/631/2936/front_fr.121.200.jpg",
+     "scans": 235
+    },
+    {
+     "code": "3760020500658",
+     "name": "Pâte à tartiner chocolat Noisette",
+     "brand": "Jardin Bio étic",
+     "quantity": "750 g",
+     "image": "https://images.openfoodfacts.org/images/products/376/002/050/0658/front_en.111.200.jpg",
+     "scans": 208
+    },
+    {
+     "code": "3560071483234",
+     "name": "Kaonuts",
+     "brand": "Carrefour",
+     "quantity": "400 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/148/3234/front_fr.38.200.jpg",
+     "scans": 64
+    },
+    {
+     "code": "3560071483326",
+     "name": "Kaonuts tartiner noisettes CRF 200G",
+     "brand": "Carrefour",
+     "quantity": "200 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/148/3326/front_fr.3.200.jpg",
+     "scans": 13
+    },
+    {
+     "code": "8001505005707",
+     "name": "Nocciolata",
+     "brand": "Rigoni di Asiago",
+     "quantity": "700 g",
+     "image": "https://images.openfoodfacts.org/images/products/800/150/500/5707/front_fr.161.200.jpg",
+     "scans": 2
+    },
+    {
+     "code": "3017620423468",
+     "name": "nutella",
+     "brand": "Ferrero",
+     "quantity": "1000g",
+     "image": "https://images.openfoodfacts.org/images/products/301/762/042/3468/front_fr.4.200.jpg",
+     "scans": 2
+    },
+    {
+     "code": "3770012968250",
+     "name": "ET TOC! Purement noisette",
+     "brand": "ET TOC!",
+     "quantity": "220 g",
+     "image": "https://images.openfoodfacts.org/images/products/377/001/296/8250/front_fr.17.200.jpg",
+     "scans": 2
+    },
+    {
+     "code": "3770012968298",
+     "name": "ET TOC! noisette cacao",
+     "brand": "Et TOC!",
+     "quantity": "220 g",
+     "image": "https://images.openfoodfacts.org/images/products/377/001/296/8298/front_fr.29.200.jpg",
+     "scans": 3
+    },
+    {
+     "code": "3770012968366",
+     "name": "ET TOC! Noisette cacao",
+     "brand": "Et toc",
+     "quantity": "220 g",
+     "image": "https://images.openfoodfacts.org/images/products/377/001/296/8366/front_fr.15.200.jpg",
+     "scans": 2
+    }
+   ]
+  },
+  "coffees": {
+   "category": "coffees",
+   "products": [
+    {
+     "code": "7613032655495",
+     "name": "Chicorée & Café, RICORÉ® L'Original, Boîte de 260g",
+     "brand": "Nestlé",
+     "quantity": "260 g",
+     "image": "https://images.openfoodfacts.org/images/products/761/303/265/5495/front_fr.379.200.jpg",
+     "scans": 233
+    },
+    {
+     "code": "3033710074518",
+     "name": "NESCAFÉ SPECIAL FILTRE L'Original Flacon de 100g",
+     "brand": "Nestlé",
+     "quantity": "100 g",
+     "image": "https://images.openfoodfacts.org/images/products/303/371/007/4518/front_nl.85.200.jpg",
+     "scans": 108
+    },
+    {
+     "code": "3033710076017",
+     "name": "NESCAFÉ SPECIAL FILTRE L'Original, Café Soluble, Boîte de 25 Sticks",
+     "brand": "Nestlé",
+     "quantity": "50 g",
+     "image": "https://images.openfoodfacts.org/images/products/303/371/007/6017/front_fr.147.200.jpg",
+     "scans": 52
+    },
+    {
+     "code": "3560071198060",
+     "name": "Pur Arabica",
+     "brand": "Carrefour",
+     "quantity": "100 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/119/8060/front_fr.51.200.jpg",
+     "scans": 21
+    },
+    {
+     "code": "3270190007920",
+     "name": "Tradition moulu",
+     "brand": "Carrefour",
+     "quantity": "250 g",
+     "image": "https://images.openfoodfacts.org/images/products/327/019/000/7920/front_fr.44.200.jpg",
+     "scans": 14
+    },
+    {
+     "code": "3560071275808",
+     "name": "Café soluble intense",
+     "brand": "Carrefour",
+     "quantity": "100g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/127/5808/front_fr.21.200.jpg",
+     "scans": 16
+    },
+    {
+     "code": "8711000681947",
+     "name": "Senseo classique 72 dosette méga forma",
+     "brand": "Senseo",
+     "quantity": "500g",
+     "image": "https://images.openfoodfacts.org/images/products/871/100/068/1947/front_fr.16.200.jpg",
+     "scans": 19
+    },
+    {
+     "code": "3760091725776",
+     "name": "café arabica moulu Moka Éthiopie",
+     "brand": "Ethiquable",
+     "quantity": "250g",
+     "image": "https://images.openfoodfacts.org/images/products/376/009/172/5776/front_fr.76.200.jpg",
+     "scans": 15
+    },
+    {
+     "code": "8000070032866",
+     "name": "Il Mattino",
+     "brand": "Lavazza",
+     "quantity": "4x250g",
+     "image": "https://images.openfoodfacts.org/images/products/800/007/003/2866/front_en.10.200.jpg",
+     "scans": 16
+    },
+    {
+     "code": "3560071006716",
+     "name": "Robusta Moulu",
+     "brand": "Carrefour",
+     "quantity": "250 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/100/6716/front_fr.11.200.jpg",
+     "scans": 4
+    },
+    {
+     "code": "8000070000674",
+     "name": "Café moulu douceur intense",
+     "brand": "Carte Noire",
+     "quantity": "",
+     "image": "https://images.openfoodfacts.org/images/products/800/007/000/0674/front_fr.12.200.jpg",
+     "scans": 3
+    },
+    {
+     "code": "3560071227593",
+     "name": "Espresso classico",
+     "brand": "Carrefour",
+     "quantity": "",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/122/7593/front_fr.30.200.jpg",
+     "scans": 3
+    },
+    {
+     "code": "3560071260248",
+     "name": "Grains mexico 100% Arabica",
+     "brand": "Carrefour BIO",
+     "quantity": "500g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/126/0248/front_fr.3.200.jpg",
+     "scans": 5
+    },
+    {
+     "code": "3560071431884",
+     "name": "Espresso Leggero",
+     "brand": "Carrefour",
+     "quantity": "52 g (10 capsules)",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/143/1884/front_fr.13.200.jpg",
+     "scans": 4
+    },
+    {
+     "code": "3560071432096",
+     "name": "Lungo Voluptuo",
+     "brand": "Carrefour",
+     "quantity": "52 g (10 capsules)",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/143/2096/front_fr.14.200.jpg",
+     "scans": 2
+    },
+    {
+     "code": "3560071258153",
+     "name": "Café moulu Équilibré",
+     "brand": "Carrefour BIO",
+     "quantity": "500 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/125/8153/front_fr.8.200.jpg",
+     "scans": 3
+    },
+    {
+     "code": "3560071431914",
+     "name": "Espresso Savoroso",
+     "brand": "Carrefour",
+     "quantity": "52 g (10 capsules)",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/143/1914/front_fr.13.200.jpg",
+     "scans": 1
+    },
+    {
+     "code": "3187570015546",
+     "name": "Malongon",
+     "brand": "Malongo",
+     "quantity": "2 x 250 g",
+     "image": "https://images.openfoodfacts.org/images/products/318/757/001/5546/front_fr.13.200.jpg",
+     "scans": 2
+    },
+    {
+     "code": "3560070713110",
+     "name": "Dolce",
+     "brand": "Carrefour",
+     "quantity": "252 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/071/3110/front_fr.42.200.jpg",
+     "scans": 4
+    },
+    {
+     "code": "3184830028070",
+     "name": "70% ARABICA 30% ROBUSTA Café légèrement corsé, aromatique",
+     "brand": "Carrefour",
+     "quantity": "1 kg",
+     "image": "https://images.openfoodfacts.org/images/products/318/483/002/8070/front_fr.12.200.jpg",
+     "scans": 2
+    }
+   ]
+  },
+  "teas": {
+   "category": "teas",
+   "products": [
+    {
+     "code": "5055953900117",
+     "name": "Twinning Thé Vert Menthe",
+     "brand": "Twinings",
+     "quantity": "30 g (25 sachets)",
+     "image": "https://images.openfoodfacts.org/images/products/505/595/390/0117/front_fr.25.200.jpg",
+     "scans": 45
+    },
+    {
+     "code": "3560070502004",
+     "name": "Thé vert menthe douce",
+     "brand": "Carrefour",
+     "quantity": "20 sachets",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/050/2004/front_fr.68.200.jpg",
+     "scans": 36
+    },
+    {
+     "code": "5055953903057",
+     "name": "thé vert saveur citron vert gingembre",
+     "brand": "Twinings",
+     "quantity": "32 g",
+     "image": "https://images.openfoodfacts.org/images/products/505/595/390/3057/front_fr.13.200.jpg",
+     "scans": 28
+    },
+    {
+     "code": "5055953900193",
+     "name": "Lady Grey goût russe",
+     "brand": "Twinings",
+     "quantity": "40 g, 20 sachets",
+     "image": "https://images.openfoodfacts.org/images/products/505/595/390/0193/front_fr.44.200.jpg",
+     "scans": 18
+    },
+    {
+     "code": "8720608002849",
+     "name": "Infuse a froid pêche-framboise",
+     "brand": "Lipton",
+     "quantity": "15pcs",
+     "image": "https://images.openfoodfacts.org/images/products/872/060/800/2849/front_fr.39.200.jpg",
+     "scans": 3
+    },
+    {
+     "code": "3560070888115",
+     "name": "Infusion Tilleul",
+     "brand": "Carrefour",
+     "quantity": "37,5 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/088/8115/front_fr.129.200.jpg",
+     "scans": 10
+    },
+    {
+     "code": "3560070230778",
+     "name": "English breakfast",
+     "brand": "Carrefour",
+     "quantity": "50 g (25 x 2 g)\n25 SACHeTS",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/023/0778/front_fr.27.200.jpg",
+     "scans": 10
+    },
+    {
+     "code": "3560070659517",
+     "name": "Russian earl grey",
+     "brand": "Carrefour",
+     "quantity": "36 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/065/9517/front_fr.45.200.jpg",
+     "scans": 7
+    },
+    {
+     "code": "3560070824960",
+     "name": "Thé vert Jasmin",
+     "brand": "Carrefour",
+     "quantity": "100 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/082/4960/front_fr.38.200.jpg",
+     "scans": 8
+    },
+    {
+     "code": "3379140108783",
+     "name": "Thé vert (spécial gunpowder)",
+     "brand": "Central asia Pacific Limited",
+     "quantity": "250g",
+     "image": "https://images.openfoodfacts.org/images/products/337/914/010/8783/front_fr.6.200.jpg",
+     "scans": 1
+    },
+    {
+     "code": "3483981001049",
+     "name": "Thé Noir Breakfast 20 x",
+     "brand": "Terra Etica",
+     "quantity": "36 g",
+     "image": "https://images.openfoodfacts.org/images/products/348/398/100/1049/front_cs.37.200.jpg",
+     "scans": 1
+    },
+    {
+     "code": "8722700129523",
+     "name": "Lipton Thé Vert Classique Goût Léger & Subtil 50 Sachets",
+     "brand": "Lipton",
+     "quantity": "65 g",
+     "image": "https://images.openfoodfacts.org/images/products/872/270/012/9523/front_fr.40.200.jpg",
+     "scans": 2
+    },
+    {
+     "code": "3228881024008",
+     "name": "Thé Vert Classique (25 sachets enveloppés)",
+     "brand": "Lipton",
+     "quantity": "32,5 g",
+     "image": "https://images.openfoodfacts.org/images/products/322/888/102/4008/front_fr.58.200.jpg",
+     "scans": 1
+    },
+    {
+     "code": "5055953901183",
+     "name": "Thé Vert Citron Touche de Miel",
+     "brand": "Twinings",
+     "quantity": "(20 sachets)",
+     "image": "https://images.openfoodfacts.org/images/products/505/595/390/1183/front_fr.21.200.jpg",
+     "scans": 1
+    },
+    {
+     "code": "5055953900124",
+     "name": "thé vert jasmin",
+     "brand": "Twinings",
+     "quantity": "40 g (25 sachets)",
+     "image": "https://images.openfoodfacts.org/images/products/505/595/390/0124/front_fr.11.200.jpg",
+     "scans": 1
+    },
+    {
+     "code": "3228881005373",
+     "name": "yellow label tea",
+     "brand": "Lipton",
+     "quantity": "100 sachets",
+     "image": "https://images.openfoodfacts.org/images/products/322/888/100/5373/front_fr.9.200.jpg",
+     "scans": 1
+    },
+    {
+     "code": "3560070303823",
+     "name": "25 St the English Breakfast",
+     "brand": "Grand Jury",
+     "quantity": "50 g",
+     "image": "https://images.openfoodfacts.org/images/products/356/007/030/3823/front_fr.22.200.jpg",
+     "scans": 2
+    },
+    {
+     "code": "5410033800211",
+     "name": "Lipton Thé Noir Yellow Label 100 Sachets",
+     "brand": "Lipton",
+     "quantity": "200 g",
+     "image": "https://images.openfoodfacts.org/images/products/541/003/380/0211/front_fr.44.200.jpg",
+     "scans": 8
+    },
+    {
+     "code": "8711200353897",
+     "name": "Elephant Mon Infusion Bio Grenade Hibiscus 20 Sachets Pyramid®",
+     "brand": "Éléphant",
+     "quantity": "38 g",
+     "image": "https://images.openfoodfacts.org/images/products/871/120/035/3897/front_fr.52.200.jpg",
+     "scans": 2
+    },
+    {
+     "code": "5055953902340",
+     "name": "rooibos golden caramel",
+     "brand": "Twinings",
+     "quantity": "37",
+     "image": "https://images.openfoodfacts.org/images/products/505/595/390/2340/front_fr.4.200.jpg",
+     "scans": 1
+    }
+   ]
+  }
+ }
+}

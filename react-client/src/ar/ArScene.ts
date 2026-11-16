@@ -269,11 +269,11 @@ export class ArScene {
       const segments = wallSegments(floor, mpu);
       const walls = new THREE.InstancedMesh(wallGeometry, wallMaterial, segments.length);
       segments.forEach((s, i) => {
-        const horizontal = s.y1 === s.y2;
-        const length = (horizontal ? s.x2 - s.x1 : s.y2 - s.y1) * mpu;
+        // (walls of rooms are axis-aligned, a surveyed outline can run at any angle)
+        const length = Math.hypot(s.x2 - s.x1, s.y2 - s.y1) * mpu;
         this.dummy.position.set(((s.x1 + s.x2) / 2) * mpu, WALL_HEIGHT / 2, ((s.y1 + s.y2) / 2) * mpu);
-        this.dummy.rotation.set(0, 0, 0);
-        this.dummy.scale.set(horizontal ? length + WALL_THICKNESS : WALL_THICKNESS, WALL_HEIGHT, horizontal ? WALL_THICKNESS : length + WALL_THICKNESS);
+        this.dummy.rotation.set(0, -Math.atan2(s.y2 - s.y1, s.x2 - s.x1), 0);
+        this.dummy.scale.set(length + WALL_THICKNESS, WALL_HEIGHT, WALL_THICKNESS);
         this.dummy.updateMatrix();
         walls.setMatrixAt(i, this.dummy.matrix);
       });

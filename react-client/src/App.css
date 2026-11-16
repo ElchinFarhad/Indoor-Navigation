@@ -2495,3 +2495,112 @@ body {
   margin: 0.7rem 0 0;
   font-size: 0.82rem;
 }
+
+/* Surveyed outlines (real footprints from OpenStreetMap) */
+.map-view__shape {
+  stroke: rgba(77, 86, 107, 0.35);
+  pointer-events: none;
+}
+
+.map-view__shape--site {
+  stroke: #9aa3b5;
+}
+
+.map-view__shape--store {
+  stroke: #4d566b;
+  stroke-linejoin: round;
+}
+
+.map-view__shape-name {
+  fill: #6b7488;
+  font-weight: 600;
+  pointer-events: none;
+}
+
+.map-view__credit {
+  position: absolute;
+  left: 6px;
+  bottom: 4px;
+  z-index: 1;
+  max-width: 70%;
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.78);
+  color: #4d566b;
+  font-size: 9.5px;
+  line-height: 1.3;
+  pointer-events: none;
+}
+
+.map-view--compact .map-view__credit {
+  display: none;
+}
+
+/* Products from a real catalogue: rows with photo, brand and pack size */
+.shopping__products--rich {
+  flex-direction: column;
+  flex-wrap: nowrap;
+}
+
+.product--rich {
+  width: 100%;
+  min-height: 3.4rem;
+  padding: 0.35rem 0.8rem 0.35rem 0.6rem;
+  border-radius: 14px;
+  text-align: left;
+  gap: 0.6rem;
+}
+
+.product--rich > span:first-child {
+  flex: none;
+}
+
+.product--rich img {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  object-fit: contain;
+  background: #ffffff;
+}
+
+.product--rich .product__text {
+  display: flex;
+  flex-direction: column;
+  width: auto;
+  height: auto;
+  min-width: 0;
+  place-items: initial;
+  border-radius: 0;
+  background: none;
+  color: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+.product--rich .product__text strong {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.product--rich .product__text small {
+  color: var(--ink-soft);
+  font-size: 0.78rem;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.product--rich.is-on .product__text {
+  background: none;
+  color: inherit;
+}
+
+/* in the navigation screen the credit sits above the bottom bar */
+.nav-map .map-view__credit {
+  bottom: 7.4rem;
+  left: 12px;
+}

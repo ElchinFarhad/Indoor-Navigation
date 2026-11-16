@@ -94,6 +94,25 @@ export interface RawProduct {
   name: string;
   /** Id of the plan room (shelf section) where it is. */
   section: string;
+  brand?: string;
+  /** Pack size as printed ("1 l", "6 x 125 g"). */
+  quantity?: string;
+  /** Small product photo (URL). */
+  image?: string;
+}
+
+/**
+ * A surveyed outline that is not an axis-aligned rectangle: the real footprint
+ * of a store, of the building around it, of neighbouring shops. Drawn under
+ * the rooms; a "store" outline is also the wall around the walkable floor.
+ */
+export interface PlanOutline {
+  id: string;
+  name?: string;
+  /** site (the building), shop (a neighbour), corridor, store (the floor that is navigated) */
+  kind: string;
+  /** Closed polygon, [x, y] in map units. */
+  points: number[][];
 }
 
 export interface Product {
@@ -102,6 +121,9 @@ export interface Product {
   section: PlanRoom;
   /** Node in the aisle in front of that section. */
   nodeId: number;
+  brand?: string;
+  quantity?: string;
+  image?: string;
 }
 
 export interface RawFloor {
@@ -115,6 +137,7 @@ export interface RawFloor {
   width?: number;
   height?: number;
   corridors?: PlanRect[];
+  outlines?: PlanOutline[];
   rooms?: PlanRoom[];
 }
 
@@ -125,6 +148,12 @@ export interface RawGraph {
     type?: string;
     metersPerUnit?: number;
     qrSize?: number;
+    /** Street address of the venue. */
+    address?: string;
+    /** Credit line for third-party data (shown with the map). */
+    attribution?: string;
+    /** Product ids offered before the user searches. */
+    featured?: string[];
     floors?: RawFloor[];
   };
   nodes: RawNode[];
@@ -177,6 +206,7 @@ export interface Floor {
   width: number;
   height: number;
   corridors: PlanRect[];
+  outlines: PlanOutline[];
   rooms: PlanRoom[];
 }
 
@@ -193,6 +223,11 @@ export class Building {
   readonly type: string;
   /** Products of a store, by name. Empty for ordinary buildings. */
   readonly products: Product[] = [];
+  /** Credit line for third-party data, or ''. */
+  readonly attribution: string;
+  readonly address: string;
+  /** Products offered before the user searches. */
+  readonly featured: Product[] = [];
 
   private byId = new Map<number, NavNode>();
   private roomsById = new Map<string, PlanRoom>();
@@ -202,6 +237,8 @@ export class Building {
     const meta = raw.meta || {};
     this.name = meta.name || 'Building';
     this.type = meta.type === 'store' ? 'store' : 'building';
+    this.attribution = meta.attribution || '';
+    this.address = meta.address || '';
     this.metersPerUnit = meta.metersPerUnit && meta.metersPerUnit > 0 ? meta.metersPerUnit : 0.1;
     const defaultQrSize = meta.qrSize && meta.qrSize > 0 ? meta.qrSize : 0.18;
 
@@ -275,6 +312,7 @@ export class Building {
         width: (f && f.width) || 300,
         height: (f && f.height) || 300,
         corridors: (f && f.corridors) || [],
+        outlines: (f && f.outlines) || [],
         rooms: (f && f.rooms) || [],
       };
     });
@@ -298,9 +336,13 @@ export class Building {
         this.warnings.push(`product ${p.id} is in unknown section ${p.section}`);
         continue;
       }
-      this.products.push({ id: p.id, name: p.name, section, nodeId: section.node });
+      this.products.push({ id: p.id, name: p.name, section, nodeId: section.node, brand: p.brand, quantity: p.quantity, image: p.image });
     }
     this.products.sort((a, b) => a.name.localeCompare(b.name));
+    for (const id of meta.featured || []) {
+      const product = this.product(id);
+      if (product) this.featured.push(product);
+    }
   }
 
   private addHalfEdge(from: number, p: RawPath) {
