@@ -1,0 +1,35 @@
+{
+ "id": "carrefour",
+ "order": 3,
+ "name": "Carrefour Montesson (real data)",
+ "name_it": "Carrefour Montesson (dati reali)",
+ "retailer": {
+  "id": "carrefour",
+  "name": "Carrefour"
+ },
+ "store": {
+  "id": "montesson",
+  "name": "Hypermarché Montesson"
+ },
+ "type": "store",
+ "version": "2026-11-16",
+ "address": "280 Avenue Gabriel Péri, Montesson, France",
+ "attribution": "© OpenStreetMap contributors · Products: Open Food Facts · Aisle layout is illustrative",
+ "attribution_it": "© OpenStreetMap contributors · Prodotti: Open Food Facts · La disposizione delle corsie è illustrativa",
+ "sources": {
+  "map": "https://www.openstreetmap.org/way/221944925",
+  "products": "https://world.openfoodfacts.org",
+  "mapFetched": "2026-11-16",
+  "productsFetched": "2026-11-16"
+ },
+ "featured": [
+  "3533636760002",
+  "3760049790214",
+  "3270190205685",
+  "7613032655495",
+  "3240931547213",
+  "3274080005003",
+  "3523230028431",
+  "3661344221772"
+ ]
+}

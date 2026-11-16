@@ -1,6 +1,7 @@
 /**
  * Access to the phone's rear camera.
  */
+import { t } from '../i18n';
 
 export type CameraErrorKind = 'insecure' | 'unsupported' | 'denied' | 'not-found' | 'busy' | 'unknown';
 
@@ -15,14 +16,14 @@ export class CameraError extends Error {
   }
 }
 
-const MESSAGES: { [k in CameraErrorKind]: string } = {
-  insecure: 'The camera only works on a secure (https) page.',
-  unsupported: 'This browser cannot access the camera.',
-  denied: 'Camera access was denied. Allow it in the browser settings to scan markers.',
-  'not-found': 'No camera was found on this device.',
-  busy: 'The camera is in use by another application.',
-  unknown: 'The camera could not be started.',
-};
+const messages = (): { [k in CameraErrorKind]: string } => ({
+  insecure: t('The camera only works on a secure (https) page.'),
+  unsupported: t('This browser cannot access the camera.'),
+  denied: t('Camera access was denied. Allow it in the browser settings to scan markers.'),
+  'not-found': t('No camera was found on this device.'),
+  busy: t('The camera is in use by another application.'),
+  unknown: t('The camera could not be started.'),
+});
 
 function toCameraError(err: any): CameraError {
   const name = err && err.name;
@@ -30,7 +31,7 @@ function toCameraError(err: any): CameraError {
   if (name === 'NotAllowedError' || name === 'SecurityError' || name === 'PermissionDeniedError') kind = 'denied';
   else if (name === 'NotFoundError' || name === 'OverconstrainedError' || name === 'DevicesNotFoundError') kind = 'not-found';
   else if (name === 'NotReadableError' || name === 'AbortError' || name === 'TrackStartError') kind = 'busy';
-  return new CameraError(kind, MESSAGES[kind]);
+  return new CameraError(kind, messages()[kind]);
 }
 
 /**
@@ -43,10 +44,10 @@ function toCameraError(err: any): CameraError {
  */
 export async function openCamera(): Promise<MediaStream> {
   if (typeof window !== 'undefined' && window.isSecureContext === false) {
-    throw new CameraError('insecure', MESSAGES.insecure);
+    throw new CameraError('insecure', messages().insecure);
   }
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-    throw new CameraError('unsupported', MESSAGES.unsupported);
+    throw new CameraError('unsupported', messages().unsupported);
   }
   const preferred: MediaStreamConstraints = {
     audio: false,

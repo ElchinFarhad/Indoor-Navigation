@@ -1,4 +1,5 @@
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { t } from '../i18n';
 import { floorPlanUrl } from '../assets/maps';
 import { CORRIDOR_FILL, doorSegment, kindStyle, outlineBox, outlineFill, OUTSIDE_FILL } from '../map/plan';
 import { Building, NavNode, PlanRoom } from '../nav/building';
@@ -207,7 +208,7 @@ const MapView = ({ building, floor, onFloorChange, snapshot, destinationId, comp
         viewBox={viewBox}
         preserveAspectRatio="xMidYMid slice"
         role="img"
-        aria-label={`Map of ${f.name}`}
+        aria-label={t('Map of {floor}', { floor: f.name })}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
@@ -288,8 +289,8 @@ const MapView = ({ building, floor, onFloorChange, snapshot, destinationId, comp
           .filter((r) => r.kind === 'stairs')
           .map((r) => (
             <g key={`treads-${r.id}`} className="map-view__treads" strokeWidth={Math.max(0.8, px(0.8))}>
-              {[0.2, 0.32, 0.44, 0.56, 0.68, 0.8].map((t) => (
-                <line key={t} x1={r.x + r.w * t} y1={r.y + r.h * 0.16} x2={r.x + r.w * t} y2={r.y + r.h * 0.6} />
+              {[0.2, 0.32, 0.44, 0.56, 0.68, 0.8].map((u) => (
+                <line key={u} x1={r.x + r.w * u} y1={r.y + r.h * 0.16} x2={r.x + r.w * u} y2={r.y + r.h * 0.6} />
               ))}
             </g>
           ))}
@@ -384,7 +385,7 @@ const MapView = ({ building, floor, onFloorChange, snapshot, destinationId, comp
       {surveyed && building.attribution && <div className="map-view__credit">{building.attribution}</div>}
 
       {!compact && !!onFloorChange && building.floors.length > 1 && (
-        <div className="map-view__floors" role="tablist" aria-label="Floor">
+        <div className="map-view__floors" role="tablist" aria-label={t('Floor')}>
           {building.floors.map((fl) => (
             <button
               key={fl.id}
@@ -402,7 +403,7 @@ const MapView = ({ building, floor, onFloorChange, snapshot, destinationId, comp
       {!compact && (
         <div className="map-view__tools">
           {manual && (
-            <button type="button" className="map-view__locate" aria-label={here ? 'Follow my position' : 'Show the whole floor'} onClick={() => setManual(null)}>
+            <button type="button" className="map-view__locate" aria-label={here ? t('Follow my position') : t('Show the whole floor')} onClick={() => setManual(null)}>
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
                 <circle cx="12" cy="12" r="6" />
                 <circle cx="12" cy="12" r="1.6" fill="currentColor" />
@@ -411,10 +412,10 @@ const MapView = ({ building, floor, onFloorChange, snapshot, destinationId, comp
             </button>
           )}
           <div className="map-view__zoom">
-            <button type="button" aria-label="Zoom in" onClick={() => zoom(1 / 1.4)}>
+            <button type="button" aria-label={t('Zoom in')} onClick={() => zoom(1 / 1.4)}>
               +
             </button>
-            <button type="button" aria-label="Zoom out" onClick={() => zoom(1.4)}>
+            <button type="button" aria-label={t('Zoom out')} onClick={() => zoom(1.4)}>
               −
             </button>
           </div>

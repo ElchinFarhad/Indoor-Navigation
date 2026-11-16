@@ -1,5 +1,5 @@
 /**
- * Generates src/db/graph.json for the demo building.
+ * Generates venues-src/demo/engineering-building/map.json: the demo building.
  *
  *   node scripts/build-demo-building.js
  *
@@ -7,13 +7,12 @@
  * around the outside, a 3 m wide ring corridor, a central block (auditorium
  * and labs) split by a cross corridor that lines up with the main entrance,
  * two staircases and a lift. It is a designed, realistic plan - not a survey
- * of an existing building. To describe a real one, edit graph.json directly
- * (or adapt the tables below): the app only reads the JSON.
+ * of an existing building. To describe a real one, edit map.json directly
+ * (or adapt the tables below): the app only reads the compiled venue files.
  *
  * Units: decimetres (meta.metersPerUnit = 0.1), origin at the top-left corner.
  */
-const fs = require('fs');
-const path = require('path');
+const { writeVenue } = require('./venue-out');
 
 const WIDTH = 640;
 const HEIGHT = 400;
@@ -75,8 +74,8 @@ function rooms(f) {
 }
 
 const floors = [
-  { id: 0, name: 'Ground floor', short: 'G', spoken: 'the ground floor' },
-  { id: 1, name: 'First floor', short: '1', spoken: 'the first floor' },
+  { id: 0, name: 'Ground floor', name_it: 'Piano terra', short: 'G', short_it: 'T', spoken: 'the ground floor', spoken_it: 'piano terra' },
+  { id: 1, name: 'First floor', name_it: 'Primo piano', short: '1', spoken: 'the first floor', spoken_it: 'primo piano' },
 ];
 
 const nodes = [];
@@ -171,9 +170,27 @@ const ordered = nodes.map((n) => {
   return out;
 });
 
+// Italian names: the kind of room is translated, numbers stay.
+const IT = [
+  ['Seminar room', 'Aula seminari'], ['Computer lab', 'Laboratorio informatico'], ['Meeting room', 'Sala riunioni'], ['Reading room', 'Sala lettura'],
+  ['Study room', 'Sala studio'], ['Lecture hall', 'Aula magna'], ['Main entrance', 'Ingresso principale'], ['Classroom', 'Aula'], ['Office', 'Ufficio'],
+  ['Restrooms', 'Servizi'], ['Workshop', 'Officina'], ['Library', 'Biblioteca'], ['Stairs', 'Scale'], ['Lift', 'Ascensore'], ['Lobby', 'Atrio'],
+  ['Café', 'Bar'], ['Lab', 'Laboratorio'],
+];
+const it = (text) => {
+  for (const [en, translated] of IT) if (text === en || text.startsWith(`${en} `)) return translated + text.slice(en.length);
+  return undefined;
+};
+for (const f of planFloors) {
+  for (const room of f.rooms) {
+    if (it(room.name)) room.name_it = it(room.name);
+    if (room.short && it(room.short)) room.short_it = it(room.short);
+  }
+}
+for (const n of ordered) if (n.label && it(n.label)) n.label_it = it(n.label);
+
 const graph = {
   meta: {
-    name: 'Engineering Building',
     metersPerUnit: MPU,
     qrSize: 0.18,
     floors: planFloors,
@@ -181,6 +198,19 @@ const graph = {
   nodes: ordered,
 };
 
-const file = path.resolve(__dirname, '../src/db/graph.json');
-fs.writeFileSync(file, JSON.stringify(graph, null, 1) + '\n');
-console.log(`Wrote ${ordered.length} nodes, ${planFloors.reduce((a, f) => a + f.rooms.length, 0)} rooms to ${file}`);
+writeVenue({
+  retailer: 'demo',
+  storeId: 'engineering-building',
+  store: {
+    id: 'engineering',
+    order: 1,
+    name: 'Engineering Building',
+    name_it: 'Edificio di Ingegneria',
+    retailer: { id: 'demo', name: 'Demo' },
+    store: { id: 'engineering-building', name: 'Engineering Building' },
+    type: 'building',
+    version: '2026-11-16',
+  },
+  graph,
+});
+console.log(`Engineering Building: ${ordered.length} nodes, ${planFloors.reduce((a, f) => a + f.rooms.length, 0)} rooms`);

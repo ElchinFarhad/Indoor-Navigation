@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { building } from '../db/dijkstra';
+import { t } from '../i18n';
 import { currentVenue, selectVenue, VENUES } from '../db/venues';
 import { CATEGORY_ORDER, kindStyle } from '../map/plan';
 import { NavNode } from '../nav/building';
@@ -76,7 +77,7 @@ const HomePage = () => {
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <path d="M12 21s-6-5.3-6-10a6 6 0 1 1 12 0c0 4.7-6 10-6 10z" />
               </svg>
-              <select aria-label="Venue" value={currentVenue().id} onChange={(e) => selectVenue(e.target.value)}>
+              <select aria-label={t('Venue')} value={currentVenue().id} onChange={(e) => selectVenue(e.target.value)}>
                 {VENUES.map((v) => (
                   <option key={v.id} value={v.id}>
                     {v.name}
@@ -87,17 +88,17 @@ const HomePage = () => {
           ) : (
             <p className="hero__eyebrow">{building.name}</p>
           )}
-          <h1>{store ? 'What do you need today?' : 'Where do you want to go?'}</h1>
+          <h1>{store ? t('What do you need today?') : t('Where do you want to go?')}</h1>
           {at ? (
             <p className="hero__lead hero__lead--here">
-              <span className="dot" /> You are at <b>{building.displayName(at)}</b>
+              <span className="dot" /> {t('You are at')} <b>{building.displayName(at)}</b>
               {building.floor(at.floor) ? `, ${building.floor(at.floor)!.name}` : ''}
             </p>
           ) : (
             <p className="hero__lead">
               {store
-                ? 'Make your list, scan one QR marker, and be guided from shelf to shelf by the shortest way.'
-                : 'Pick a place, scan one QR marker, then just follow the arrows and the voice.'}
+                ? t('Make your list, scan one QR marker, and be guided from shelf to shelf by the shortest way.')
+                : t('Pick a place, scan one QR marker, then just follow the arrows and the voice.')}
             </p>
           )}
           <label className="search">
@@ -105,25 +106,25 @@ const HomePage = () => {
               <circle cx="11" cy="11" r="6.5" />
               <path d="M16 16l4.5 4.5" />
             </svg>
-            <input type="search" placeholder={store ? 'Search products' : 'Search rooms'} aria-label={store ? 'Search products and sections' : 'Search rooms'} value={query} onChange={(e) => setQuery(e.target.value)} />
+            <input type="search" placeholder={store ? t('Search products') : t('Search rooms')} aria-label={store ? t('Search products and sections') : t('Search rooms')} value={query} onChange={(e) => setQuery(e.target.value)} />
           </label>
         </div>
       </header>
 
       <main className="content">
         {store && <ShoppingList query={query} startId={at ? at.id : null} finished={finished} />}
-        <div className="chips" role="tablist" aria-label="Category">
+        <div className="chips" role="tablist" aria-label={t('Category')}>
           {categories.map((c) => (
             <button key={c} type="button" role="tab" aria-selected={category === c} className={`chip${category === c ? ' is-active' : ''}`} onClick={() => setCategory(c)}>
-              {c}
+              {t(c)}
             </button>
           ))}
         </div>
 
         {building.hasPlan && (
-          <section className="browse" aria-label="Floor plan">
+          <section className="browse" aria-label={t('Floor plan')}>
             {building.floors.length > 1 && (
-              <div className="browse__floors" role="tablist" aria-label="Floor">
+              <div className="browse__floors" role="tablist" aria-label={t('Floor')}>
                 {building.floors.map((f) => (
                   <button key={f.id} type="button" role="tab" aria-selected={floor === f.id} className={floor === f.id ? 'is-active' : ''} onClick={() => setFloor(f.id)}>
                     {f.name}
@@ -144,34 +145,34 @@ const HomePage = () => {
                   <span>{selectedFloor ? selectedFloor.name : ''}</span>
                 </span>
                 <button type="button" className="btn-nav btn-nav--primary" onClick={() => handleClick(selected)}>
-                  Navigate
+                  {t('Navigate')}
                 </button>
               </div>
             ) : (
-              <p className="browse__hint">Tap a room on the map, or choose one from the list.</p>
+              <p className="browse__hint">{store ? t('Tap a section on the map, or choose one from the list.') : t('Tap a room on the map, or choose one from the list.')}</p>
             )}
           </section>
         )}
 
-        <h2 className="section-title">{store ? 'Or go to one section' : 'Choose Your Destination'}</h2>
+        <h2 className="section-title">{store ? t('Or go to one section') : t('Choose Your Destination')}</h2>
 
         <ul className="rooms">
           {rooms.map(({ room, distance }) => {
             const f = building.floor(room.floor);
-            const heading = at === null && room.floor !== lastFloor ? (f ? f.name : `Floor ${room.floor}`) : null;
+            const heading = at === null && room.floor !== lastFloor ? (f ? f.name : t('Floor {n}', { n: room.floor })) : null;
             lastFloor = room.floor;
             return (
               <React.Fragment key={room.id}>
                 {heading && <li className="rooms__floor">{heading}</li>}
                 <li>
-                  <button type="button" className="room" onClick={() => handleClick(room)} aria-label={`Navigate to ${building.displayName(room)}`}>
+                  <button type="button" className="room" onClick={() => handleClick(room)} aria-label={t('Navigate to {place}', { place: building.displayName(room) })}>
                     <span className="room__badge" style={{ background: kindStyle(room.kind).fill }}>
                       <KindIcon kind={room.kind} />
                     </span>
                     <span className="room__text">
                       <strong>{building.displayName(room)}</strong>
                       <span>
-                        {building.floors.length > 1 ? (f ? f.name : `Floor ${room.floor}`) : kindStyle(room.kind).category}
+                        {building.floors.length > 1 ? (f ? f.name : t('Floor {n}', { n: room.floor })) : t(kindStyle(room.kind).category)}
                         {distance !== null ? ` · ${Math.round(distance)} m` : ''}
                       </span>
                     </span>
@@ -186,10 +187,10 @@ const HomePage = () => {
             );
           })}
         </ul>
-        {rooms.length === 0 && <p className="empty">No room matches “{query}”.</p>}
+        {rooms.length === 0 && <p className="empty">{t('Nothing matches “{query}”.', { query })}</p>}
 
         <p className="footnote">
-          {store ? building.name : 'Politecnico di Torino'} · <Link to="/about">How it works</Link>
+          {store ? building.name : 'Politecnico di Torino'} · <Link to="/about">{t('How it works')}</Link> · <Link to="/privacy">{t('Privacy')}</Link>
         </p>
       </main>
     </div>

@@ -16,6 +16,7 @@
  *   path[].kind          "walk" | "stairs" | "elevator"
  *   path[].length        length in metres, for edges whose map distance means nothing (stairs)
  */
+import { t } from '../i18n';
 import { direction, distance, DEG, Vec2 } from './geometry';
 
 export type NodeType = 'room' | 'node' | 'stairs' | 'elevator';
@@ -81,6 +82,11 @@ export interface PlanRoom extends PlanRect {
   /** Node in front of the room's door. */
   node?: number;
   /**
+   * Location code of a shelf bay ("A03-02"): names the physical place, whatever
+   * is on the shelf at the moment (see db/assemble.ts).
+   */
+  code?: string;
+  /**
    * A solid block (a shelf, a counter) rather than a room one walks into. Its
    * "door" is then the point of its face that the node stands in front of: it
    * is not drawn as an opening.
@@ -124,6 +130,8 @@ export interface Product {
   brand?: string;
   quantity?: string;
   image?: string;
+  /** Location code of the shelf bay it is on. */
+  code?: string;
 }
 
 export interface RawFloor {
@@ -336,7 +344,7 @@ export class Building {
         this.warnings.push(`product ${p.id} is in unknown section ${p.section}`);
         continue;
       }
-      this.products.push({ id: p.id, name: p.name, section, nodeId: section.node, brand: p.brand, quantity: p.quantity, image: p.image });
+      this.products.push({ id: p.id, name: p.name, section, nodeId: section.node, brand: p.brand, quantity: p.quantity, image: p.image, code: section.code });
     }
     this.products.sort((a, b) => a.name.localeCompare(b.name));
     for (const id of meta.featured || []) {
@@ -410,10 +418,10 @@ export class Building {
   /** Display name of a node: its label if it has one, otherwise "Room A" / "Marker B". */
   displayName(node: NavNode): string {
     if (node.label) return node.label;
-    if (node.type === 'room') return `Room ${node.name}`;
-    if (node.type === 'stairs') return `Stairs ${node.name}`;
-    if (node.type === 'elevator') return `Elevator ${node.name}`;
-    return `Marker ${node.name}`;
+    if (node.type === 'room') return t('Room {name}', { name: node.name });
+    if (node.type === 'stairs') return t('Stairs {name}', { name: node.name });
+    if (node.type === 'elevator') return t('Lift {name}', { name: node.name });
+    return t('Marker {name}', { name: node.name });
   }
 }
 

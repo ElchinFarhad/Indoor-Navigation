@@ -59,9 +59,9 @@ describe('audio queue', () => {
   let clock = 0;
 
   beforeEach(() => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
     clock = 1000000;
-    jest.spyOn(Date, 'now').mockImplementation(() => clock);
+    vi.spyOn(Date, 'now').mockImplementation(() => clock);
     window.localStorage.clear();
     spoken = [];
     finishSpeech = () => undefined;
@@ -90,9 +90,9 @@ describe('audio queue', () => {
 
   afterEach(() => {
     guide.dispose();
-    jest.clearAllTimers();
-    jest.useRealTimers();
-    jest.restoreAllMocks();
+    vi.clearAllTimers();
+    vi.useRealTimers();
+    vi.restoreAllMocks();
     delete (window as any).speechSynthesis;
   });
 
@@ -101,7 +101,7 @@ describe('audio queue', () => {
   const pass = async (ms: number) => {
     for (let t = 0; t < ms; t += 50) {
       clock += 50;
-      jest.advanceTimersByTime(50);
+      vi.advanceTimersByTime(50);
       await Promise.resolve();
       await Promise.resolve();
     }

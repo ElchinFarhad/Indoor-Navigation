@@ -1,7 +1,9 @@
 /**
- * Generates a printable QR marker (SVG) for every node of src/db/graph.json.
+ * Generates a printable QR marker (SVG) for every marker of a venue.
  *
- *   node scripts/generate-markers.js [--base http://localhost:3000] [--format scanner|at] [--out ../QRCodeImages]
+ *   node scripts/generate-markers.js [--venue demo/engineering-building] [--base http://localhost:3000] [--format scanner|at] [--out ../QRCodeImages]
+ *
+ * --venue is the store folder below venues-src/ (<retailer>/<store>).
  *
  * --format scanner  payload "<base>/qrScanner/<id>" - the format of the original
  *                   markers (local0.pdf ...). Default.
@@ -28,7 +30,7 @@ function option(name, fallback) {
 const base = option('base', 'http://localhost:3000').replace(/\/$/, '');
 const format = option('format', 'scanner');
 const outDir = path.resolve(__dirname, option('out', '../../QRCodeImages'));
-const graph = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../src/db/graph.json'), 'utf8'));
+const graph = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../venues-src', option('venue', 'demo/engineering-building'), 'map.json'), 'utf8'));
 const floors = (graph.meta && graph.meta.floors) || [];
 
 function payload(id) {

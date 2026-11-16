@@ -2604,3 +2604,50 @@ body {
   bottom: 7.4rem;
   left: 12px;
 }
+
+/* Language switch in the top bar: shows the language you can switch to */
+.app-navbar__lang {
+  margin-left: 0.25rem;
+  padding: 0.3rem 0.55rem;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.8rem;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+}
+
+.app-navbar__lang:hover {
+  color: #ffffff;
+  border-color: #ffffff;
+}
+
+@media (max-width: 360px) {
+  .app-navbar__title {
+    display: none;
+  }
+}
+
+/* Shown instead of the app when the venue data cannot be loaded */
+.boot-error {
+  max-width: 26rem;
+  margin: 22vh auto 0;
+  padding: 0 1.5rem;
+  text-align: center;
+  color: var(--ink);
+}
+
+.boot-error h1 {
+  font-size: 1.3rem;
+}
+
+.boot-error button {
+  margin-top: 0.8rem;
+  padding: 0.7rem 1.4rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #ffffff;
+  font-weight: 600;
+}

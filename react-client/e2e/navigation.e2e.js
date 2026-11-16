@@ -25,7 +25,7 @@ const PORT = 5173;
 const BASE = `http://localhost:${PORT}`;
 const SHOTS = process.argv[2] ? path.resolve(process.argv[2]) : null;
 const MARKERS = path.resolve(__dirname, '../../QRCodeImages');
-const GRAPH = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../src/db/graph.json'), 'utf8'));
+const GRAPH = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../venues-src/demo/engineering-building/map.json'), 'utf8'));
 
 /** Node of the building by its label (and floor). */
 function node(label, floor = 0) {
@@ -733,8 +733,10 @@ async function run() {
     /* ------------------------------------------------------------------ */
     console.log('8. Real data: Carrefour Montesson (OpenStreetMap outline, Open Food Facts products)');
     {
-      const venue = require('../src/db/carrefour-montesson.json');
-      const first = (section) => venue.products.find((p) => p.section === section);
+      // The catalogue as published: a product is at a location code, a code holds a section.
+      const venue = require('../scripts/venues.js').compileAll().find((v) => v.entry.id === 'carrefour').catalog;
+      const codeOf = (section) => venue.locations.find((l) => l.section === section).code;
+      const first = (section) => venue.products.find((p) => p.location === codeOf(section));
       // Three real products from aisles near the main entrance, so the simulated walk stays short.
       const picks = [first('meals'), first('ice-creams'), first('frozen-pizzas')];
       assert.ok(picks.every(Boolean), 'the catalogue has products in the sections used here');

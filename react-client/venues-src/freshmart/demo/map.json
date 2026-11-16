@@ -1,15 +1,15 @@
 {
  "meta": {
-  "name": "FreshMart Supermarket",
-  "type": "store",
   "metersPerUnit": 0.1,
   "qrSize": 0.25,
   "floors": [
    {
     "id": 0,
     "name": "Sales floor",
+    "name_it": "Area vendita",
     "short": "S",
     "spoken": "the sales floor",
+    "spoken_it": "piano vendita",
     "width": 420,
     "height": 300,
     "corridors": [
@@ -25,7 +25,9 @@
      {
       "id": "entrance",
       "name": "Entrance",
+      "name_it": "Ingresso",
       "short": "Entrance",
+      "short_it": "Ingresso",
       "kind": "lobby",
       "x": 20,
       "y": 250,
@@ -47,10 +49,8 @@
       "node": 0
      },
      {
-      "id": "fruit",
-      "name": "Fruit",
-      "short": "Fruit",
-      "kind": "produce",
+      "id": "A01-01",
+      "code": "A01-01",
       "solid": true,
       "x": 0,
       "y": 60,
@@ -65,10 +65,8 @@
       "node": 13
      },
      {
-      "id": "cereals",
-      "name": "Breakfast & cereals",
-      "short": "Breakfast & cereals",
-      "kind": "pantry",
+      "id": "A01-02",
+      "code": "A01-02",
       "solid": true,
       "x": 60,
       "y": 60,
@@ -83,10 +81,8 @@
       "node": 14
      },
      {
-      "id": "vegetables",
-      "name": "Vegetables",
-      "short": "Vegetables",
-      "kind": "produce",
+      "id": "A01-03",
+      "code": "A01-03",
       "solid": true,
       "x": 0,
       "y": 135,
@@ -101,10 +97,8 @@
       "node": 15
      },
      {
-      "id": "coffee",
-      "name": "Coffee & tea",
-      "short": "Coffee & tea",
-      "kind": "pantry",
+      "id": "A01-04",
+      "code": "A01-04",
       "solid": true,
       "x": 60,
       "y": 135,
@@ -119,10 +113,8 @@
       "node": 16
      },
      {
-      "id": "pasta",
-      "name": "Pasta & rice",
-      "short": "Pasta & rice",
-      "kind": "pantry",
+      "id": "A02-01",
+      "code": "A02-01",
       "solid": true,
       "x": 72,
       "y": 60,
@@ -137,10 +129,8 @@
       "node": 17
      },
      {
-      "id": "sauces",
-      "name": "Sauces & oils",
-      "short": "Sauces & oils",
-      "kind": "pantry",
+      "id": "A02-02",
+      "code": "A02-02",
       "solid": true,
       "x": 124,
       "y": 60,
@@ -155,10 +145,8 @@
       "node": 18
      },
      {
-      "id": "canned",
-      "name": "Canned food",
-      "short": "Canned food",
-      "kind": "pantry",
+      "id": "A02-03",
+      "code": "A02-03",
       "solid": true,
       "x": 72,
       "y": 135,
@@ -173,10 +161,8 @@
       "node": 19
      },
      {
-      "id": "baking",
-      "name": "Baking & spices",
-      "short": "Baking & spices",
-      "kind": "pantry",
+      "id": "A02-04",
+      "code": "A02-04",
       "solid": true,
       "x": 124,
       "y": 135,
@@ -191,10 +177,8 @@
       "node": 20
      },
      {
-      "id": "snacks",
-      "name": "Snacks & crisps",
-      "short": "Snacks & crisps",
-      "kind": "snacks",
+      "id": "A03-01",
+      "code": "A03-01",
       "solid": true,
       "x": 136,
       "y": 60,
@@ -209,10 +193,8 @@
       "node": 21
      },
      {
-      "id": "softdrinks",
-      "name": "Soft drinks",
-      "short": "Soft drinks",
-      "kind": "drinks",
+      "id": "A03-02",
+      "code": "A03-02",
       "solid": true,
       "x": 188,
       "y": 60,
@@ -227,10 +209,8 @@
       "node": 22
      },
      {
-      "id": "sweets",
-      "name": "Sweets & chocolate",
-      "short": "Sweets & chocolate",
-      "kind": "snacks",
+      "id": "A03-03",
+      "code": "A03-03",
       "solid": true,
       "x": 136,
       "y": 135,
@@ -245,10 +225,8 @@
       "node": 23
      },
      {
-      "id": "water",
-      "name": "Water & juice",
-      "short": "Water & juice",
-      "kind": "drinks",
+      "id": "A03-04",
+      "code": "A03-04",
       "solid": true,
       "x": 188,
       "y": 135,
@@ -263,10 +241,8 @@
       "node": 24
      },
      {
-      "id": "wine",
-      "name": "Beer & wine",
-      "short": "Beer & wine",
-      "kind": "drinks",
+      "id": "A04-01",
+      "code": "A04-01",
       "solid": true,
       "x": 200,
       "y": 60,
@@ -281,10 +257,8 @@
       "node": 25
      },
      {
-      "id": "frozen",
-      "name": "Frozen food",
-      "short": "Frozen food",
-      "kind": "frozen",
+      "id": "A04-02",
+      "code": "A04-02",
       "solid": true,
       "x": 252,
       "y": 60,
@@ -299,10 +273,8 @@
       "node": 26
      },
      {
-      "id": "world",
-      "name": "World food",
-      "short": "World food",
-      "kind": "pantry",
+      "id": "A04-03",
+      "code": "A04-03",
       "solid": true,
       "x": 200,
       "y": 135,
@@ -317,10 +289,8 @@
       "node": 27
      },
      {
-      "id": "icecream",
-      "name": "Ice cream",
-      "short": "Ice cream",
-      "kind": "frozen",
+      "id": "A04-04",
+      "code": "A04-04",
       "solid": true,
       "x": 252,
       "y": 135,
@@ -335,10 +305,8 @@
       "node": 28
      },
      {
-      "id": "baby",
-      "name": "Baby",
-      "short": "Baby",
-      "kind": "care",
+      "id": "A05-01",
+      "code": "A05-01",
       "solid": true,
       "x": 264,
       "y": 60,
@@ -353,10 +321,8 @@
       "node": 29
      },
      {
-      "id": "cleaning",
-      "name": "Cleaning",
-      "short": "Cleaning",
-      "kind": "household",
+      "id": "A05-02",
+      "code": "A05-02",
       "solid": true,
       "x": 316,
       "y": 60,
@@ -371,10 +337,8 @@
       "node": 30
      },
      {
-      "id": "pets",
-      "name": "Pet food",
-      "short": "Pet food",
-      "kind": "household",
+      "id": "A05-03",
+      "code": "A05-03",
       "solid": true,
       "x": 264,
       "y": 135,
@@ -389,10 +353,8 @@
       "node": 31
      },
      {
-      "id": "paper",
-      "name": "Paper & tissues",
-      "short": "Paper & tissues",
-      "kind": "household",
+      "id": "A05-04",
+      "code": "A05-04",
       "solid": true,
       "x": 316,
       "y": 135,
@@ -407,10 +369,8 @@
       "node": 32
      },
      {
-      "id": "beauty",
-      "name": "Health & beauty",
-      "short": "Health & beauty",
-      "kind": "care",
+      "id": "A06-01",
+      "code": "A06-01",
       "solid": true,
       "x": 328,
       "y": 60,
@@ -425,10 +385,8 @@
       "node": 33
      },
      {
-      "id": "milk",
-      "name": "Milk & yoghurt",
-      "short": "Milk & yoghurt",
-      "kind": "dairy",
+      "id": "A06-02",
+      "code": "A06-02",
       "solid": true,
       "x": 400,
       "y": 60,
@@ -443,10 +401,8 @@
       "node": 34
      },
      {
-      "id": "hygiene",
-      "name": "Personal care",
-      "short": "Personal care",
-      "kind": "care",
+      "id": "A06-03",
+      "code": "A06-03",
       "solid": true,
       "x": 328,
       "y": 135,
@@ -461,10 +417,8 @@
       "node": 35
      },
      {
-      "id": "cheese",
-      "name": "Cheese & eggs",
-      "short": "Cheese & eggs",
-      "kind": "dairy",
+      "id": "A06-04",
+      "code": "A06-04",
       "solid": true,
       "x": 400,
       "y": 135,
@@ -479,10 +433,8 @@
       "node": 36
      },
      {
-      "id": "bakery",
-      "name": "Bakery",
-      "short": "Bakery",
-      "kind": "bakery",
+      "id": "B-01",
+      "code": "B-01",
       "solid": true,
       "x": 20,
       "y": 0,
@@ -497,10 +449,8 @@
       "node": 3
      },
      {
-      "id": "butcher",
-      "name": "Butcher",
-      "short": "Butcher",
-      "kind": "meat",
+      "id": "B-02",
+      "code": "B-02",
       "solid": true,
       "x": 136,
       "y": 0,
@@ -515,10 +465,8 @@
       "node": 7
      },
      {
-      "id": "fish",
-      "name": "Fish counter",
-      "short": "Fish counter",
-      "kind": "fish",
+      "id": "B-03",
+      "code": "B-03",
       "solid": true,
       "x": 264,
       "y": 0,
@@ -535,7 +483,9 @@
      {
       "id": "checkout",
       "name": "Checkouts",
+      "name_it": "Casse",
       "short": "Checkouts",
+      "short_it": "Casse",
       "kind": "checkout",
       "x": 150,
       "y": 255,
@@ -563,6 +513,7 @@
    "y": 280,
    "floor": 0,
    "label": "Entrance",
+   "label_it": "Ingresso",
    "room": "entrance",
    "path": [
     {
@@ -579,6 +530,7 @@
    "y": 35,
    "floor": 0,
    "label": "back of aisle 1",
+   "label_it": "fondo della corsia 1",
    "path": [
     {
      "nodeID": 13,
@@ -598,6 +550,7 @@
    "y": 235,
    "floor": 0,
    "label": "front of aisle 1",
+   "label_it": "inizio della corsia 1",
    "path": [
     {
      "nodeID": 16,
@@ -620,8 +573,7 @@
    "x": 104,
    "y": 35,
    "floor": 0,
-   "label": "Bakery",
-   "room": "bakery",
+   "room": "B-01",
    "path": [
     {
      "nodeID": 17,
@@ -645,6 +597,7 @@
    "y": 235,
    "floor": 0,
    "label": "front of aisle 2",
+   "label_it": "inizio della corsia 2",
    "path": [
     {
      "nodeID": 20,
@@ -668,6 +621,7 @@
    "y": 35,
    "floor": 0,
    "label": "back of aisle 3",
+   "label_it": "fondo della corsia 3",
    "path": [
     {
      "nodeID": 21,
@@ -691,6 +645,7 @@
    "y": 235,
    "floor": 0,
    "label": "front of aisle 3",
+   "label_it": "inizio della corsia 3",
    "path": [
     {
      "nodeID": 24,
@@ -713,8 +668,7 @@
    "x": 232,
    "y": 35,
    "floor": 0,
-   "label": "Butcher",
-   "room": "butcher",
+   "room": "B-02",
    "path": [
     {
      "nodeID": 25,
@@ -738,6 +692,7 @@
    "y": 235,
    "floor": 0,
    "label": "front of aisle 4",
+   "label_it": "inizio della corsia 4",
    "path": [
     {
      "nodeID": 28,
@@ -760,8 +715,7 @@
    "x": 296,
    "y": 35,
    "floor": 0,
-   "label": "Fish counter",
-   "room": "fish",
+   "room": "B-03",
    "path": [
     {
      "nodeID": 29,
@@ -785,6 +739,7 @@
    "y": 235,
    "floor": 0,
    "label": "front of aisle 5",
+   "label_it": "inizio della corsia 5",
    "path": [
     {
      "nodeID": 32,
@@ -808,6 +763,7 @@
    "y": 35,
    "floor": 0,
    "label": "back of aisle 6",
+   "label_it": "fondo della corsia 6",
    "path": [
     {
      "nodeID": 33,
@@ -827,6 +783,7 @@
    "y": 235,
    "floor": 0,
    "label": "front of aisle 6",
+   "label_it": "inizio della corsia 6",
    "path": [
     {
      "nodeID": 36,
@@ -845,8 +802,7 @@
    "x": 40,
    "y": 90,
    "floor": 0,
-   "label": "Fruit",
-   "room": "fruit",
+   "room": "A01-01",
    "qr": false,
    "path": [
     {
@@ -866,8 +822,7 @@
    "x": 40,
    "y": 105,
    "floor": 0,
-   "label": "Breakfast & cereals",
-   "room": "cereals",
+   "room": "A01-02",
    "qr": false,
    "path": [
     {
@@ -887,8 +842,7 @@
    "x": 40,
    "y": 165,
    "floor": 0,
-   "label": "Vegetables",
-   "room": "vegetables",
+   "room": "A01-03",
    "qr": false,
    "path": [
     {
@@ -908,8 +862,7 @@
    "x": 40,
    "y": 180,
    "floor": 0,
-   "label": "Coffee & tea",
-   "room": "coffee",
+   "room": "A01-04",
    "qr": false,
    "path": [
     {
@@ -929,8 +882,7 @@
    "x": 104,
    "y": 90,
    "floor": 0,
-   "label": "Pasta & rice",
-   "room": "pasta",
+   "room": "A02-01",
    "qr": false,
    "path": [
     {
@@ -950,8 +902,7 @@
    "x": 104,
    "y": 105,
    "floor": 0,
-   "label": "Sauces & oils",
-   "room": "sauces",
+   "room": "A02-02",
    "qr": false,
    "path": [
     {
@@ -971,8 +922,7 @@
    "x": 104,
    "y": 165,
    "floor": 0,
-   "label": "Canned food",
-   "room": "canned",
+   "room": "A02-03",
    "qr": false,
    "path": [
     {
@@ -992,8 +942,7 @@
    "x": 104,
    "y": 180,
    "floor": 0,
-   "label": "Baking & spices",
-   "room": "baking",
+   "room": "A02-04",
    "qr": false,
    "path": [
     {
@@ -1013,8 +962,7 @@
    "x": 168,
    "y": 90,
    "floor": 0,
-   "label": "Snacks & crisps",
-   "room": "snacks",
+   "room": "A03-01",
    "qr": false,
    "path": [
     {
@@ -1034,8 +982,7 @@
    "x": 168,
    "y": 105,
    "floor": 0,
-   "label": "Soft drinks",
-   "room": "softdrinks",
+   "room": "A03-02",
    "qr": false,
    "path": [
     {
@@ -1055,8 +1002,7 @@
    "x": 168,
    "y": 165,
    "floor": 0,
-   "label": "Sweets & chocolate",
-   "room": "sweets",
+   "room": "A03-03",
    "qr": false,
    "path": [
     {
@@ -1076,8 +1022,7 @@
    "x": 168,
    "y": 180,
    "floor": 0,
-   "label": "Water & juice",
-   "room": "water",
+   "room": "A03-04",
    "qr": false,
    "path": [
     {
@@ -1097,8 +1042,7 @@
    "x": 232,
    "y": 90,
    "floor": 0,
-   "label": "Beer & wine",
-   "room": "wine",
+   "room": "A04-01",
    "qr": false,
    "path": [
     {
@@ -1118,8 +1062,7 @@
    "x": 232,
    "y": 105,
    "floor": 0,
-   "label": "Frozen food",
-   "room": "frozen",
+   "room": "A04-02",
    "qr": false,
    "path": [
     {
@@ -1139,8 +1082,7 @@
    "x": 232,
    "y": 165,
    "floor": 0,
-   "label": "World food",
-   "room": "world",
+   "room": "A04-03",
    "qr": false,
    "path": [
     {
@@ -1160,8 +1102,7 @@
    "x": 232,
    "y": 180,
    "floor": 0,
-   "label": "Ice cream",
-   "room": "icecream",
+   "room": "A04-04",
    "qr": false,
    "path": [
     {
@@ -1181,8 +1122,7 @@
    "x": 296,
    "y": 90,
    "floor": 0,
-   "label": "Baby",
-   "room": "baby",
+   "room": "A05-01",
    "qr": false,
    "path": [
     {
@@ -1202,8 +1142,7 @@
    "x": 296,
    "y": 105,
    "floor": 0,
-   "label": "Cleaning",
-   "room": "cleaning",
+   "room": "A05-02",
    "qr": false,
    "path": [
     {
@@ -1223,8 +1162,7 @@
    "x": 296,
    "y": 165,
    "floor": 0,
-   "label": "Pet food",
-   "room": "pets",
+   "room": "A05-03",
    "qr": false,
    "path": [
     {
@@ -1244,8 +1182,7 @@
    "x": 296,
    "y": 180,
    "floor": 0,
-   "label": "Paper & tissues",
-   "room": "paper",
+   "room": "A05-04",
    "qr": false,
    "path": [
     {
@@ -1265,8 +1202,7 @@
    "x": 370,
    "y": 90,
    "floor": 0,
-   "label": "Health & beauty",
-   "room": "beauty",
+   "room": "A06-01",
    "qr": false,
    "path": [
     {
@@ -1286,8 +1222,7 @@
    "x": 370,
    "y": 105,
    "floor": 0,
-   "label": "Milk & yoghurt",
-   "room": "milk",
+   "room": "A06-02",
    "qr": false,
    "path": [
     {
@@ -1307,8 +1242,7 @@
    "x": 370,
    "y": 165,
    "floor": 0,
-   "label": "Personal care",
-   "room": "hygiene",
+   "room": "A06-03",
    "qr": false,
    "path": [
     {
@@ -1328,8 +1262,7 @@
    "x": 370,
    "y": 180,
    "floor": 0,
-   "label": "Cheese & eggs",
-   "room": "cheese",
+   "room": "A06-04",
    "qr": false,
    "path": [
     {
@@ -1350,6 +1283,7 @@
    "y": 235,
    "floor": 0,
    "label": "Checkout",
+   "label_it": "Cassa",
    "room": "checkout",
    "path": [
     {
@@ -1361,473 +1295,6 @@
      "weight": 3.2
     }
    ]
-  }
- ],
- "products": [
-  {
-   "id": "apple-juice",
-   "name": "Apple juice",
-   "section": "water"
-  },
-  {
-   "id": "apples",
-   "name": "Apples",
-   "section": "fruit"
-  },
-  {
-   "id": "baby-food",
-   "name": "Baby food",
-   "section": "baby"
-  },
-  {
-   "id": "baking-powder",
-   "name": "Baking powder",
-   "section": "baking"
-  },
-  {
-   "id": "bananas",
-   "name": "Bananas",
-   "section": "fruit"
-  },
-  {
-   "id": "beans",
-   "name": "Beans",
-   "section": "canned"
-  },
-  {
-   "id": "beer",
-   "name": "Beer",
-   "section": "wine"
-  },
-  {
-   "id": "bin-bags",
-   "name": "Bin bags",
-   "section": "cleaning"
-  },
-  {
-   "id": "biscuits",
-   "name": "Biscuits",
-   "section": "sweets"
-  },
-  {
-   "id": "black-pepper",
-   "name": "Black pepper",
-   "section": "baking"
-  },
-  {
-   "id": "bread",
-   "name": "Bread",
-   "section": "bakery"
-  },
-  {
-   "id": "bread-rolls",
-   "name": "Bread rolls",
-   "section": "bakery"
-  },
-  {
-   "id": "butter",
-   "name": "Butter",
-   "section": "milk"
-  },
-  {
-   "id": "canned-tomatoes",
-   "name": "Canned tomatoes",
-   "section": "canned"
-  },
-  {
-   "id": "carrots",
-   "name": "Carrots",
-   "section": "vegetables"
-  },
-  {
-   "id": "cat-food",
-   "name": "Cat food",
-   "section": "pets"
-  },
-  {
-   "id": "chewing-gum",
-   "name": "Chewing gum",
-   "section": "sweets"
-  },
-  {
-   "id": "chicken-breast",
-   "name": "Chicken breast",
-   "section": "butcher"
-  },
-  {
-   "id": "chocolate",
-   "name": "Chocolate",
-   "section": "sweets"
-  },
-  {
-   "id": "coffee",
-   "name": "Coffee",
-   "section": "coffee"
-  },
-  {
-   "id": "cola",
-   "name": "Cola",
-   "section": "softdrinks"
-  },
-  {
-   "id": "corn-flakes",
-   "name": "Corn flakes",
-   "section": "cereals"
-  },
-  {
-   "id": "couscous",
-   "name": "Couscous",
-   "section": "pasta"
-  },
-  {
-   "id": "crackers",
-   "name": "Crackers",
-   "section": "snacks"
-  },
-  {
-   "id": "cream",
-   "name": "Cream",
-   "section": "milk"
-  },
-  {
-   "id": "crisps",
-   "name": "Crisps",
-   "section": "snacks"
-  },
-  {
-   "id": "croissants",
-   "name": "Croissants",
-   "section": "bakery"
-  },
-  {
-   "id": "cucumber",
-   "name": "Cucumber",
-   "section": "vegetables"
-  },
-  {
-   "id": "deodorant",
-   "name": "Deodorant",
-   "section": "hygiene"
-  },
-  {
-   "id": "dog-food",
-   "name": "Dog food",
-   "section": "pets"
-  },
-  {
-   "id": "eggs",
-   "name": "Eggs",
-   "section": "cheese"
-  },
-  {
-   "id": "fish-fingers",
-   "name": "Fish fingers",
-   "section": "frozen"
-  },
-  {
-   "id": "flour",
-   "name": "Flour",
-   "section": "baking"
-  },
-  {
-   "id": "frozen-peas",
-   "name": "Frozen peas",
-   "section": "frozen"
-  },
-  {
-   "id": "frozen-pizza",
-   "name": "Frozen pizza",
-   "section": "frozen"
-  },
-  {
-   "id": "grapes",
-   "name": "Grapes",
-   "section": "fruit"
-  },
-  {
-   "id": "ham",
-   "name": "Ham",
-   "section": "butcher"
-  },
-  {
-   "id": "honey",
-   "name": "Honey",
-   "section": "cereals"
-  },
-  {
-   "id": "ice-lollies",
-   "name": "Ice lollies",
-   "section": "icecream"
-  },
-  {
-   "id": "iced-tea",
-   "name": "Iced tea",
-   "section": "softdrinks"
-  },
-  {
-   "id": "jam",
-   "name": "Jam",
-   "section": "cereals"
-  },
-  {
-   "id": "ketchup",
-   "name": "Ketchup",
-   "section": "sauces"
-  },
-  {
-   "id": "kitchen-roll",
-   "name": "Kitchen roll",
-   "section": "paper"
-  },
-  {
-   "id": "laundry-detergent",
-   "name": "Laundry detergent",
-   "section": "cleaning"
-  },
-  {
-   "id": "lemonade",
-   "name": "Lemonade",
-   "section": "softdrinks"
-  },
-  {
-   "id": "lemons",
-   "name": "Lemons",
-   "section": "fruit"
-  },
-  {
-   "id": "mayonnaise",
-   "name": "Mayonnaise",
-   "section": "sauces"
-  },
-  {
-   "id": "milk",
-   "name": "Milk",
-   "section": "milk"
-  },
-  {
-   "id": "minced-beef",
-   "name": "Minced beef",
-   "section": "butcher"
-  },
-  {
-   "id": "mozzarella",
-   "name": "Mozzarella",
-   "section": "cheese"
-  },
-  {
-   "id": "muesli",
-   "name": "Muesli",
-   "section": "cereals"
-  },
-  {
-   "id": "nappies",
-   "name": "Nappies",
-   "section": "baby"
-  },
-  {
-   "id": "noodles",
-   "name": "Noodles",
-   "section": "world"
-  },
-  {
-   "id": "oats",
-   "name": "Oats",
-   "section": "cereals"
-  },
-  {
-   "id": "olive-oil",
-   "name": "Olive oil",
-   "section": "sauces"
-  },
-  {
-   "id": "onions",
-   "name": "Onions",
-   "section": "vegetables"
-  },
-  {
-   "id": "orange-juice",
-   "name": "Orange juice",
-   "section": "water"
-  },
-  {
-   "id": "oranges",
-   "name": "Oranges",
-   "section": "fruit"
-  },
-  {
-   "id": "parmesan",
-   "name": "Parmesan",
-   "section": "cheese"
-  },
-  {
-   "id": "peanuts",
-   "name": "Peanuts",
-   "section": "snacks"
-  },
-  {
-   "id": "penne",
-   "name": "Penne",
-   "section": "pasta"
-  },
-  {
-   "id": "plasters",
-   "name": "Plasters",
-   "section": "beauty"
-  },
-  {
-   "id": "potatoes",
-   "name": "Potatoes",
-   "section": "vegetables"
-  },
-  {
-   "id": "prawns",
-   "name": "Prawns",
-   "section": "fish"
-  },
-  {
-   "id": "red-wine",
-   "name": "Red wine",
-   "section": "wine"
-  },
-  {
-   "id": "rice",
-   "name": "Rice",
-   "section": "pasta"
-  },
-  {
-   "id": "salad",
-   "name": "Salad",
-   "section": "vegetables"
-  },
-  {
-   "id": "salmon",
-   "name": "Salmon",
-   "section": "fish"
-  },
-  {
-   "id": "salt",
-   "name": "Salt",
-   "section": "baking"
-  },
-  {
-   "id": "sausages",
-   "name": "Sausages",
-   "section": "butcher"
-  },
-  {
-   "id": "shampoo",
-   "name": "Shampoo",
-   "section": "beauty"
-  },
-  {
-   "id": "soap",
-   "name": "Soap",
-   "section": "hygiene"
-  },
-  {
-   "id": "soy-sauce",
-   "name": "Soy sauce",
-   "section": "world"
-  },
-  {
-   "id": "spaghetti",
-   "name": "Spaghetti",
-   "section": "pasta"
-  },
-  {
-   "id": "sparkling-water",
-   "name": "Sparkling water",
-   "section": "water"
-  },
-  {
-   "id": "sponges",
-   "name": "Sponges",
-   "section": "cleaning"
-  },
-  {
-   "id": "still-water",
-   "name": "Still water",
-   "section": "water"
-  },
-  {
-   "id": "sugar",
-   "name": "Sugar",
-   "section": "coffee"
-  },
-  {
-   "id": "sun-cream",
-   "name": "Sun cream",
-   "section": "beauty"
-  },
-  {
-   "id": "sweetcorn",
-   "name": "Sweetcorn",
-   "section": "canned"
-  },
-  {
-   "id": "tea",
-   "name": "Tea",
-   "section": "coffee"
-  },
-  {
-   "id": "tissues",
-   "name": "Tissues",
-   "section": "paper"
-  },
-  {
-   "id": "toilet-paper",
-   "name": "Toilet paper",
-   "section": "paper"
-  },
-  {
-   "id": "tomato-sauce",
-   "name": "Tomato sauce",
-   "section": "sauces"
-  },
-  {
-   "id": "tomatoes",
-   "name": "Tomatoes",
-   "section": "vegetables"
-  },
-  {
-   "id": "toothpaste",
-   "name": "Toothpaste",
-   "section": "hygiene"
-  },
-  {
-   "id": "tortillas",
-   "name": "Tortillas",
-   "section": "world"
-  },
-  {
-   "id": "tuna",
-   "name": "Tuna",
-   "section": "canned"
-  },
-  {
-   "id": "vanilla-ice-cream",
-   "name": "Vanilla ice cream",
-   "section": "icecream"
-  },
-  {
-   "id": "vinegar",
-   "name": "Vinegar",
-   "section": "sauces"
-  },
-  {
-   "id": "washing-up-liquid",
-   "name": "Washing-up liquid",
-   "section": "cleaning"
-  },
-  {
-   "id": "white-wine",
-   "name": "White wine",
-   "section": "wine"
-  },
-  {
-   "id": "yoghurt",
-   "name": "Yoghurt",
-   "section": "milk"
   }
  ]
 }

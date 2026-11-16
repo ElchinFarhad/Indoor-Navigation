@@ -1,0 +1,26 @@
+{
+ "id": "supermarket",
+ "order": 2,
+ "name": "FreshMart Supermarket",
+ "name_it": "Supermercato FreshMart",
+ "retailer": {
+  "id": "freshmart",
+  "name": "FreshMart"
+ },
+ "store": {
+  "id": "demo",
+  "name": "Demo store"
+ },
+ "type": "store",
+ "version": "2026-11-16",
+ "featured": [
+  "milk",
+  "bread",
+  "eggs",
+  "apples",
+  "coffee",
+  "spaghetti",
+  "still-water",
+  "toilet-paper"
+ ]
+}

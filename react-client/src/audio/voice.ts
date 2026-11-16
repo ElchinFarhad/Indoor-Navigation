@@ -9,6 +9,7 @@
  * / enhanced ones first, known novelty and legacy voices last), picks the best
  * one, and lets the user choose another.
  */
+import { currentLang } from '../i18n';
 
 export interface VoiceInfo {
   uri: string;
@@ -100,7 +101,10 @@ export class VoiceEngine {
 
   /** Voices that can read the prompts, best first. */
   voices(): VoiceInfo[] {
-    const language = (typeof navigator !== 'undefined' && navigator.language && navigator.language.slice(0, 2) === 'en' && navigator.language) || 'en-US';
+    // The prompts are in the app's language; within it, prefer the phone's own regional variant.
+    const app = currentLang();
+    const own = typeof navigator !== 'undefined' && navigator.language && navigator.language.slice(0, 2) === app ? navigator.language : null;
+    const language = own || (app === 'it' ? 'it-IT' : 'en-US');
     return this.rawVoices()
       .map((v) => ({ uri: v.voiceURI, name: v.name, lang: v.lang, score: scoreVoice(v, language) }))
       .filter((v) => v.score > -100)
@@ -149,7 +153,7 @@ export class VoiceEngine {
         utterance.voice = voice;
         utterance.lang = voice.lang;
       } else {
-        utterance.lang = 'en-US';
+        utterance.lang = currentLang() === 'it' ? 'it-IT' : 'en-US';
       }
       utterance.rate = this.rate;
       utterance.pitch = 1;
